@@ -1,30 +1,61 @@
 <template>
-    <div class="form" @keydown.enter="login">
+    <div
+        class="form"
+        @keydown.enter="login"
+    >
         <label>
-            <div>Логин</div>
-            <input type="text" placeholder="Ваш логин" class="login" :class="{
-                error: login_error && validation_error
-            }" v-model="form.login">
-            <small v-show="login_error && validation_error" style="color: red;margin-bottom: 15px;display: block;">Логин не
-                менее 3 символов</small>
+            <div>Почта</div>
+            <input
+                v-model="form.email"
+                type="email"
+                placeholder="Ваш email"
+                class="email"
+                :class="{ error: email_error && validation_error }"
+            >
+            <small
+                v-show="email_error && validation_error"
+                style="color: red;margin-bottom: 15px;display: block;"
+            >
+              Неправильный Email
+            </small>
         </label>
         <label>
             <div>Пароль</div>
-            <input type="password" placeholder="Ваш пароль" class="password" :class="{
-                error: password_error && validation_error
-            }" v-model="form.password">
-            <small v-show="password_error && validation_error" style="color: red;margin-bottom: 15px;display: block;">Пароль
-                не менее 8 символов</small>
+            <input
+                v-model="form.password"
+                type="password" 
+                placeholder="Ваш пароль" 
+                class="password" 
+                :class="{ error: password_error && validation_error }"
+            >
+            <small 
+                v-show="password_error && validation_error" 
+                style="color: red;margin-bottom: 15px;display: block;"
+            >
+              Пароль не менее 8 символов
+            </small>
         </label>
         <div class="flex items-center justify-between">
             <label class="remember-me">
-                <input type="checkbox" v-model="form.checked"> - Запомнить меня
+                <input
+                    v-model="form.checked"
+                    type="checkbox"
+                >
+              - Запомнить меня
             </label>
-            <button class="btn" :class="{
-                disabled: formIsEmpty && validation_error
-            }" :disabled="formIsEmpty && validation_error" @click="login">Войти</button>
+            <button
+                class="btn"
+                :class="{ disabled: formIsEmpty && validation_error }"
+                :disabled="formIsEmpty && validation_error"
+                @click="login"
+            >
+              Войти
+            </button>
         </div>
-        <div class="flex items-center justify-between authorization_error" v-show="authorization_error">
+        <div
+            v-show="authorization_error"
+            class="flex items-center justify-between authorization_error"
+        >
             {{ authorization_error_text }}
         </div>
     </div>
@@ -38,7 +69,7 @@ export default {
     data() {
         return {
             form: {
-                login: '',
+                email: '',
                 password: '',
                 checked: true,
             },
@@ -64,7 +95,7 @@ export default {
                 },
                 credentials: "include",
                 body: JSON.stringify({
-                    username: this.form.login,
+                    email: this.form.email,
                     password: this.form.password,
                 }),
             })
@@ -83,7 +114,7 @@ export default {
                     }
                     else if (response.status == 401) {
                         this.authorization_error = true
-                        this.authorization_error_text = '«Неправильный логин или пароль»'
+                        this.authorization_error_text = '«Неправильная почта или пароль»'
                     }
                     this.validation_error = true
                 })
@@ -101,21 +132,22 @@ export default {
         }
     },
     computed: {
-        formIsEmpty() {
-            return this.form.login.length < 3 || this.form.password.length < 8
-        },
-        login_error() {
-            return this.form.login.length < 3
-        },
-        password_error() {
-            return this.form.password.length < 8
-        },
+      formIsEmpty() {
+        return this.form.email.length < 3 || this.form.password.length < 8
+      }, 
+      email_error() {
+        let regex = /\S+@\S+\.\S+/;
+        return !regex.test(this.form.email);
+      }, 
+      password_error() {
+        return this.form.password.length < 8
+      },
     },
 }
 </script>
 
 <style>
-.login.error,
+.email.error,
 .password.error {
     border-color: red !important;
     margin-bottom: 0 !important;

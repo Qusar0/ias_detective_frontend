@@ -2,47 +2,64 @@
     <div class="form">
         <label>
             <div>Почта</div>
-            <input type="email" placeholder="Ваш email" :class="{
-                'email': true,
-                error: email_error && validation_error
-            }" v-model="form.email">
-            <small v-show="email_error && validation_error" style="color: red;margin-bottom: 15px;display: block;">Не
-                правильный Email</small>
-        </label>
-        <label>
-            <div>Логин</div>
-            <input type="text" placeholder="Ваш логин" :class="{
-                'login': true,
-                error: login_error && validation_error
-            }" v-model="form.login">
-            <small v-show="login_error && validation_error" style="color: red;margin-bottom: 15px;display: block;">Логин не
-                менее 3 символов</small>
+            <input
+                v-model="form.email"
+                type="email"
+                placeholder="Ваш email"
+                :class="{ 'email': true, error: email_error && validation_error }"
+            >
+            <small
+                v-show="email_error && validation_error"
+                style="color: red;margin-bottom: 15px;display: block;"
+            >
+              Неправильный Email
+            </small>
         </label>
         <label>
             <div>Пароль</div>
-            <input type="password" placeholder="Ваш пароль" :class="{
-                'password': true,
-                error: password_error && validation_error
-            }" v-model="form.password">
-            <small v-show="password_error && validation_error" style="color: red;margin-bottom: 15px;display: block;">Пароль
-                не менее 8 символов</small>
+            <input
+                v-model="form.password"
+                type="password"
+                placeholder="Ваш пароль"
+                :class="{ 'password': true, error: password_error && validation_error }"
+            >
+            <small
+                v-show="password_error && validation_error"
+                style="color: red;margin-bottom: 15px;display: block;"
+            >
+              Пароль не менее 8 символов
+            </small>
         </label>
         <label>
             <div>Подтвердите пароль</div>
-            <input type="password" placeholder="Подтвердите пароль" :class="{
-                'password-confirm': true,
-                error: password_confirm_error && validation_error
-            }" v-model="form.confirm_password">
-            <small v-show="password_confirm_error && validation_error"
-                style="color: red;margin-bottom: 15px;display: block;">Пароли не совпадают</small>
+            <input
+                v-model="form.confirm_password"
+                type="password"
+                placeholder="Подтвердите пароль"
+                :class="{ 'password-confirm': true, error: password_confirm_error && validation_error }"
+            >
+            <small
+                v-show="password_confirm_error && validation_error"
+                style="color: red;margin-bottom: 15px;display: block;"
+            >
+              Пароли не совпадают
+            </small>
         </label>
         <div class="flex items-center justify-between">
             <label></label>
-            <button class="btn" :class="{
-                disabled: !formIsEmpty && validation_error
-            }" :disabled="!formIsEmpty && validation_error" @click="register">Войти</button>
+            <button
+                class="btn"
+                :class="{ disabled: !formIsEmpty && validation_error }"
+                :disabled="!formIsEmpty && validation_error"
+                @click="register"
+            >
+              Войти
+            </button>
         </div>
-        <div class="flex items-center justify-between registration_error" v-show="registration_error">
+        <div
+            v-show="registration_error"
+            class="flex items-center justify-between registration_error"
+        >
             {{ registration_error_text }}
         </div>
     </div>
@@ -60,7 +77,6 @@ export default {
     data() {
         return {
             form: {
-                login: '',
                 email: '',
                 password: '',
                 confirm_password: '',
@@ -86,7 +102,6 @@ export default {
                 },
                 credentials: "include",
                 body: JSON.stringify({
-                    username: this.form.login,
                     email: this.form.email,
                     password: this.form.password,
                 }),
@@ -117,9 +132,6 @@ export default {
             let regex = /\S+@\S+\.\S+/;
             return !regex.test(this.form.email);
         },
-        login_error() {
-            return this.form.login.length < 3;
-        },
         password_error() {
             return this.form.password.length < 8;
         },
@@ -132,7 +144,6 @@ export default {
 
 <style>
 .email.error,
-.login.error,
 .password.error,
 .password-confirm.error {
     border-color: red !important;
