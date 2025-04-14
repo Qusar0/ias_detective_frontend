@@ -9,7 +9,7 @@
                 class="confirm-model_body"
                 @click.stop
             >
-                <div class="title">Вы уверенны что хотите сделать запрос?</div>
+                <div class="title">Вы уверены, что хотите сделать запрос?</div>
                 <div class="flex items-center">
                     <button
                         class="add-item cancel"

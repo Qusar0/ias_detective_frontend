@@ -25,6 +25,7 @@
                     @click.stop="bell_opened = !bell_opened"
                 ></i>
                 <div
+                    v-if="events.length"
                     class="notifications scrollbar"
                     :class="{ open: bell_opened }"
                     @click.stop
@@ -52,7 +53,12 @@
                 class="fa-solid fa-user-tie"
                 style="font-size: 22px;"
             ></i>
-            <div class="full_name">{{ user_name }}</div>
+            <div
+                v-if="user_name"
+                class="full_name"
+            >
+              {{ user_name }}
+            </div>
             <img
                 src="../assets/img/arrow-down.png"
                 alt=""

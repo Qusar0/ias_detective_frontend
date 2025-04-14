@@ -2,7 +2,7 @@
     <div class="content">
         <div class="confirm-model" v-show="confirm_model" @click="confirm_model = false">
             <div class="confirm-model_body" @click.stop>
-                <div class="title">Вы уверенны что хотите сделать запрос за {{ temp_price }} руб. ?</div>
+                <div class="title">Вы уверены, что хотите сделать запрос за {{ temp_price }} руб. ?</div>
                 <div class="flex items-center">
                     <button class="add-item cancel" @click="confirm_model = false">Отмена</button>
                     <button class="add-item confirm" @click.stop="getHTMLPage()">Да</button>
