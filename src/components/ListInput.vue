@@ -12,7 +12,10 @@
             @click.stop
             v-show="item.modal"
         >
-            <p v-for="site in item.list" :key="site">
+            <p
+                v-for="site in item.list"
+                :key="site"
+            >
                 <span>{{ site }}</span>
                 <i
                     class="fa-solid fa-xmark"
@@ -25,31 +28,31 @@
         </div>
         <i
             class="fa-solid fa-angle-down"
-            :class="{
-                active: item.modal
-            }"
+            :class="{ active: item.modal }"
             @click.stop="toggleItemList(item.name)"
         ></i>
         <label class="upload-text-file parent-prompt-hover">
-            <input type="file" style="display: none;" accept="text/plain" @input="uploadFile">
+            <input
+                type="file"
+                style="display: none;"
+                accept="text/plain"
+                @input="uploadFile"
+            >
             <i class="fa-solid fa-file-arrow-up"></i>
-            <small class="prompt-hover">Формат файла: одно ключевое слово / фраза на строке без знаков препинания.</small>
+            <small class="prompt-hover">
+              Формат файла: одно ключевое слово / фраза на строке без знаков препинания.
+            </small>
         </label>
         <input
-            @keydown.enter="addItem"
             v-model="item.input"
             style="margin-right: 0; border-radius: 3px 0 0 3px;height: 100%;"
             type="text"
             :placeholder="item.placeholder"
+            @keydown.enter="addItem"
         />
         <small class="prompt with-upload">{{ prompt == '' ? item.prompt : prompt }}</small>
         <button
-            :disabled="hasSpaceOrСomma(item.input)"
-            :class="{
-                'btn-gray-bg': hasSpaceOrСomma(item.input),
-            }"
             class="add-item"
-            @click="addItem"
             style="
             font-size: 13px;
             background: #f1f4f9;
@@ -63,6 +66,9 @@
             border-radius: 0 3px 3px 0;
             cursor: pointer;
         "
+            :disabled="hasSpaceOrСomma(item.input)"
+            :class="{ 'btn-gray-bg': hasSpaceOrСomma(item.input), }"
+            @click="addItem"
         >
             Добавить
         </button>
@@ -70,7 +76,6 @@
 </template>
 
 <script>
-
 import { toggleItemList } from '../use/index'
 
 export default {

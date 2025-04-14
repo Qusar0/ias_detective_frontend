@@ -75,7 +75,9 @@
                         class="prompt-hover"
                     >
                         <!-- Списание стоимости запроса производится <br>вне зависимости от его результата. -->
-                        Теги из популярных мобильных<br> приложений определения звонящего.
+                      Теги из популярных мобильных <br>
+                      приложений определения звонящего. <br>
+                      Все страны, кроме номеров России.
                     </small>
                     <span style="user-select: none"
                         >Теги: <span class="checkbox-price">{{ chbox_prices.tags }} ₽</span></span
@@ -90,7 +92,7 @@
                         Функция в разработке
                     </small>
                     <span style="user-select: none" class="checkbox-disabled">
-                        Поиск аккаунтов
+                        Аккаунты
                     </span>
                 </label>
                 <!-- <label class="flex items-center parent-prompt-hover">

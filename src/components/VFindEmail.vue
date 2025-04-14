@@ -71,7 +71,7 @@
                         Функция в разработке
                     </small>
                     <span style="user-select: none" class="checkbox-disabled">
-                        Поиск аккаунтов
+                        Аккаунты
                     </span>
                 </label>
                 <!-- <label class="flex items-center parent-prompt-hover">

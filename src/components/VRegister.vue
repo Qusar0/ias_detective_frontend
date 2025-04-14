@@ -109,6 +109,7 @@ export default {
                 if (response.status == 200) {
                     //this.isAuthorized = true
                     //this.$router.push('/')
+                  console.log('hi')
                     this.bool = true
                     return;
                 }
@@ -126,7 +127,7 @@ export default {
     computed: {
         formIsEmpty() {
             let regex = /\S+@\S+\.\S+/;
-            return regex.test(this.form.email) && this.form.login.length >= 3 && this.form.password.length >= 8 && this.form.password === this.form.confirm_password
+            return regex.test(this.form.email) && this.form.password.length >= 8 && this.form.password === this.form.confirm_password
         },
         email_error() {
             let regex = /\S+@\S+\.\S+/;

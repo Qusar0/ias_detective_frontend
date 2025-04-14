@@ -1,28 +1,40 @@
-
-
 <template>
     <div class="header">
-        <svg @click="$emit('toggle-menu', !menu)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 20">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 30 20"
+            @click="$emit('toggle-menu', !menu)"
+        >
             <rect width="30" height="4" rx="2" />
             <rect y="8" width="30" height="4" rx="2" />
             <rect y="16" width="30" height="4" rx="2" />
         </svg>
-
         <div class="nav">
             <button class="item-btn btn">
                 <router-link to="/payment" style="text-decoration: none;color: white;">Пополнить</router-link>
             </button>
-            <div style="font-size: 13.3px;margin-right: 15px;"><b>{{ user_balance.toFixed(1) }}</b> руб.</div>
+            <div style="font-size: 13.3px;margin-right: 15px;">
+              <b>{{ user_balance.toFixed(1) }}</b>
+              руб.
+            </div>
             <div style="position: relative;z-index: 99;">
-                <i class="fa-solid fa-bell" :class="{
-                    'has-notifications': has_notifications,
-                    'bell-animation': bell_animation,
-                }" style="margin-right: 15px;" @click.stop="bell_opened = !bell_opened"></i>
-                <div class="notifications scrollbar" @click.stop :class="{
-                    open: bell_opened
-                }">
-                    <div v-for="event_item in events" :key="event_item" class="notification"
-                        @mouseenter="seen_notification(event_item)">
+                <i
+                    class="fa-solid fa-bell"
+                    :class="{ 'has-notifications': has_notifications, 'bell-animation': bell_animation, }"
+                    style="margin-right: 15px;"
+                    @click.stop="bell_opened = !bell_opened"
+                ></i>
+                <div
+                    class="notifications scrollbar"
+                    :class="{ open: bell_opened }"
+                    @click.stop
+                >
+                    <div
+                        v-for="event_item in events"
+                        :key="event_item"
+                        class="notification"
+                        @mouseenter="seen_notification(event_item)"
+                    >
                         <div :class="`seen_dot ${event_item?.event_status == 'seen' ? 'seen-animation' : ''}`"></div>
                         <ToastifyMessage :event_data="{
                             event_id: event_item?.event_id,
@@ -36,12 +48,31 @@
                 </div>
             </div>
             <!--<img src="../assets/img/avatar.jpg" alt="avatar" class="avatar">-->
-            <i class="fa-solid fa-user-tie" style="font-size: 22px;"></i>
+            <i
+                class="fa-solid fa-user-tie"
+                style="font-size: 22px;"
+            ></i>
             <div class="full_name">{{ user_name }}</div>
-            <img src="../assets/img/arrow-down.png" alt="" class="dropdown" @click.stop="dropdown = !dropdown">
-            <div class="pos-a dropdown-menu" style="z-index: 2;" @click.stop v-show="dropdown">
-                <span><i class="fa-solid fa-gear"></i><router-link to="/settings">Настройки</router-link></span>
-                <span class="logout" @click="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i>Выход</span>
+            <img
+                src="../assets/img/arrow-down.png"
+                alt=""
+                class="dropdown"
+                @click.stop="dropdown = !dropdown"
+            >
+            <div
+                v-show="dropdown"
+                class="pos-a dropdown-menu"
+                style="z-index: 2;"
+                @click.stop
+            >
+                <span>
+                  <i class="fa-solid fa-gear"></i>
+                  <router-link to="/settings">Настройки</router-link>
+                </span>
+                <span class="logout" @click="logout()">
+                  <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                  Выход
+                </span>
             </div>
         </div>
     </div>
@@ -57,7 +88,18 @@ export default {
         ToastifyMessage,
     },
     setup() {
-        return { isAuthorized, dropdown, user_name, getNotificationSound, bell_animation, has_notifications, bell_opened, events, user_balance, get_user_balance }
+        return {
+          isAuthorized,
+          dropdown,
+          user_name,
+          getNotificationSound,
+          bell_animation,
+          has_notifications,
+          bell_opened,
+          events,
+          user_balance,
+          get_user_balance
+        }
     },
     props: {
         menu: {

@@ -1,17 +1,50 @@
 <template>
-    <VSidebar :menu="menu" @click.stop="refresh()" />
-    <div class="wrap" @click.stop="refresh()" style="width: 100%">
-        <VHeader :menu="menu" @toggle-menu="toggleMenu" />
-        <div class="w-full" style="flex-direction: column; margin-top: 50px">
+    <VSidebar
+        :menu="menu"
+        @click.stop="refresh()"
+    />
+    <div
+        class="wrap"
+        style="width: 100%"
+        @click.stop="refresh()"
+    >
+        <VHeader
+            :menu="menu"
+            @toggle-menu="toggleMenu"
+        />
+        <div
+            class="w-full"
+            style="flex-direction: column; margin-top: 50px"
+        >
             <h1 class="payment-title">Пополнение баланса</h1>
-            <div class="payment-block" style="background: white;padding: 20px 10px 20px 10px;">
+            <div
+                class="payment-block"
+                style="background: white;padding: 20px 10px 20px 10px;"
+            >
                 <span style="color: rgb(38, 38, 38);">Введите сумму пополнения:</span>
-                <div class="sum" style="display: flex;flex-direction: column;">
-                    <input type="number" class="sum-input" v-model="amount" :step="100" :min="0">
+                <div
+                    class="sum"
+                    style="display: flex;flex-direction: column;"
+                >
+                    <input
+                        v-model="amount"
+                        type="number"
+                        class="sum-input"
+                        :step="100"
+                        :min="0"
+                    >
                 </div>
-                <button class="item-btn btn" @click="initPayment">Пополнить</button>
+                <button
+                    class="item-btn btn"
+                    @click="initPayment"
+                >
+                  Пополнить
+                </button>
             </div>
-            <div id="element" v-if="amount <= 0"></div>
+            <div
+                v-if="amount <= 0"
+                id="element"
+            ></div>
         </div>
     </div>
 </template>
