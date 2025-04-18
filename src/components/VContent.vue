@@ -361,8 +361,7 @@
                       ></i>
                     </button>
                   <i
-                      v-show="query.query_status !== 'pending'"
-                      class="fa-solid fa-trash"
+                      class="fa-solid fa-trash delete-icon"
                       @click="deleteQuery(query.query_id)"
                   ></i>
                 </div>
@@ -1189,4 +1188,7 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
     text-transform: capitalize;
 }
 
+.delete-icon {
+  cursor: pointer;
+}
 </style>

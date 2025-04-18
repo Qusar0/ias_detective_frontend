@@ -183,8 +183,7 @@
                         @click="downloadQuery(query.query_title, query.query_id, query)">Скачать <i
                             class="fa-solid fa-spinner" v-show="query.downloading" style="margin-left: 5px;"></i></button>
                   <i
-                      v-show="query.query_status !== 'pending'"
-                      class="fa-solid fa-trash"
+                      class="fa-solid fa-trash delete-icon"
                       @click="deleteQuery(query.query_id)"
                   ></i>
                 </div>
@@ -995,5 +994,9 @@ label.parent-prompt:not(label.parent-prompt:focus-within)>.prompt {
     padding: 1px 2px 1px 3px;
     font-size: 11px;
     border-radius: 3px;
+}
+
+.delete-icon {
+  cursor: pointer;
 }
 </style>

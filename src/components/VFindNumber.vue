@@ -217,8 +217,7 @@
                     <i class="fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'failed'" :title="'Ошибка сервера!\n\nПопробуйте позже.'" style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"></i>
                     <button v-else class="item-btn btn" @click="downloadQuery(query.query_title, query.query_id, query)">Скачать <i class="fa-solid fa-spinner" v-show="query.downloading" style="margin-left: 5px;"></i></button>
                   <i
-                      v-show="query.query_status !== 'pending'"
-                      class="fa-solid fa-trash"
+                      class="fa-solid fa-trash delete-icon"
                       @click="deleteQuery(query.query_id)"
                   ></i>
                 </div>
@@ -1039,4 +1038,7 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
     opacity: .5;
 }
 
+.delete-icon {
+  cursor: pointer;
+}
 </style>
