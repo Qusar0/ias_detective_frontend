@@ -240,6 +240,15 @@
                     </small>
                     <span style="user-select: none">Досье</span>
                 </label>
+              <label class="flex items-center parent-prompt-hover">
+                <input type="checkbox" class="chbox" v-model="chbox.use_yandex" />
+                <small class="prompt-hover">
+                  Использовать ПС Яндекс для поиска
+                </small>
+                <span style="user-select: none">
+                  Yandex
+                </span>
+              </label>
             </div>
             <button
                 class="btn"
@@ -403,13 +412,13 @@ export default {
             confirm_model: false,
             current_timestamp: new Date().valueOf(),
             query_list: [],
-
             prohibited_site: "",
             prohibited_sites: [],
 
             keyword: "",
             keywords: [],
             chbox: {
+              use_yandex: false,
                 company_negativ: true,
                 company_reputation: true,
                 company_relations: true,
@@ -554,6 +563,7 @@ export default {
                 this.form.company_name != ""
             ) {
                 const query_data = {
+                  use_yandex: this.chbox.use_yandex,
                     company_name: this.form.company_name.trim().replace(/^"(.*)"$/, '$1'),
                     extra_name: this.form.extra_name.trim().replace(/^"(.*)"$/, '$1'),
                     location: this.form.location.trim(),

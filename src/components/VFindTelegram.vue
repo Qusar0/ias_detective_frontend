@@ -92,6 +92,15 @@
                     <span style="user-select: none">Телефон: <span class="checkbox-price">{{ chbox_prices.phone_number }}
                             ₽</span></span>
                 </label>
+              <label class="flex items-center parent-prompt-hover">
+                <input type="checkbox" class="chbox" v-model="chbox.use_yandex" />
+                <small class="prompt-hover">
+                  Использовать ПС Яндекс для поиска
+                </small>
+                <span style="user-select: none">
+                  Yandex
+                </span>
+              </label>
             </div>
             <button class="btn" style="white-space: nowrap;margin-top: 10px;margin-left: auto !important;"
                 @click="getPrice()">
@@ -215,13 +224,13 @@ export default {
             confirm_model: false,
             current_timestamp: new Date().valueOf(),
             query_list: [],
-
             prohibited_site: "",
             prohibited_sites: [],
 
             keyword: "",
             keywords: [],
             chbox: {
+              use_yandex: false,
                 interests: false,
                 groups_1: false,
                 groups_2: false,
@@ -366,6 +375,7 @@ export default {
                 this.form.tg_username != "" || this.form.tg_id != ""
             ) {
                 const query_data = {
+                  use_yandex: this.chbox.use_yandex,
                     username: this.form.tg_username.trim(),
                     user_id: this.form.tg_id.trim(),
                     methods_type: Object.keys(this.chbox).filter(temp_chbox => this.chbox[temp_chbox])
