@@ -79,9 +79,38 @@ export default {
         this.menu = bool;
       },
       sendData(amount, transactionId) {
-        console.log(amount)
-        console.log(transactionId)
-        console.log(user_id)
+        fetch('https://api.ipify.org?format=json')
+            .then(res => res.json())
+            .then(data => {
+              const ip = data.ip;
+              const params = new URLSearchParams({
+                TransactionId: transactionId,
+                Currency: "RUB",
+                PaymentAmount: amount,
+                OperationType: "Payment",
+                InvoiceId: "123",
+                AccountId: localStorage.getItem('user_id'),
+                Email: localStorage.getItem('user_name'),
+                DateTime: new Date().toISOString(),
+                IpAddress: ip,
+                Status: "Completed"
+              });
+
+              return fetch(`/api/top_up_balance?${params.toString()}`, {
+                method: 'GET',
+                credentials: "include"
+              })
+            })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              return response.json;
+            })
+            .then(data => console.log(data))
+            .catch((error) => {
+              console.log(error)
+            })
       },
       initPayment() {
             if (this.amount <= 0) return;

@@ -9,7 +9,18 @@
                 class="confirm-model_body"
                 @click.stop
             >
-                <div class="title">Вы уверены, что хотите сделать запрос?</div>
+                <div
+                    v-if="user_balance >= 10"
+                    class="title"
+                >
+                  Вы уверены, что хотите сделать запрос?
+                </div>
+              <div
+                  v-else
+                  class="title"
+              >
+                Недостаточно средств для совершения запроса за 10 руб.
+              </div>
                 <div class="flex items-center">
                     <button
                         class="add-item cancel"
@@ -18,6 +29,7 @@
                       Отмена
                     </button>
                     <button
+                        v-if="user_balance >= 10"
                         class="add-item confirm"
                         @click.stop="getHTMLPage()"
                     >
@@ -343,6 +355,11 @@
                           style="margin-left: 5px;"
                       ></i>
                     </button>
+                  <i
+                      v-show="query.query_status !== 'pending'"
+                      class="fa-solid fa-trash"
+                      @click="deleteQuery(query.query_id)"
+                  ></i>
                 </div>
             </div>
             <div
@@ -367,14 +384,14 @@
 <script>
 import axios from "axios";
 import "../utils/index";
-import { isAuthorized, prohibited_model, keywords_model, keys_list } from "../use/index";
+import { isAuthorized, prohibited_model, keywords_model, keys_list, user_balance } from "../use/index";
 import ListInput from './ListInput.vue'
 import VPagination from './UI/VPagination.vue'
 import { events } from "../utils/notification"
 
 export default {
     setup() {
-        return { isAuthorized, prohibited_model, keywords_model, keys_list, events };
+        return { isAuthorized, prohibited_model, keywords_model, keys_list, events, user_balance };
     },
     components: {
         ListInput,
@@ -458,7 +475,6 @@ export default {
                         return false
                     }
                 });
-                this.delete_queries(temp_delete_queries)
                 return '00:00:00';
             }
             else {
@@ -538,8 +554,8 @@ export default {
                 this.form.company_name != ""
             ) {
                 const query_data = {
-                    company_name: this.form.company_name.trim(),
-                    extra_name: this.form.extra_name.trim(),
+                    company_name: this.form.company_name.trim().replace(/^"(.*)"$/, '$1'),
+                    extra_name: this.form.extra_name.trim().replace(/^"(.*)"$/, '$1'),
                     location: this.form.location.trim(),
                     keywords: this.keys_list.keyword.list,
                     search_minus: this.keys_list.minus.list.map(keyword => `+-${keyword}`).join(""),
@@ -591,6 +607,27 @@ export default {
 
             }
         },
+      deleteQuery(id) {
+        fetch(`/api/delete_query?query_id=${id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        })
+            .then(() => {
+              this.query_list_loading = true
+              this.getUserQueriesCount()
+              this.getUserQueries()
+              this.update_current_timestamp()
+              if (this.news_count === 1) {
+                window.location.reload()
+              }
+            })
+            .catch(() => {
+              console.log('unable to delete query', id)
+            });
+      },
         getUserQueriesCount() {
             fetch(`/api/queries_count?query_category=company`, {
                 method: "GET",
@@ -697,27 +734,6 @@ export default {
                 });
         },
 
-        delete_queries(queries) {
-            fetch(`/api/delete_queries`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    queries: queries
-                }),
-            })
-                .then((response) => {
-                    return response.json()
-                })
-                .then((response) => {
-                    console.log('deleted_queries json = ', response);
-                })
-                .catch((error) => {
-                    console.log("error", error);
-                })
-        },
         update_current_timestamp() {
             this.current_timestamp = new Date().valueOf()
             setTimeout(() => {

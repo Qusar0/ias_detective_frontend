@@ -119,7 +119,7 @@ export default {
                     this.validation_error = true
                 })
                 .then((response) => {
-                    this.user_name = response?.name
+                    this.user_name = response?.email
                     this.user_created = response?.created
                     this.user_id = response?.user_id
                     localStorage.setItem('user_name', this.user_name)

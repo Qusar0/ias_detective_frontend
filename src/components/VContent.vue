@@ -351,6 +351,11 @@
                           style="margin-left: 5px;"
                       ></i>
                     </button>
+                  <i
+                      v-show="query.query_status !== 'pending'"
+                      class="fa-solid fa-trash"
+                      @click="deleteQuery(query.query_id)"
+                  ></i>
                 </div>
             </div>
             <div
@@ -450,7 +455,6 @@ export default {
                         return false
                     }
                 });
-                this.delete_queries(temp_delete_queries)
                 return '00:00:00';
             }
             else {
@@ -636,7 +640,7 @@ export default {
                         return response.json();
                     })
                     .then((response) => {
-                        if (response) this.temp_price = response;
+                        if (response) this.temp_price = response.price;
                     })
                     .catch((error) => {
                         console.log("error", error);
@@ -686,6 +690,27 @@ export default {
                     }
                 });
         },
+      deleteQuery(id) {
+        fetch(`/api/delete_query?query_id=${id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        })
+            .then(() => {
+              this.query_list_loading = true
+              this.getUserQueriesCount()
+              this.getUserQueries()
+              this.update_current_timestamp()
+              if (this.news_count === 1) {
+                window.location.reload()
+              }
+            })
+            .catch(() => {
+              console.log('unable to delete query', id)
+            });
+      },
         getUserQueriesCount() {
             fetch(`/api/queries_count?query_category=name`, {
                 method: "GET",
@@ -749,28 +774,6 @@ export default {
                 .finally(() => {
                     query.downloading = false
                 });
-        },
-        
-        delete_queries(queries) {
-            fetch(`/api/delete_queries`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    queries: queries
-                }),
-            })
-                .then((response) => {
-                    return response.json()
-                })
-                .then((response) => {
-                    console.log('deleted_queries json = ', response, queries);
-                })
-                .catch((error) => {
-                    console.log("error", error);
-                })
         },
         update_current_timestamp() {
             this.current_timestamp = new Date().valueOf()
