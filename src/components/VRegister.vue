@@ -68,6 +68,12 @@
       >
         Вы зарегистрированы, письмо с подтверждением отправлено на вашу почту
       </div>
+      <div
+          v-show="loading"
+          class="flex items-center justify-between registration_loading"
+      >
+        Загрузка... Пожалуйста, подождите
+      </div>
     </div>
 </template>
 
@@ -87,6 +93,7 @@ export default {
                 password: '',
                 confirm_password: '',
             },
+          loading: false,
             registration_error: false,
           registration_success: false,
             validation_error: false,
@@ -100,6 +107,7 @@ export default {
                 this.validation_error = true
                 return;
             }
+            this.loading = true;
 
             fetch(`/api/v1/auth/register`, {
                 method: "POST",
@@ -112,6 +120,7 @@ export default {
                     password: this.form.password,
                 }),
             }).then((response) => {
+              this.loading = false;
                 if (response.status == 200) {
                     //this.isAuthorized = true
                     //this.$router.push('/')
@@ -124,11 +133,12 @@ export default {
                 }
                 else if (response.status == 409) {
                     this.registration_error = true
-                    this.registration_error_text = 'Такой пользователь уже существует!'
+                    this.registration_error_text = 'Не удалось создать аккаунт. Попробуйте позже.'
                 }
                 this.validation_error = true
             })
                 .catch((error) => {
+                  this.loading = false;
                     console.log('error', error);
                 })
         }
@@ -168,6 +178,7 @@ export default {
     justify-content: center !important;
     color: red;
     margin: 10px 15px 0 15px;
+  padding: 3px;
 }
 
 .registration_success {
@@ -177,6 +188,17 @@ export default {
   text-align: center;
   justify-content: center !important;
   color: green;
+  margin: 10px 15px 0 15px;
+  padding: 3px;
+}
+
+.registration_loading {
+  border: 1px solid gray;
+  border-radius: 3px;
+  background: #f1f4f9;
+  text-align: center;
+  justify-content: center !important;
+  color: gray;
   margin: 10px 15px 0 15px;
   padding: 3px;
 }
