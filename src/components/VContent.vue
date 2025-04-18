@@ -1195,5 +1195,6 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
 .item-death-time {
   width: 150px;
   text-wrap: nowrap;
+  text-align: center;
 }
 </style>
