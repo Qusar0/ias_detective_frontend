@@ -1177,11 +1177,11 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
   cursor: pointer;
 }
 
-
 .item__content {
   width: 120px;
   display: flex;
   align-items: center;
+  text-align: center;
   justify-content: center;
 }
 

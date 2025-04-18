@@ -1151,12 +1151,13 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
   cursor: pointer;
 }
 
-
 .item__content {
   width: 120px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 .item__header {
