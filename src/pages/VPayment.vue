@@ -35,11 +35,21 @@
                     >
                 </div>
                 <button
+                    v-if="!loading && !confirmationError"
                     class="item-btn btn"
-                    @click="initPayment"
+                    @click="confirmUser"
                 >
                   Пополнить
                 </button>
+                <div v-if="loading">
+                  Загрузка...
+                </div>
+                <div
+                    v-if="confirmationError"
+                    class="confirmation-error"
+                >
+                  Ваш аккаунт не подтвержден, повторное письмо отправлено на вашу почту
+                </div>
             </div>
             <div
                 v-if="amount <= 0"
@@ -56,7 +66,7 @@ import VSidebar from "../components/VSidebar.vue";
 import VHeader from "../components/VHeader.vue";
 import {bool, refresh, menu} from '../use/index'
 import PersonInfo from "../components/PersonInfo.vue";
-import {user_id} from "../use/index";
+import {user_id, user_name} from "../use/index";
 
 export default {
     components: {
@@ -71,6 +81,8 @@ export default {
     },
     data: () => ({
         amount: 0,
+        loading: false,
+        confirmationError: false,
         transactionId: 0,
         transactionDate: 0,
     }),
@@ -110,6 +122,29 @@ export default {
             .then(data => console.log(data))
             .catch((error) => {
               console.log(error)
+            })
+      },
+      confirmUser() {
+        this.loading = true;
+        fetch(`/api/is_confirmed`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        })
+            .then((response) => {
+              this.loading = false;
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              } else {
+                this.initPayment()
+              }
+              return response.json;
+            })
+            .catch(() => {
+              this.confirmationError = true
+              this.loading = false
             })
       },
       initPayment() {
@@ -207,4 +242,14 @@ export default {
     background: #40a9ff;
 }
 
+.confirmation-error {
+  border: 1px solid red;
+  border-radius: 3px;
+  background: #f1f4f9;
+  text-align: center;
+  justify-content: center !important;
+  color: red;
+  margin: 10px 15px 0 15px;
+  padding: 3px;
+}
 </style>

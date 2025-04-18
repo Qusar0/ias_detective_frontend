@@ -158,6 +158,9 @@ export default {
                 .then((response) => {
                     if (response.status == 200) {
                         this.isAuthorized = false
+                        localStorage.removeItem('user_created')
+                        localStorage.removeItem('user_id')
+                        localStorage.removeItem('user_name')
                         this.$router.push('login')
                         return;
                     }
