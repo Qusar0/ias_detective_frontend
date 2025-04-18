@@ -145,19 +145,16 @@
         </div> -->
 
 
-        <div class="items head-item">
-            <div class="item select-none" style="height: 35px">
-                <div class="item-title">Telegram</div>
-                <div class="btn-wrap">
-                    <div class="item-date" style="margin-left: 5%;">Дата</div>
-                    <div class="item-price" style="margin-left: 13.5%;">Стоимость</div>
-                    <div class="item-death-time">Время до удаления</div>
-                    <button class="item-btn btn" style="opacity: 0">
-                        Скачать
-                    </button>
-                </div>
-            </div>
+      <div class="items head-item">
+        <div class="item select-none" style="height: 35px">
+          <div class="item__header item-title">Telegram</div>
+          <div class="item__header item-date" style="">Дата</div>
+          <div class="item__header item-price" style="">Стоимость</div>
+          <div class="item__header item-death-time">Время до удаления</div>
+          <div class="item__header"></div>
+          <div class="item__header"></div>
         </div>
+      </div>
 
 
         <div class="items">
@@ -998,5 +995,24 @@ label.parent-prompt:not(label.parent-prompt:focus-within)>.prompt {
 
 .delete-icon {
   cursor: pointer;
+}
+
+
+.item__content {
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item__header {
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-death-time {
+  width: 150px;
 }
 </style>

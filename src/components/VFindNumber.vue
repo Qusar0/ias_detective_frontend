@@ -187,40 +187,35 @@
         
         <div class="items head-item">
             <div class="item select-none" style="height: 35px">
-                <div class="item-title">Номер</div>
-                <div class="btn-wrap">
-                    <div class="item-date" style="margin-left: 5%;">Дата</div>
-                    <div class="item-price" style="margin-left: 13.5%;">Стоимость</div>
-                    <div class="item-death-time">Время до удаления</div>
-                    <button class="item-btn btn" style="opacity: 0">
-                        Скачать
-                    </button>
-                </div>
+              <div class="item__header item-title">Номер</div>
+              <div class="item__header item-date" style="">Дата</div>
+              <div class="item__header item-price" style="">Стоимость</div>
+              <div class="item__header item-death-time">Время до удаления</div>
+              <div class="item__header"></div>
+              <div class="item__header"></div>
             </div>
         </div>
 
         
         <div class="items">
             <div class="item" v-for="query in query_list" :key="query.query_id">
-                <div class="item-title">{{ query.query_title }}</div>
-                <div class="btn-wrap">
-                    <div class="item-date">
-                        {{ getItemDate(new Date(query?.query_created_at)) }}
-                        <!-- 17:55, 11 Июнь -->
-                    </div>
-                    <div class="item-price">
-                        {{ query.balance }} руб.
-                    </div>
-                    <div class="item-death-time">{{ getRemainingTime(query, current_timestamp) }}</div>
-                    <i class="fa-solid fa-spinner" v-if="query.query_status == 'pending'"></i>
-                    <i class="fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'xmlriver on update'" :title="'Сервис на обновлении!\n\nПопробуйте позже.'" style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"></i>
-                    <i class="fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'failed'" :title="'Ошибка сервера!\n\nПопробуйте позже.'" style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"></i>
-                    <button v-else class="item-btn btn" @click="downloadQuery(query.query_title, query.query_id, query)">Скачать <i class="fa-solid fa-spinner" v-show="query.downloading" style="margin-left: 5px;"></i></button>
-                  <i
-                      class="fa-solid fa-trash delete-icon"
-                      @click="deleteQuery(query.query_id)"
-                  ></i>
-                </div>
+              <div class="item__content item-title">{{ query.query_title }}</div>
+              <div class="item__content item-date">
+                {{ getItemDate(new Date(query?.query_created_at)) }}
+                <!-- 17:55, 11 Июнь -->
+              </div>
+              <div class="item__content item-price">
+                {{ query.balance }} руб.
+              </div>
+              <div class="item__content item-death-time">{{ getRemainingTime(query, current_timestamp) }}</div>
+              <i class="item__content fa-solid fa-spinner" v-if="query.query_status == 'pending'"></i>
+              <i class="item__content fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'xmlriver on update'" :title="'Сервис на обновлении!\n\nПопробуйте позже.'" style="font-size: 17px;color: #ec5e5e;"></i>
+              <i class="item__content fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'failed'" :title="'Ошибка сервера!\n\nПопробуйте позже.'" style="font-size: 17px;color: #ec5e5e;"></i>
+              <button v-else class="item__content item-btn btn" @click="downloadQuery(query.query_title, query.query_id, query)">Скачать <i class="fa-solid fa-spinner" v-show="query.downloading" style=""></i></button>
+              <i
+                  class="item__content fa-solid fa-trash delete-icon"
+                  @click="deleteQuery(query.query_id)"
+              ></i>
             </div>
             <div class="item" v-show="query_list_loading" style="background-color: transparent;justify-content: center;margin-top: 0;">
                 <i class="fa-solid fa-spinner"></i>
@@ -1040,5 +1035,23 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
 
 .delete-icon {
   cursor: pointer;
+}
+
+.item__content {
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item__header {
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-death-time {
+  width: 150px;
 }
 </style>

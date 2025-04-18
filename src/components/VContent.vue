@@ -271,100 +271,85 @@
             </div>
         </div>
 
-        <div class="items head-item">
-            <div
-                class="item select-none"
-                style="height: 35px"
-            >
-                <div class="item-title">ФИО</div>
-                <div class="btn-wrap">
-                    <div
-                        class="item-date"
-                        style="margin-left: 5%;"
-                    >
-                      Дата
-                    </div>
-                    <div
-                        class="item-price"
-                        style="margin-left: 13.5%;"
-                    >
-                      Стоимость
-                    </div>
-                    <div class="item-death-time">Время до удаления</div>
-                    <div style="padding-right: 13px;">Статус</div>
-                </div>
-            </div>
+      <div class="items head-item">
+        <div class="item select-none" style="height: 35px">
+          <div class="item__header item-title">ФИО</div>
+          <div class="item__header item-date" style="">Дата</div>
+          <div class="item__header item-price" style="">Стоимость</div>
+          <div class="item__header item-death-time">Время до удаления</div>
+          <div class="item__header"></div>
+          <div class="item__header"></div>
         </div>
+      </div>
         <div class="items">
             <div
                 v-for="query in query_list"
                 :key="query.query_id"
                 class="item"
             >
-                <div class="item-title">{{ query.query_title }}</div>
-                <div class="btn-wrap">
-                    <div class="item-date">
-                        {{ getItemDate(new Date(query?.query_created_at)) }}
-                        <!-- 17:55, 11 Июнь -->
-                    </div>
-                    <div class="item-price">
-                        {{ query.balance }} руб.
-                    </div>
-                    <div class="item-death-time">{{ getRemainingTime(query, current_timestamp) }}</div>
-                    <!-- <i class="fa-solid fa-spinner" v-if="query.query_status == 'pending'"></i> -->
+                <div class="item__content item-title">{{ query.query_title }}</div>
+              <div class="item__content item-date">
+                {{ getItemDate(new Date(query?.query_created_at)) }}
+                <!-- 17:55, 11 Июнь -->
+              </div>
+              <div class="item__content item-price">
+                {{ query.balance }} руб.
+              </div>
+              <div class="item__content item-death-time">{{ getRemainingTime(query, current_timestamp) }}</div>
+              <!-- <i class="fa-solid fa-spinner" v-if="query.query_status == 'pending'"></i> -->
 
-                    <div
-                        v-if="query.query_status == 'pending'"
-                        style="width: 105px;height: 26px;position: relative; pointer-events: none;"
-                    >
-                        <button
-                            class="item-btn btn"
-                            style="height: 26px;background: #A4CFFA;color: #333; width: 100%"
-                        >
-                          Выполняется
-                        </button>
-                    </div>
-                    <div
-                        v-else-if="query.query_status == 'queue'"
-                        style="width: 74.36px;height: 26px;position: relative; pointer-events: none;"
-                    >
-                        <button
-                            class="item-btn btn"
-                            style="position: absolute;right: 0;height: 26px;background: #FFC636;color: #333;"
-                        >
-                          В очереди
-                        </button>
-                    </div>
-                    <i
-                        v-else-if="query.query_status == 'xmlriver on update'"
-                        class="fa-solid fa-circle-exclamation"
-                        :title="'Сервис на обновлении!\n\nПопробуйте позже.'"
-                        style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"
-                    ></i>
-                    <i
-                        v-else-if="query.query_status == 'failed'"
-                        class="fa-solid fa-circle-exclamation"
-                        :title="'Ошибка сервера!\n\nПопробуйте позже.'"
-                        style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"
-                    ></i>
-                    <button
-                        v-else
-                        class="item-btn btn"
-                        style="width: 17%"
-                        @click="downloadQuery(query.query_title, query.query_id, query)"
-                    >
-                      Скачать
-                      <i
-                          v-show="query.downloading"
-                          class="fa-solid fa-spinner"
-                          style="margin-left: 5px;"
-                      ></i>
-                    </button>
-                  <i
-                      class="fa-solid fa-trash delete-icon"
-                      @click="deleteQuery(query.query_id)"
-                  ></i>
-                </div>
+              <div
+                  v-if="query.query_status == 'pending'"
+                  class="item__content"
+                  style="height: 26px;position: relative; pointer-events: none;"
+              >
+                <button
+                    class="item-btn btn"
+                    style="width: 120px; background: #A4CFFA;color: #333;"
+                >
+                  Выполняется
+                </button>
+              </div>
+              <div
+                  v-else-if="query.query_status == 'queue'"
+                  class="item__content"
+                  style="height: 26px;position: relative; pointer-events: none;"
+              >
+                <button
+                    class="item-btn btn"
+                    style="width: 120px; height: 26px;background: #FFC636;color: #333;"
+                >
+                  В очереди
+                </button>
+              </div>
+              <i
+                  v-else-if="query.query_status == 'xmlriver on update'"
+                  class="item__content fa-solid fa-circle-exclamation"
+                  :title="'Сервис на обновлении!\n\nПопробуйте позже.'"
+                  style="font-size: 17px;color: #ec5e5e;"
+              ></i>
+              <i
+                  v-else-if="query.query_status == 'failed'"
+                  class="item__content fa-solid fa-circle-exclamation"
+                  :title="'Ошибка сервера!\n\nПопробуйте позже.'"
+                  style="font-size: 17px;color: #ec5e5e;"
+              ></i>
+              <button
+                  v-else
+                  class="item__content item-btn btn"
+                  @click="downloadQuery(query.query_title, query.query_id, query)"
+              >
+                Скачать
+                <i
+                    v-show="query.downloading"
+                    class="fa-solid fa-spinner"
+                    style="margin-left: 5px;"
+                ></i>
+              </button>
+              <i
+                  class="item__content fa-solid fa-trash delete-icon"
+                  @click="deleteQuery(query.query_id)"
+              ></i>
             </div>
             <div
                 v-show="query_list_loading"
@@ -1190,5 +1175,24 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
 
 .delete-icon {
   cursor: pointer;
+}
+
+
+.item__content {
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item__header {
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item-death-time {
+  width: 150px;
 }
 </style>
