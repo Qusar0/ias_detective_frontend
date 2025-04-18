@@ -7,28 +7,21 @@
             ></i>
             <i
                 class="fa fa-angle-left first-page border-radius-0"
-                @click="
-                    set_selected_page(selected_page == 1 ? 1 : selected_page - 1)
-                    "
+                @click="set_selected_page(selected_page == 1 ? 1 : selected_page - 1)"
             ></i>
         </div>
         <span
             v-for="page in pagination"
             :key="page"
-            :class="{
-                active: page == selected_page,
-            }"
+            :class="{ active: page == selected_page, }"
             @click="set_selected_page(page)"
-            >{{ page }}</span
-        >
+            >
+          {{ page }}
+        </span>
         <div class="hovered-angle">
             <i
                 class="fa fa-angle-right second-page border-radius-0"
-                @click="
-                    set_selected_page(selected_page == getPaginationCount
-                        ? getPaginationCount
-                        : selected_page + 1)
-                    "
+                @click="set_selected_page(selected_page == getPaginationCount ? getPaginationCount : selected_page + 1)"
             ></i>
             <i
                 class="fa-solid fa-angles-right second-page icon-w-0"

@@ -62,6 +62,12 @@
         >
             {{ registration_error_text }}
         </div>
+      <div
+          v-show="registration_success"
+          class="flex items-center justify-between registration_success"
+      >
+        Вы зарегистрированы, письмо с подтверждением отправлено на вашу почту
+      </div>
     </div>
 </template>
 
@@ -82,7 +88,7 @@ export default {
                 confirm_password: '',
             },
             registration_error: false,
-
+          registration_success: false,
             validation_error: false,
             registration_error_text: '',
         }
@@ -109,7 +115,11 @@ export default {
                 if (response.status == 200) {
                     //this.isAuthorized = true
                     //this.$router.push('/')
+                  this.registration_success = true;
+                  setTimeout(() => {
                     this.bool = true
+                    this.registration_success = false
+                  }, 3000);
                     return;
                 }
                 else if (response.status == 409) {
@@ -126,7 +136,7 @@ export default {
     computed: {
         formIsEmpty() {
             let regex = /\S+@\S+\.\S+/;
-            return regex.test(this.form.email) && this.form.login.length >= 3 && this.form.password.length >= 8 && this.form.password === this.form.confirm_password
+            return regex.test(this.form.email) && this.form.password.length >= 8 && this.form.password === this.form.confirm_password
         },
         email_error() {
             let regex = /\S+@\S+\.\S+/;
@@ -154,9 +164,20 @@ export default {
     border: 1px solid red;
     border-radius: 3px;
     background: #f1f4f9;
-    height: 35px;
+  text-align: center;
     justify-content: center !important;
     color: red;
     margin: 10px 15px 0 15px;
+}
+
+.registration_success {
+  border: 1px solid green;
+  border-radius: 3px;
+  background: #f1f4f9;
+  text-align: center;
+  justify-content: center !important;
+  color: green;
+  margin: 10px 15px 0 15px;
+  padding: 3px;
 }
 </style>

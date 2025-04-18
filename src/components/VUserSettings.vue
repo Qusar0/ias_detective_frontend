@@ -18,7 +18,7 @@
                 Уведомления в Telegram
             </div>
             <button class="btn password-btn" style="margin-top: 0;">
-                <a href="https://t.me/pss_notification_bot" target="_blank" class="nav-link">
+                <a href="https://t.me/iasdetectivebot" target="_blank" class="nav-link">
                     Подключить уведомления
                 </a>
             </button>

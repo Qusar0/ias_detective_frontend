@@ -1,24 +1,73 @@
 <template>
     <div class="content">
-        <div class="confirm-model" v-show="confirm_model" @click="confirm_model = false">
-            <div class="confirm-model_body" @click.stop>
-                <div class="title">Вы уверенны что хотите сделать запрос?</div>
+        <div
+            v-show="confirm_model"
+            class="confirm-model"
+            @click="confirm_model = false"
+        >
+            <div
+                class="confirm-model_body"
+                @click.stop
+            >
+                <div
+                    v-if="user_balance >= 10"
+                    class="title"
+                >
+                  Вы уверены, что хотите сделать запрос?
+                </div>
+              <div
+                  v-else
+                  class="title"
+              >
+                Недостаточно средств для совершения запроса за 10 руб.
+              </div>
                 <div class="flex items-center">
-                    <button class="add-item cancel" @click="confirm_model = false">Отмена</button>
-                    <button class="add-item confirm" @click.stop="getHTMLPage()">Да</button>
+                    <button
+                        class="add-item cancel"
+                        @click="confirm_model = false"
+                    >
+                      Отмена
+                    </button>
+                    <button
+                        v-if="user_balance >= 10"
+                        class="add-item confirm"
+                        @click.stop="getHTMLPage()"
+                    >
+                      Да
+                    </button>
                 </div>
             </div>
         </div>
-        <div class="confirm-model" v-show="error_model" @click="error_model = false">
-            <div class="confirm-model_body" @click.stop>
-                <div class="title" style="color: rgb(236, 94, 94);font-size: 17px;">{{ form.company_name == '' ? 'Название компаний это обязательное поле!' : 'Название компаний указано не корректно!'}}</div>
+        <div
+            v-show="error_model"
+            class="confirm-model"
+            @click="error_model = false"
+        >
+            <div
+                class="confirm-model_body"
+                @click.stop
+            >
+                <div
+                    class="title"
+                    style="color: rgb(236, 94, 94);font-size: 17px;"
+                >
+                  {{ form.company_name == '' ? 'Название компаний это обязательное поле!' : 'Название компаний указано не корректно!'}}
+                </div>
                 <div class="flex items-center">
-                    <button class="add-item cancel" @click="error_model = false">Закрыть</button>
+                    <button
+                        class="add-item cancel"
+                        @click="error_model = false"
+                    >
+                      Закрыть
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="form" style="padding: 15px 25px !important;margin-bottom: 15px;">
+        <div
+            class="form"
+            style="padding: 15px 25px !important;margin-bottom: 15px;"
+        >
             <ul>
                 <li>Укажите наиболее распространенный вариант написания названия компании в графе «Полное наименование» – именно по нему будет осуществляться поиск. Примеры заполнения: ПАО «СберБанк»; Ультрамар; потребительский кооператив "Биллионс".</li>
                 <li>Графу «Дополнительное наименование» следует заполнить, если компания имеет второй вариант часто используемого наименования. Пример: "Магнитогорский птицеводческий комплекс" / ООО "МПК"; потребительский кооператив "Биллионс" / МПК ВО "Биллионс".</li>
@@ -37,19 +86,14 @@
                             title="some title ..."
                             style="margin: 0;"
                             placeholder="Наименование компании"
-                            :class="{
-                                'border-color-red':
-                                    surname_error && form.company_name == '',
-                            }"
+                            :class="{ 'border-color-red': surname_error && form.company_name == '', }"
                         />
                         <small
                             class="prompt"
-                            :class="{
-                                'bg-red':
-                                    surname_error && form.company_name == '',
-                            }"
-                            >Укажите наиболее распространенный вариант написания названия компании.</small
+                            :class="{ 'bg-red': surname_error && form.company_name == '', }"
                         >
+                          Укажите наиболее распространенный вариант написания названия компании.
+                        </small>
                     </div>
                     <div
                         class="flex flex-col w-full parent-prompt top-input"
@@ -110,12 +154,22 @@
             </div>
 
             <div class="flex" style="margin-bottom: 20px;">
-                <list-input style="width: 100%;" :item="keys_list.keyword" :prompt="'Укажите как можно больше слов, которые могут встречаться в связи с упоминаемой компанией – фамилии руководства, города присутствия, направления деятельности компании, ситуации, связанные с ней и др.'"></list-input>
+                <list-input
+                    style="width: 100%;"
+                    :item="keys_list.keyword"
+                    :prompt="'Укажите как можно больше слов, которые могут встречаться в связи с упоминаемой компанией – фамилии руководства, города присутствия, направления деятельности компании, ситуации, связанные с ней и др.'"
+                ></list-input>
                 <!-- <list-input :item="keys_list.prohibited_site"></list-input> -->
             </div>
             <div class="flex">
-                <list-input :item="keys_list.minus" :prompt="'Используйте в случаях, когда требуется исключить определенные сочетания упоминаемых объектов. К примеру, вы ищите компанию «ВТБ», занимающуюся строительством зданий. В этом случае можно указать такие минус-слова: «банк», «страхование», чтобы исключить поиск упоминаний Банка ВТБ из задания.'"></list-input>
-                <list-input :item="keys_list.plus" :prompt="'Укажите слова, которые неразрывно связаны с деятельностью изучаемой компании – все остальные материалы будут отфильтрованы по признаку наличия данных плюс-слов.'"></list-input>
+                <list-input
+                    :item="keys_list.minus"
+                    :prompt="'Используйте в случаях, когда требуется исключить определенные сочетания упоминаемых объектов. К примеру, вы ищите компанию «ВТБ», занимающуюся строительством зданий. В этом случае можно указать такие минус-слова: «банк», «страхование», чтобы исключить поиск упоминаний Банка ВТБ из задания.'"
+                ></list-input>
+                <list-input
+                    :item="keys_list.plus"
+                    :prompt="'Укажите слова, которые неразрывно связаны с деятельностью изучаемой компании – все остальные материалы будут отфильтрованы по признаку наличия данных плюс-слов.'"
+                ></list-input>
             </div>
 
             <div class="flex items-center justify-between" style="height: 30px;margin-top: 10px;">
@@ -125,15 +179,15 @@
                 </label> -->
 
                 <label class="flex items-center parent-prompt-hover">
-                    <input type="checkbox" class="chbox" v-model="chbox.company_negativ" />
-                    <small
-                        class="prompt-hover"
-                    >
+                    <input
+                        v-model="chbox.company_negativ"
+                        type="checkbox"
+                        class="chbox"
+                    />
+                    <small class="prompt-hover">
                         Поиск негативных упоминаний о компании.
                     </small>
-                    <span style="user-select: none">
-                        Негатив
-                    </span>
+                    <span style="user-select: none">Негатив</span>
                 </label>
 
                 <!-- <label class="flex items-center">
@@ -142,15 +196,15 @@
                 </label> -->
 
                 <label class="flex items-center parent-prompt-hover">
-                    <input type="checkbox" class="chbox" v-model="chbox.company_reputation" />
-                    <small
-                        class="prompt-hover"
-                    >
+                    <input
+                        v-model="chbox.company_reputation"
+                        type="checkbox"
+                        class="chbox"
+                    />
+                    <small class="prompt-hover">
                         Поиск материалов, содержащих отзывы клиентов, бывших работников.
                     </small>
-                    <span style="user-select: none">
-                        Репутация
-                    </span>
+                    <span style="user-select: none">Репутация</span>
                 </label>
 
                 <!-- <label class="flex items-center">
@@ -159,15 +213,15 @@
                 </label> -->
 
                 <label class="flex items-center parent-prompt-hover">
-                    <input type="checkbox" class="chbox" v-model="chbox.company_relations" />
-                    <small
-                        class="prompt-hover"
-                    >
+                    <input
+                        v-model="chbox.company_relations"
+                        type="checkbox"
+                        class="chbox"
+                    />
+                    <small class="prompt-hover">
                         Поиск материалов, содержащих сведения о связанных лицах.
                     </small>
-                    <span style="user-select: none">
-                        Связи
-                    </span>
+                    <span style="user-select: none">Связи</span>
                 </label>
                 <!-- <label class="flex items-center">
                     <input type="checkbox" class="chbox" v-model="chbox.company_report" />
@@ -175,19 +229,23 @@
                 </label> -->
 
                 <label class="flex items-center parent-prompt-hover">
-                    <input type="checkbox" class="chbox" v-model="chbox.company_report" />
-                    <small
-                        class="prompt-hover"
-                    >
+                    <input
+                        v-model="chbox.company_report"
+                        type="checkbox"
+                        class="chbox"
+                    />
+                    <small class="prompt-hover">
                         Поиск по всем рубрикам<br> 
                         (негатив, репутация, связи).
                     </small>
-                    <span style="user-select: none">
-                        Досье
-                    </span>
+                    <span style="user-select: none">Досье</span>
                 </label>
             </div>
-            <button class="btn" style="white-space: nowrap;" @click="getPrice()">
+            <button
+                class="btn"
+                style="white-space: nowrap;"
+                @click="getPrice()"
+            >
                 Отправить запрос
             </button>
             <!--<div class="flex items-center">-->
@@ -230,53 +288,95 @@
 
 
         <div class="items head-item">
-            <div class="item select-none" style="height: 35px">
+            <div
+                class="item select-none"
+                style="height: 35px"
+            >
                 <div class="item-title">Компания</div>
                 <div class="btn-wrap">
-                    <div class="item-date" style="margin-left: 5%;">Дата</div>
-                    <div class="item-price" style="margin-left: 13.5%;">Стоимость</div>
+                    <div
+                        class="item-date"
+                        style="margin-left: 5%;"
+                    >
+                      Дата
+                    </div>
+                    <div
+                        class="item-price"
+                        style="margin-left: 13.5%;"
+                    >
+                      Стоимость
+                    </div>
                     <div class="item-death-time">Время до удаления</div>
-                    <button class="item-btn btn" style="opacity: 0">
-                        Скачать
+                    <button
+                        class="item-btn btn"
+                        style="opacity: 0"
+                    >
+                      Скачать
                     </button>
                 </div>
             </div>
         </div>
-
-
         <div class="items">
-            <div class="item" v-for="query in query_list" :key="query.query_id">
+            <div
+                v-for="query in query_list"
+                :key="query.query_id"
+                class="item"
+            >
                 <div class="item-title">{{ query.query_title }}</div>
                 <div class="btn-wrap">
-                    <div class="item-date">
-                        {{ getItemDate(new Date(query?.query_created_at)) }}
-                        <!-- 17:55, 11 Июнь -->
-                    </div>
-                    <div class="item-price">
-                        {{ query.balance }} руб.
-                    </div>
+                    <div class="item-date">{{ getItemDate(new Date(query?.query_created_at)) }}</div>
+                    <div class="item-price">{{ query.balance }} руб.</div>
                     <div class="item-death-time">{{ getRemainingTime(query, current_timestamp) }}</div>
-                    <i class="fa-solid fa-spinner" v-if="query.query_status == 'pending'"></i>
-                    <i class="fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'xmlriver on update'"
+                    <i
+                        v-if="query.query_status == 'pending'"
+                        class="fa-solid fa-spinner"
+                    ></i>
+                    <i
+                        v-else-if="query.query_status == 'xmlriver on update'"
+                        class="fa-solid fa-circle-exclamation"
                         :title="'Сервис на обновлении!\n\nПопробуйте позже.'"
-                        style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"></i>
-                    <i class="fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'failed'"
+                        style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"
+                    ></i>
+                    <i
+                        v-else-if="query.query_status == 'failed'"
+                        class="fa-solid fa-circle-exclamation"
                         :title="'Ошибка сервера!\n\nПопробуйте позже.'"
-                        style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"></i>
-                    <button v-else class="item-btn btn"
-                        @click="downloadQuery(query.query_title, query.query_id, query)">Скачать <i
-                            class="fa-solid fa-spinner" v-show="query.downloading" style="margin-left: 5px;"></i></button>
+                        style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"
+                    ></i>
+                    <button
+                        v-else
+                        class="item-btn btn"
+                        @click="downloadQuery(query.query_title, query.query_id, query)"
+                    >
+                      Скачать
+                      <i
+                          v-show="query.downloading"
+                          class="fa-solid fa-spinner"
+                          style="margin-left: 5px;"
+                      ></i>
+                    </button>
+                  <i
+                      v-show="query.query_status !== 'pending'"
+                      class="fa-solid fa-trash"
+                      @click="deleteQuery(query.query_id)"
+                  ></i>
                 </div>
             </div>
-            <div class="item" v-show="query_list_loading"
-                style="background-color: transparent;justify-content: center;margin-top: 0;">
+            <div
+                v-show="query_list_loading"
+                class="item"
+                style="background-color: transparent;justify-content: center;margin-top: 0;"
+            >
                 <i class="fa-solid fa-spinner"></i>
             </div>
         </div>
 
         <div style="max-width: 900px;margin: 15px auto 0;display: flex;">
-            <v-pagination :selected_page="selected_page" :general_count="news_count"
-                :set_selected_page="set_selected_page" />
+            <v-pagination
+                :selected_page="selected_page"
+                :general_count="news_count"
+                :set_selected_page="set_selected_page"
+            />
         </div>
     </div>
 </template>
@@ -284,14 +384,14 @@
 <script>
 import axios from "axios";
 import "../utils/index";
-import { isAuthorized, prohibited_model, keywords_model, keys_list } from "../use/index";
+import { isAuthorized, prohibited_model, keywords_model, keys_list, user_balance } from "../use/index";
 import ListInput from './ListInput.vue'
 import VPagination from './UI/VPagination.vue'
 import { events } from "../utils/notification"
 
 export default {
     setup() {
-        return { isAuthorized, prohibited_model, keywords_model, keys_list, events };
+        return { isAuthorized, prohibited_model, keywords_model, keys_list, events, user_balance };
     },
     components: {
         ListInput,
@@ -375,7 +475,6 @@ export default {
                         return false
                     }
                 });
-                this.delete_queries(temp_delete_queries)
                 return '00:00:00';
             }
             else {
@@ -455,8 +554,8 @@ export default {
                 this.form.company_name != ""
             ) {
                 const query_data = {
-                    company_name: this.form.company_name.trim(),
-                    extra_name: this.form.extra_name.trim(),
+                    company_name: this.form.company_name.trim().replace(/^"(.*)"$/, '$1'),
+                    extra_name: this.form.extra_name.trim().replace(/^"(.*)"$/, '$1'),
                     location: this.form.location.trim(),
                     keywords: this.keys_list.keyword.list,
                     search_minus: this.keys_list.minus.list.map(keyword => `+-${keyword}`).join(""),
@@ -508,6 +607,27 @@ export default {
 
             }
         },
+      deleteQuery(id) {
+        fetch(`/api/delete_query?query_id=${id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        })
+            .then(() => {
+              this.query_list_loading = true
+              this.getUserQueriesCount()
+              this.getUserQueries()
+              this.update_current_timestamp()
+              if (this.news_count === 1) {
+                window.location.reload()
+              }
+            })
+            .catch(() => {
+              console.log('unable to delete query', id)
+            });
+      },
         getUserQueriesCount() {
             fetch(`/api/queries_count?query_category=company`, {
                 method: "GET",
@@ -614,27 +734,6 @@ export default {
                 });
         },
 
-        delete_queries(queries) {
-            fetch(`/api/delete_queries`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    queries: queries
-                }),
-            })
-                .then((response) => {
-                    return response.json()
-                })
-                .then((response) => {
-                    console.log('deleted_queries json = ', response);
-                })
-                .catch((error) => {
-                    console.log("error", error);
-                })
-        },
         update_current_timestamp() {
             this.current_timestamp = new Date().valueOf()
             setTimeout(() => {

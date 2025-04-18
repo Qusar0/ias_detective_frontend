@@ -1,41 +1,81 @@
 <template>
     <div class="content">
-        <div class="confirm-model" v-show="confirm_model" @click="confirm_model = false">
-            <div class="confirm-model_body" @click.stop>
-                
-                <div class="title" v-if="temp_price > user_balance">Недостаточно средств для оплаты запрос на 
-                        <i v-if="temp_price == 'loading...'" class="fa-solid fa-spinner"></i>
-                        <template v-else> {{ temp_price }} </template>
-                     руб. , пополните баланс!</div>
-                <div class="title" v-else>Вы уверенны что хотите сделать запрос за 
-                    <i v-if="temp_price == 'loading...'" class="fa-solid fa-spinner"></i>
-                    <template v-else> {{ temp_price }} </template>
-                 руб. ?</div>
+        <div
+            v-show="confirm_model"
+            class="confirm-model"
+            @click="confirm_model = false"
+        >
+            <div
+                class="confirm-model_body"
+                @click.stop
+            >
+                <div
+                    v-if="temp_price > user_balance"
+                    class="title"
+                >
+                  Недостаточно средств для оплаты запрос на
+                  <i
+                      v-if="temp_price == 'loading...'"
+                      class="fa-solid fa-spinner"
+                  ></i>
+                  <template v-else> {{ temp_price }} </template>
+                  руб. , пополните баланс!
+                </div>
+                <div
+                    v-else
+                    class="title"
+                >
+                  Вы уверенны что хотите сделать запрос за
+                  <i v-if="temp_price == 'loading...'" class="fa-solid fa-spinner"></i>
+                  <template v-else> {{ temp_price }} </template>
+                  руб. ?
+                </div>
                  <!-- ₽ -->
                  <!-- рублей. -->
-                <div class="flex items-center" v-if="temp_price > user_balance">
-                    <button class="add-item cancel" @click="confirm_model = false">Отмена</button>
+                <div
+                    v-if="temp_price > user_balance"
+                    class="flex items-center"
+                >
+                    <button
+                        class="add-item cancel"
+                        @click="confirm_model = false"
+                    >
+                      Отмена
+                    </button>
                     <button
                         class="add-item confirm" 
                         :disabled="!temp_price || temp_price == 'loading...'"
                         :style="temp_price == 'loading...' ? 'background: #ccc;' : ''"
                         @click="confirm_model = false"
-                    >Пополнить баланс</button>
+                    >
+                      Пополнить баланс
+                    </button>
                 </div>
-                <div class="flex items-center" v-else>
-                    <button class="add-item cancel" @click="confirm_model = false">Отмена</button>
+                <div
+                    v-else
+                    class="flex items-center"
+                >
+                    <button
+                        class="add-item cancel"
+                        @click="confirm_model = false"
+                    >
+                      Отмена
+                    </button>
                     <button
                         class="add-item confirm"
                         :disabled="!temp_price || temp_price == 'loading...'"
                         :style="temp_price == 'loading...' ? 'background: #ccc;' : ''"
-                        @click.stop="getHTMLPage()">
+                        @click.stop="getHTMLPage()"
+                    >
                         Да
                     </button>
                 </div>
             </div>
         </div>
-
-        <div class="form" style="padding: 15px 25px !important;margin-bottom: 15px;">
+        <div
+            class="form"
+            style="padding: 15px 25px !important;margin-bottom: 15px;"
+        >
             <ul>
                 <li>Ключевые слова, минус и плюс-слова вводите по одному / одной фразе на строке, после чего нажмите Enter или кнопку «Добавить» - повторите для нужного количества слов. </li>
                 <li>Список ключевых слов можно загрузить из файла – кнопка загрузки появится после наведения курсора на соответствующее поле ввода.</li>
@@ -51,20 +91,15 @@
                         title="some title ..."
                         style="margin: 0;"
                         placeholder="Фамилия"
-                        :class="{
-                            'border-color-red':
-                                surname_error && form.search_surname == '',
-                        }"
+                        :class="{ 'border-color-red': surname_error && form.search_surname == '', }"
                         @keydown="multiInput"
                     />
                     <small
                         class="prompt"
-                        :class="{
-                            'bg-red':
-                                surname_error && form.search_surname == '',
-                        }"
-                        >Введите фамилию объекта в именительном падеже</small
+                        :class="{ 'bg-red': surname_error && form.search_surname == '', }"
                     >
+                      Введите фамилию объекта в именительном падеже
+                    </small>
                 </div>
                 <div
                     class="flex flex-col w-full parent-prompt top-input"
@@ -79,18 +114,14 @@
                         type="text"
                         placeholder="Имя"
                         style="margin: 0;"
-                        :class="{
-                            'border-color-red':
-                                name_error && form.search_name == '',
-                        }"
+                        :class="{ 'border-color-red': name_error && form.search_name == '', }"
                     />
                     <small
                         class="prompt"
-                        :class="{
-                            'bg-red': name_error && form.search_name == '',
-                        }"
-                        >Введите имя объекта в именительном падеже</small
+                        :class="{ 'bg-red': name_error && form.search_name == '', }"
                     >
+                      Введите имя объекта в именительном падеже
+                    </small>
                 </div>
                 <div
                     class="flex flex-col w-full parent-prompt top-input"
@@ -101,32 +132,34 @@
                         type="text"
                         placeholder="Отчество"
                         style="margin: 0;"
-                        :class="{
-                            'border-color-red':
-                                patronymic_error &&
-                                form.search_patronymic == '',
-                        }"
+                        :class="{ 'border-color-red': patronymic_error && form.search_patronymic == '', }"
                     />
                     <small
                         class="prompt"
-                        :class="{
-                            'bg-red':
-                                patronymic_error &&
-                                form.search_patronymic == '',
-                        }"
-                        >Введите отчество объекта в именительном падеже (при наличии)</small
+                        :class="{ 'bg-red': patronymic_error && form.search_patronymic == '', }"
                     >
+                      Введите отчество объекта в именительном падеже (при наличии)
+                    </small>
                 </div>
             </div>
-            <div class="flex" style="margin-bottom: 20px;">
-                <list-input style="width: 100%;" :item="keys_list.keyword"></list-input>
+            <div
+                class="flex"
+                style="margin-bottom: 20px;"
+            >
+                <list-input
+                    style="width: 100%;"
+                    :item="keys_list.keyword"
+                ></list-input>
                 <!-- <list-input :item="keys_list.prohibited_site"></list-input> -->
             </div>
             <div class="flex">
                 <list-input :item="keys_list.minus"></list-input>
                 <list-input :item="keys_list.plus"></list-input>
             </div>
-            <div class="flex items-center justify-between" style="height: 30px;margin-top: 10px;">
+            <div
+                class="flex items-center justify-between"
+                style="height: 30px;margin-top: 10px;"
+            >
                 <!-- <label class="flex items-center">
                     <input type="checkbox" class="chbox" v-model="chbox.negativ" />
                     <span style="user-select: none"
@@ -135,29 +168,28 @@
                 <!-- </label> -->
                 
                 <label class="flex items-center parent-prompt-hover">
-                    <input type="checkbox" class="chbox" v-model="chbox.negativ" />
-                    <small
-                        class="prompt-hover"
-                    >
+                    <input
+                        v-model="chbox.negativ"
+                        type="checkbox"
+                        class="chbox"
+                    />
+                    <small class="prompt-hover">
                         Поиск негативных упоминаний персоны<br>
                         (уголовные дела, связь с криминалом, коррупция и пр.).
                     </small>
-                    <span style="user-select: none">
-                        Негатив
-                    </span>
+                    <span style="user-select: none">Негатив</span>
                 </label>
-
                 <label class="flex items-center parent-prompt-hover">
-                    <input type="checkbox" class="chbox" v-model="chbox.reputation" />
-                    <small
-                        class="prompt-hover"
-                    >
+                    <input
+                        v-model="chbox.reputation"
+                        type="checkbox"
+                        class="chbox"
+                    />
+                    <small class="prompt-hover">
                         Поиск материалов, содержащих отзывы, <br>
                         биографию проверяемого, интервью с ним.
                     </small>
-                    <span style="user-select: none"
-                        >Репутация</span
-                    >
+                    <span style="user-select: none">Репутация</span>
                 </label>
 
                 <!-- <label class="flex items-center">
@@ -174,16 +206,16 @@
                 </label> -->
 
                 <label class="flex items-center parent-prompt-hover">
-                    <input type="checkbox" class="chbox" v-model="chbox.relations" />
-                    <small
-                        class="prompt-hover"
-                    >
+                    <input
+                        v-model="chbox.relations"
+                        type="checkbox"
+                        class="chbox"
+                    />
+                    <small class="prompt-hover">
                         Поиск материалов, содержащих сведения <br>
                         о связанных лицах (семья, сослуживцы и пр.)
                     </small>
-                    <span style="user-select: none"
-                        >Связи</span
-                    >
+                    <span style="user-select: none">Связи</span>
                 </label>
 
                 <!-- <label class="flex items-center">
@@ -194,16 +226,18 @@
                 </label> -->
 
                 <label class="flex items-center parent-prompt-hover">
-                    <input type="checkbox" class="chbox" v-model="chbox.report" />
+                    <input
+                        v-model="chbox.report"
+                        type="checkbox"
+                        class="chbox"
+                    />
                     <small
                         class="prompt-hover"
                     >
                         Поиск по всем рубрикам <br>
                         (негатив, репутация, связи).
                     </small>
-                    <span style="user-select: none"
-                        >Досье</span
-                    >
+                    <span style="user-select: none">Досье</span>
                 </label>
                 <!--<label class="flex items-center">
                     <input type="checkbox" class="chbox" v-model="chbox.company" />
@@ -219,26 +253,45 @@
                         >стандартные ключевые слова</span
                     >
                 </label>-->
-                <button class="btn" @click="getPrice()">
+                <button
+                    class="btn"
+                    @click="getPrice()"
+                >
                     Отправить запрос
                 </button>
             </div>
         </div>
 
         <div class="items head-item">
-            <div class="item select-none" style="height: 35px">
+            <div
+                class="item select-none"
+                style="height: 35px"
+            >
                 <div class="item-title">ФИО</div>
                 <div class="btn-wrap">
-                    <div class="item-date" style="margin-left: 5%;">Дата</div>
-                    <div class="item-price" style="margin-left: 13.5%;">Стоимость</div>
+                    <div
+                        class="item-date"
+                        style="margin-left: 5%;"
+                    >
+                      Дата
+                    </div>
+                    <div
+                        class="item-price"
+                        style="margin-left: 13.5%;"
+                    >
+                      Стоимость
+                    </div>
                     <div class="item-death-time">Время до удаления</div>
                     <div style="padding-right: 13px;">Статус</div>
                 </div>
             </div>
         </div>
-
         <div class="items">
-            <div class="item" v-for="query in query_list" :key="query.query_id">
+            <div
+                v-for="query in query_list"
+                :key="query.query_id"
+                class="item"
+            >
                 <div class="item-title">{{ query.query_title }}</div>
                 <div class="btn-wrap">
                     <div class="item-date">
@@ -251,25 +304,68 @@
                     <div class="item-death-time">{{ getRemainingTime(query, current_timestamp) }}</div>
                     <!-- <i class="fa-solid fa-spinner" v-if="query.query_status == 'pending'"></i> -->
 
-                    <div v-if="query.query_status == 'pending'" style="width: 105px;height: 26px;position: relative; pointer-events: none;">
-                        <button class="item-btn btn" style="height: 26px;background: #A4CFFA;color: #333; width: 100%">Выполняется</button>
+                    <div
+                        v-if="query.query_status == 'pending'"
+                        style="width: 105px;height: 26px;position: relative; pointer-events: none;"
+                    >
+                        <button
+                            class="item-btn btn"
+                            style="height: 26px;background: #A4CFFA;color: #333; width: 100%"
+                        >
+                          Выполняется
+                        </button>
                     </div>
-                    <div v-else-if="query.query_status == 'queue'" style="width: 74.36px;height: 26px;position: relative; pointer-events: none;">
-                        <button class="item-btn btn" style="position: absolute;right: 0;height: 26px;background: #FFC636;color: #333;">В очереди</button>
+                    <div
+                        v-else-if="query.query_status == 'queue'"
+                        style="width: 74.36px;height: 26px;position: relative; pointer-events: none;"
+                    >
+                        <button
+                            class="item-btn btn"
+                            style="position: absolute;right: 0;height: 26px;background: #FFC636;color: #333;"
+                        >
+                          В очереди
+                        </button>
                     </div>
-
-                    <i class="fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'xmlriver on update'" :title="'Сервис на обновлении!\n\nПопробуйте позже.'" style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"></i>
-
-                    <i class="fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'failed'" :title="'Ошибка сервера!\n\nПопробуйте позже.'" style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"></i>
-
-                    <button v-else class="item-btn btn" style="width: 17%" @click="downloadQuery(query.query_title, query.query_id, query)">Скачать <i class="fa-solid fa-spinner" v-show="query.downloading" style="margin-left: 5px;"></i></button>
+                    <i
+                        v-else-if="query.query_status == 'xmlriver on update'"
+                        class="fa-solid fa-circle-exclamation"
+                        :title="'Сервис на обновлении!\n\nПопробуйте позже.'"
+                        style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"
+                    ></i>
+                    <i
+                        v-else-if="query.query_status == 'failed'"
+                        class="fa-solid fa-circle-exclamation"
+                        :title="'Ошибка сервера!\n\nПопробуйте позже.'"
+                        style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"
+                    ></i>
+                    <button
+                        v-else
+                        class="item-btn btn"
+                        style="width: 17%"
+                        @click="downloadQuery(query.query_title, query.query_id, query)"
+                    >
+                      Скачать
+                      <i
+                          v-show="query.downloading"
+                          class="fa-solid fa-spinner"
+                          style="margin-left: 5px;"
+                      ></i>
+                    </button>
+                  <i
+                      v-show="query.query_status !== 'pending'"
+                      class="fa-solid fa-trash"
+                      @click="deleteQuery(query.query_id)"
+                  ></i>
                 </div>
             </div>
-            <div class="item" v-show="query_list_loading" style="background-color: transparent;justify-content: center;margin-top: 0;">
+            <div
+                v-show="query_list_loading"
+                class="item"
+                style="background-color: transparent;justify-content: center;margin-top: 0;"
+            >
                 <i class="fa-solid fa-spinner"></i>
             </div>
         </div>
-
         <div style="max-width: 900px;margin: 15px auto 0;display: flex;">
             <v-pagination
                 :selected_page="selected_page"
@@ -278,7 +374,6 @@
                 v-show="query_list.length > 0 "
             />
         </div>
-
     </div>
 </template>
 
@@ -360,7 +455,6 @@ export default {
                         return false
                     }
                 });
-                this.delete_queries(temp_delete_queries)
                 return '00:00:00';
             }
             else {
@@ -546,7 +640,7 @@ export default {
                         return response.json();
                     })
                     .then((response) => {
-                        if (response) this.temp_price = response;
+                        if (response) this.temp_price = response.price;
                     })
                     .catch((error) => {
                         console.log("error", error);
@@ -596,6 +690,27 @@ export default {
                     }
                 });
         },
+      deleteQuery(id) {
+        fetch(`/api/delete_query?query_id=${id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        })
+            .then(() => {
+              this.query_list_loading = true
+              this.getUserQueriesCount()
+              this.getUserQueries()
+              this.update_current_timestamp()
+              if (this.news_count === 1) {
+                window.location.reload()
+              }
+            })
+            .catch(() => {
+              console.log('unable to delete query', id)
+            });
+      },
         getUserQueriesCount() {
             fetch(`/api/queries_count?query_category=name`, {
                 method: "GET",
@@ -659,28 +774,6 @@ export default {
                 .finally(() => {
                     query.downloading = false
                 });
-        },
-        
-        delete_queries(queries) {
-            fetch(`/api/delete_queries`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    queries: queries
-                }),
-            })
-                .then((response) => {
-                    return response.json()
-                })
-                .then((response) => {
-                    console.log('deleted_queries json = ', response, queries);
-                })
-                .catch((error) => {
-                    console.log("error", error);
-                })
         },
         update_current_timestamp() {
             this.current_timestamp = new Date().valueOf()

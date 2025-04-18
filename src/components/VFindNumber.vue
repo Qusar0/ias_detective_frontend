@@ -2,11 +2,28 @@
     <div class="content">
         <div class="confirm-model" v-show="confirm_model" @click="confirm_model = false">
             <div class="confirm-model_body" @click.stop>
-                <div class="title">Вы уверенны что хотите сделать запрос за {{ temp_price }} руб. ?</div>
-                <div class="flex items-center">
-                    <button class="add-item cancel" @click="confirm_model = false">Отмена</button>
-                    <button class="add-item confirm" @click.stop="getHTMLPage()">Да</button>
-                </div>
+              <div
+                  v-if="user_balance >= temp_price || temp_price === 0"
+                  class="title"
+              >
+                Вы уверены, что хотите сделать запрос за {{ temp_price }} руб. ?
+              </div>
+              <div
+                  v-else
+                  class="title"
+              >
+                Недостаточно средств для совершения действия
+              </div>
+              <div class="flex items-center">
+                <button class="add-item cancel" @click="confirm_model = false">Отмена</button>
+                <button
+                    v-if="user_balance >= temp_price || temp_price === 0"
+                    class="add-item confirm"
+                    @click.stop="getHTMLPage()"
+                >
+                  Да
+                </button>
+              </div>
             </div>
         </div>
 
@@ -75,7 +92,9 @@
                         class="prompt-hover"
                     >
                         <!-- Списание стоимости запроса производится <br>вне зависимости от его результата. -->
-                        Теги из популярных мобильных<br> приложений определения звонящего.
+                      Теги из популярных мобильных <br>
+                      приложений определения звонящего. <br>
+                      Все страны, кроме номеров России.
                     </small>
                     <span style="user-select: none"
                         >Теги: <span class="checkbox-price">{{ chbox_prices.tags }} ₽</span></span
@@ -90,7 +109,7 @@
                         Функция в разработке
                     </small>
                     <span style="user-select: none" class="checkbox-disabled">
-                        Поиск аккаунтов
+                        Аккаунты
                     </span>
                 </label>
                 <!-- <label class="flex items-center parent-prompt-hover">
@@ -187,6 +206,11 @@
                     <i class="fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'xmlriver on update'" :title="'Сервис на обновлении!\n\nПопробуйте позже.'" style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"></i>
                     <i class="fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'failed'" :title="'Ошибка сервера!\n\nПопробуйте позже.'" style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"></i>
                     <button v-else class="item-btn btn" @click="downloadQuery(query.query_title, query.query_id, query)">Скачать <i class="fa-solid fa-spinner" v-show="query.downloading" style="margin-left: 5px;"></i></button>
+                  <i
+                      v-show="query.query_status !== 'pending'"
+                      class="fa-solid fa-trash"
+                      @click="deleteQuery(query.query_id)"
+                  ></i>
                 </div>
             </div>
             <div class="item" v-show="query_list_loading" style="background-color: transparent;justify-content: center;margin-top: 0;">
@@ -206,14 +230,14 @@
 <script>
 import axios from "axios";
 import "../utils/index";
-import { isAuthorized, prohibited_model, keywords_model, keys_list } from "../use/index";
+import { isAuthorized, prohibited_model, keywords_model, keys_list, user_balance } from "../use/index";
 import ListInput from './ListInput.vue'
 import VPagination from './UI/VPagination.vue'
 import { events } from "../utils/notification"
 
 export default {
     setup() {
-        return { isAuthorized, prohibited_model, keywords_model, keys_list, events };
+        return { isAuthorized, prohibited_model, keywords_model, keys_list, events, user_balance };
     },
     components: {
         ListInput,
@@ -225,7 +249,6 @@ export default {
             confirm_model: false,
             current_timestamp: new Date().valueOf(),
             query_list: [],
-
             prohibited_site: "",
             prohibited_sites: [],
 
@@ -322,7 +345,6 @@ export default {
                         return false
                     }
                 });
-                this.delete_queries(temp_delete_queries)
                 return '00:00:00';
             }
             else {
@@ -525,6 +547,27 @@ export default {
                     }
                 });
         },
+      deleteQuery(id) {
+        fetch(`/api/delete_query?query_id=${id}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        })
+            .then(() => {
+              this.query_list_loading = true
+              this.getUserQueriesCount()
+              this.getUserQueries()
+              this.update_current_timestamp()
+              if (this.news_count === 1) {
+                window.location.reload()
+              }
+            })
+            .catch(() => {
+              console.log('unable to delete query', id)
+            });
+      },
         downloadQuery(title, id, query) {
             query.downloading = true
             fetch(`/api/download_query`, {
@@ -563,28 +606,6 @@ export default {
                 .finally(() => {
                     query.downloading = false
                 });
-        },
-        
-        delete_queries(queries) {
-            fetch(`/api/delete_queries`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({
-                    queries: queries
-                }),
-            })
-                .then((response) => {
-                    return response.json()
-                })
-                .then((response) => {
-                    console.log('deleted_queries json = ', response);
-                })
-                .catch((error) => {
-                    console.log("error", error);
-                })
         },
         update_current_timestamp() {
             this.current_timestamp = new Date().valueOf()
