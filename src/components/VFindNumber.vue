@@ -62,6 +62,17 @@
                 </label>
                 
             </div>
+            <div
+                class="flex items-center justify-between message--warning"
+                style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px"
+            >
+              <i
+                  class="fa fa-exclamation-circle"
+                  aria-hidden="true"
+                  style="margin-right: 4px; padding-top: 2px;"
+              ></i>
+              Важно! Все запросы автоматически удаляются спустя 2 часа после скачивания.
+            </div>
             <div class="flex items-center justify-between" style="height: 30px">
                 <label class="flex items-center parent-prompt-hover">
                     <input type="checkbox" class="chbox" v-model="chbox.mentions" />
@@ -1066,5 +1077,15 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
 
 .download {
   width: 130px;
+}
+
+.message--warning {
+  border: 1px solid orange;
+  border-radius: 3px;
+  background: #f1f4f9;
+  text-align: center;
+  justify-content: center !important;
+  color: orange;
+  padding: 3px;
 }
 </style>

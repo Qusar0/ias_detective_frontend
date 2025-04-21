@@ -1026,4 +1026,15 @@ label.parent-prompt:not(label.parent-prompt:focus-within)>.prompt {
 .download {
   width: 130px;
 }
+
+.message--warning {
+  border: 1px solid orange;
+  border-radius: 3px;
+  background: #f1f4f9;
+  text-align: center;
+  justify-content: center !important;
+  color: orange;
+  margin: 10px 0 0 0;
+  padding: 3px;
+}
 </style>

@@ -13,22 +13,22 @@
                     v-if="temp_price > user_balance"
                     class="title"
                 >
-                  Недостаточно средств для оплаты запрос на
+                  Недостаточно средств для оплаты запроса на
                   <i
                       v-if="temp_price == 'loading...'"
                       class="fa-solid fa-spinner"
                   ></i>
                   <template v-else> {{ temp_price }} </template>
-                  руб. , пополните баланс!
+                  руб., пополните баланс!
                 </div>
                 <div
                     v-else
                     class="title"
                 >
-                  Вы уверенны что хотите сделать запрос за
+                  Вы уверены, что хотите сделать запрос за
                   <i v-if="temp_price == 'loading...'" class="fa-solid fa-spinner"></i>
                   <template v-else> {{ temp_price }} </template>
-                  руб. ?
+                  руб.?
                 </div>
                  <!-- ₽ -->
                  <!-- рублей. -->
@@ -254,6 +254,17 @@
                         >Компания</span
                     >
                 </label>-->
+            </div>
+            <div
+                class="flex items-center justify-between message--warning"
+                style="display: flex; justify-content: center; align-items: center;"
+            >
+              <i
+                  class="fa fa-exclamation-circle"
+                  aria-hidden="true"
+                  style="margin-right: 4px; padding-top: 2px;"
+              ></i>
+              Важно! Все запросы автоматически удаляются спустя 2 часа после скачивания.
             </div>
             <div class="flex items-center">
                 <!--<label class="flex items-center">
@@ -1203,5 +1214,16 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
 
 .download {
   width: 130px;
+}
+
+.message--warning {
+  border: 1px solid orange;
+  border-radius: 3px;
+  background: #f1f4f9;
+  text-align: center;
+  justify-content: center !important;
+  color: orange;
+  margin: 10px 0 0 0;
+  padding: 3px;
 }
 </style>
