@@ -301,9 +301,8 @@
           <div class="item__header item-title">Компания</div>
           <div class="item__header item-date" style="">Дата</div>
           <div class="item__header item-price" style="">Стоимость</div>
-          <div class="item__header item-death-time">Время до удаления</div>
-          <div class="item__header"></div>
-          <div class="item__header"></div>
+          <div class="item__header item__control"></div>
+          <div class="item__header delete-icon"></div>
         </div>
       </div>
         <div class="items">
@@ -312,10 +311,9 @@
                 :key="query.query_id"
                 class="item"
             >
-                <div class="item__content item-title">{{ query.query_title }}</div>
+                <div class="item__content item__content-title item-title">{{ query.query_title }}</div>
               <div class="item__content item-date">{{ getItemDate(new Date(query?.query_created_at)) }}</div>
               <div class="item__content item-price">{{ query.balance }} руб.</div>
-              <div class="item__content item-death-time">{{ getRemainingTime(query, current_timestamp) }}</div>
               <i
                   v-if="query.query_status == 'pending'"
                   class="item__content fa-solid fa-spinner"
@@ -334,7 +332,7 @@
               ></i>
               <button
                   v-else
-                  class="item__content item-btn btn"
+                  class="download item-btn btn"
                   @click="downloadQuery(query.query_title, query.query_id, query)"
               >
                 Скачать
@@ -346,6 +344,7 @@
               </button>
               <i
                   class="item__content fa-solid fa-trash delete-icon"
+                  style="cursor: pointer"
                   @click="deleteQuery(query.query_id)"
               ></i>
             </div>
@@ -1147,27 +1146,38 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
     text-transform: capitalize;
 }
 
-.delete-icon {
-  cursor: pointer;
-}
-
 .item__content {
-  width: 120px;
-  height: 30px;
+  width: 130px;
+  height: 17px;
   display: flex;
   align-items: center;
+  text-align: center;
   justify-content: center;
-  overflow: hidden;
 }
 
 .item__header {
-  width: 120px;
+  width: 130px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.item-death-time {
-  width: 150px;
+.delete-icon {
+  width: 32px;
+}
+
+.item-title {
+  width: 280px;
+}
+
+.item__content-title {
+  display: inline-block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.download {
+  width: 130px;
 }
 </style>

@@ -190,16 +190,15 @@
               <div class="item__header item-title">Номер</div>
               <div class="item__header item-date" style="">Дата</div>
               <div class="item__header item-price" style="">Стоимость</div>
-              <div class="item__header item-death-time">Время до удаления</div>
-              <div class="item__header"></div>
-              <div class="item__header"></div>
+              <div class="item__header item__control"></div>
+              <div class="item__header delete-icon"></div>
             </div>
         </div>
 
         
         <div class="items">
             <div class="item" v-for="query in query_list" :key="query.query_id">
-              <div class="item__content item-title">{{ query.query_title }}</div>
+              <div class="item__content item__content-title item-title">{{ query.query_title }}</div>
               <div class="item__content item-date">
                 {{ getItemDate(new Date(query?.query_created_at)) }}
                 <!-- 17:55, 11 Июнь -->
@@ -207,13 +206,13 @@
               <div class="item__content item-price">
                 {{ query.balance }} руб.
               </div>
-              <div class="item__content item-death-time">{{ getRemainingTime(query, current_timestamp) }}</div>
               <i class="item__content fa-solid fa-spinner" v-if="query.query_status == 'pending'"></i>
               <i class="item__content fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'xmlriver on update'" :title="'Сервис на обновлении!\n\nПопробуйте позже.'" style="font-size: 17px;color: #ec5e5e;"></i>
               <i class="item__content fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'failed'" :title="'Ошибка сервера!\n\nПопробуйте позже.'" style="font-size: 17px;color: #ec5e5e;"></i>
-              <button v-else class="item__content item-btn btn" @click="downloadQuery(query.query_title, query.query_id, query)">Скачать <i class="fa-solid fa-spinner" v-show="query.downloading" style=""></i></button>
+              <button v-else class="download item-btn btn" @click="downloadQuery(query.query_title, query.query_id, query)">Скачать <i class="fa-solid fa-spinner" v-show="query.downloading" style=""></i></button>
               <i
                   class="item__content fa-solid fa-trash delete-icon"
+                  style="cursor: pointer"
                   @click="deleteQuery(query.query_id)"
               ></i>
             </div>
@@ -1033,27 +1032,38 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
     opacity: .5;
 }
 
-.delete-icon {
-  cursor: pointer;
-}
-
 .item__content {
-  width: 120px;
-  height: 30px;
+  width: 130px;
+  height: 17px;
   display: flex;
   align-items: center;
+  text-align: center;
   justify-content: center;
-  overflow: hidden;
 }
 
 .item__header {
-  width: 120px;
+  width: 130px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.item-death-time {
-  width: 150px;
+.delete-icon {
+  width: 32px;
+}
+
+.item-title {
+  width: 280px;
+}
+
+.item__content-title {
+  display: inline-block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.download {
+  width: 130px;
 }
 </style>
