@@ -51,11 +51,14 @@
             <!--<img src="../assets/img/avatar.jpg" alt="avatar" class="avatar">-->
             <i
                 class="fa-solid fa-user-tie"
-                style="font-size: 22px;"
+                style="font-size: 22px; cursor: pointer"
+                @click.stop="dropdown = !dropdown"
             ></i>
             <div
                 v-if="user_name"
                 class="full_name"
+                style="cursor: pointer"
+                @click.stop="dropdown = !dropdown"
             >
               {{ user_name }}
             </div>
@@ -63,6 +66,7 @@
                 src="../assets/img/arrow-down.png"
                 alt=""
                 class="dropdown"
+                :style="dropdown ? 'rotate: 180deg; padding-bottom: 10px;' : ''"
                 @click.stop="dropdown = !dropdown"
             >
             <div
