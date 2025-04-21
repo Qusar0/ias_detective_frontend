@@ -277,6 +277,7 @@ export default {
             },
             chbox_prices: {
                 mentions: 5,
+              use_yandex: 0,
                 // leaks: 5,
                 'acc search': 120,
                 'acc search premium': 120,

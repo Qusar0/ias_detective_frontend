@@ -270,6 +270,7 @@ export default {
                 mentions: 5,
                 // leaks: 5,
                 tags: 20,
+              use_yandex: 0,
                 bindings: 65,
                 'acc search': 120,
             },
