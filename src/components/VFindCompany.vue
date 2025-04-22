@@ -5,38 +5,72 @@
             class="confirm-model"
             @click="confirm_model = false"
         >
+          <div
+              class="confirm-model_body"
+              @click.stop
+          >
             <div
-                class="confirm-model_body"
-                @click.stop
+                v-if="temp_price > user_balance"
+                class="title"
             >
-                <div
-                    v-if="user_balance >= 10"
-                    class="title"
-                >
-                  Вы уверены, что хотите сделать запрос?
-                </div>
-              <div
-                  v-else
-                  class="title"
-              >
-                Недостаточно средств для совершения запроса за 10 руб.
-              </div>
-                <div class="flex items-center">
-                    <button
-                        class="add-item cancel"
-                        @click="confirm_model = false"
-                    >
-                      Отмена
-                    </button>
-                    <button
-                        v-if="user_balance >= 10"
-                        class="add-item confirm"
-                        @click.stop="getHTMLPage()"
-                    >
-                      Да
-                    </button>
-                </div>
+              Недостаточно средств для оплаты запроса на
+              <i
+                  v-if="temp_price == 'loading...'"
+                  class="fa-solid fa-spinner"
+              ></i>
+              <template v-else> {{ temp_price }} </template>
+              руб., пополните баланс!
             </div>
+            <div
+                v-else
+                class="title"
+            >
+              Вы уверены, что хотите сделать запрос за
+              <i v-if="temp_price == 'loading...'" class="fa-solid fa-spinner"></i>
+              <template v-else> {{ temp_price ?? '10' }} </template>
+              руб.?
+            </div>
+            <!-- ₽ -->
+            <!-- рублей. -->
+            <div
+                v-if="temp_price > user_balance"
+                class="flex items-center"
+            >
+              <button
+                  class="add-item cancel"
+                  @click="confirm_model = false"
+              >
+                Отмена
+              </button>
+              <button
+                  class="add-item confirm"
+                  :disabled="!temp_price || temp_price == 'loading...'"
+                  :style="temp_price == 'loading...' ? 'background: #ccc;' : ''"
+                  @click="confirm_model = false"
+              >
+                Пополнить баланс
+              </button>
+            </div>
+            <div
+                v-else
+                class="flex items-center"
+            >
+              <button
+                  class="add-item cancel"
+                  @click="confirm_model = false"
+              >
+                Отмена
+              </button>
+              <button
+                  class="add-item confirm"
+                  :disabled="!temp_price || temp_price == 'loading...'"
+                  :style="temp_price == 'loading...' ? 'background: #ccc;' : ''"
+                  @click.stop="getHTMLPage()"
+              >
+                Да
+              </button>
+            </div>
+          </div>
         </div>
         <div
             v-show="error_model"
@@ -402,7 +436,7 @@ export default {
             query_list: [],
             prohibited_site: "",
             prohibited_sites: [],
-
+            temp_price: 0,
             keyword: "",
             keywords: [],
             chbox: {
@@ -430,11 +464,48 @@ export default {
     },
     methods: {
         getPrice() {
-            if (this.surname_error || this.form.company_name == '') {
-                this.error_model = true
-                return;
+          this.temp_price = 'loading...';
+          this.confirm_model = true;
+          this.surname_error = this.form.company_name == "";
+          if (
+              this.form.company_name != ""
+          ) {
+            const query_data = {
+              use_yandex: this.chbox.use_yandex,
+              company_name: this.form.company_name.trim().replace(/^"(.*)"$/, '$1'),
+              extra_name: this.form.extra_name.trim().replace(/^"(.*)"$/, '$1'),
+              location: this.form.location.trim(),
+              keywords: this.keys_list.keyword.list,
+              search_minus: this.keys_list.minus.list.map(keyword => `+-${keyword}`).join(""),
+              search_plus: this.keys_list.plus.list.map(keyword => `+${keyword}`).join(""),
+              default_keywords_type: Object.keys(this.chbox).filter(temp_chbox => this.chbox[temp_chbox]).join(', ')
             }
-            this.confirm_model = true;
+
+
+            fetch(`/api/calculate_price`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              credentials: "include",
+              body: JSON.stringify(query_data),
+            })
+                .then((response) => {
+                  if (response?.status == 401) {
+                    this.isAuthorized = false;
+                    this.$router.push("login");
+                    return;
+                  }
+
+                  return response.json();
+                })
+                .then((response) => {
+                  if (response) this.temp_price = response.price;
+                })
+                .catch((error) => {
+                  console.log("error", error);
+                })
+          }
         },
         inputEmail(event) {
             let regex = new RegExp('[a-z0-9]+@[a-z]+\.[a-z]{2,3}');

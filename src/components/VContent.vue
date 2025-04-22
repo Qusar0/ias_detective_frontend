@@ -438,30 +438,6 @@ export default {
                 `${date.format("h:i")}, ${date.format("d.m.Y")}`
             ).trim();
         },
-        getRemainingTime(query, current_timestamp) {
-            const two_hours = 1000 * 60 * 60 * 2;
-            const default_offset = new Date().getTimezoneOffset() * 60 * 1000;
-            let result = new Date(two_hours - ((current_timestamp - query.query_unix_date.valueOf())));
-            if (query?.old_query_unix_date == '1980/01/01 00:00:00') {
-                return '02:00:00';
-            }
-            else if (result.valueOf() <= new Date(0).valueOf()) {
-                let temp_delete_queries = [];
-                this.query_list = this.query_list.filter(q => {
-                    if (q.query_id != query.query_id) {
-                        return true
-                    }
-                    else {
-                        temp_delete_queries.push(+query.query_id)
-                        return false
-                    }
-                });
-                return '00:00:00';
-            }
-            else {
-                return new Date(result.valueOf() + default_offset).format("h:i:s")
-            }
-        },
         multiInput(event) {
             if (event.ctrlKey && event.code == 'KeyV') {
                 this.form.search_surname = ''
