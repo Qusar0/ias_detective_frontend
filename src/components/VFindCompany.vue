@@ -44,7 +44,7 @@
               </button>
               <button
                   class="add-item confirm"
-                  :disabled="!temp_price || temp_price == 'loading...'"
+                  :disabled="temp_price == 'loading...'"
                   :style="temp_price == 'loading...' ? 'background: #ccc;' : ''"
                   @click="confirm_model = false"
               >
@@ -63,7 +63,7 @@
               </button>
               <button
                   class="add-item confirm"
-                  :disabled="!temp_price || temp_price == 'loading...'"
+                  :disabled="temp_price == 'loading...'"
                   :style="temp_price == 'loading...' ? 'background: #ccc;' : ''"
                   @click.stop="getHTMLPage()"
               >
