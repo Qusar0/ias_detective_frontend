@@ -5,4 +5,4 @@ https://github.com/Qusar0/detective-freelance
 ## Запуск сайта
 `npm install`
 
-`npm run serve`
+`npm run dev`
