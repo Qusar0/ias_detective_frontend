@@ -32,8 +32,7 @@ export function getNotificationSound() {
 }
 
 export function get_events() {
-
-    fetch(`/api/get_events`, {
+    fetch(`/api/users/get_events`, {
         method: "GET",
         credentials: "include",
     })

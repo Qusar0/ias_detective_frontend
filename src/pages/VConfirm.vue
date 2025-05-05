@@ -34,7 +34,7 @@ export default {
   async mounted() {
     const token = this.$route.query.token;
     try {
-      const res = await fetch(`/api/confirm/${token}`);
+      const res = await fetch(`/api/v1/auth/confirm/${token}`);
       const data = await res.json();
       if (data.status === 'success') {
         this.success = true;

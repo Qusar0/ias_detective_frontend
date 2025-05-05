@@ -62,16 +62,32 @@ export default {
     },
     mounted() {
         this.get_events();
-        
-        var source = new EventSource(`/stream/stream`);
 
-        source.addEventListener(btoa(this.user_name + this.user_created + ''), this.handleGreeting, false);
-        source.addEventListener('error', function() {
-            // alert("Failed to connect to event stream. Is Redis running?");
-        }, false);
+        const channel = btoa(this.user_name + this.user_created + '');
+        console.log("Connecting to channel:", channel);
+        this.source = new EventSource(`/api/sse/${channel}`);
+
+        this.source.addEventListener("open", () => {
+            console.log("✅ SSE connection established");
+        });
+
+        this.source.addEventListener("message", this.handleGreeting);
+
+        this.source.addEventListener("error", (event) => {
+            console.error("❌ SSE connection error:", event);
+
+            if (this.source.readyState === EventSource.CLOSED) {
+                console.warn("🔌 SSE connection was closed by the server");
+            } else if (this.source.readyState === EventSource.CONNECTING) {
+                console.info("🔄 SSE is reconnecting...");
+            }
+        });
     },
     beforeUnmount() {
-        source.addEventListener(btoa(this.user_name + this.user_created + ''), this.handleGreeting, false);
+        if (this.source) {
+            this.source.removeEventListener("message", this.handleGreeting);
+            this.source.close();
+        }
     },
 }
 

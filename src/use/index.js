@@ -111,7 +111,7 @@ export async function set_user_balance(balance) {
 }
 export async function get_user_balance() {
 
-    await fetch(`/api/get_balance`, {
+    await fetch(`/api/users/get_balance`, {
         method: "GET",
         credentials: "include",
     })

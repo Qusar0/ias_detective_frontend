@@ -157,7 +157,7 @@ export default {
                 //this.keywords.length
             ) {
 
-                fetch(`/api/find_by_name`, {
+                fetch(`/api/queries/find_by_name`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

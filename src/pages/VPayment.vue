@@ -92,41 +92,45 @@ export default {
       },
       sendData(amount, transactionId) {
         fetch('https://api.ipify.org?format=json')
-            .then(res => res.json())
-            .then(data => {
-              const ip = data.ip;
-              const params = new URLSearchParams({
-                TransactionId: transactionId,
-                Currency: "RUB",
-                PaymentAmount: amount,
-                OperationType: "Payment",
-                InvoiceId: "123",
-                AccountId: localStorage.getItem('user_id'),
-                Email: localStorage.getItem('user_name'),
-                DateTime: new Date().toISOString(),
-                IpAddress: ip,
-                Status: "Completed"
-              });
+          .then(res => res.json())
+          .then(data => {
+            const ip = data.ip;
+            const payload = {
+              transaction_id: transactionId,
+              currency: "RUB",
+              payment_amount: amount,
+              operation_type: "Payment",
+              invoice_id: "123",
+              account_id: localStorage.getItem('user_id'),
+              email: localStorage.getItem('user_name'),
+              date_time: new Date().toISOString(),
+              ip_address: ip,
+              status: "Completed"
+            };
 
-              return fetch(`/api/top_up_balance?${params.toString()}`, {
-                method: 'GET',
-                credentials: "include"
-              })
+            return fetch('/api/users/top_up_balance', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              credentials: "include",
+              body: JSON.stringify(payload)
             })
-            .then((response) => {
-              if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-              }
-              return response.json;
-            })
-            .then(data => console.log(data))
-            .catch((error) => {
-              console.log(error)
-            })
+          })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json;
+          })
+          .then(data => console.log(data))
+          .catch((error) => {
+            console.log(error)
+          })
       },
       confirmUser() {
         this.loading = true;
-        fetch(`/api/is_confirmed`, {
+        fetch(`/api/users/is_confirmed`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

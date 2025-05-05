@@ -84,8 +84,7 @@ router.beforeEach(async (to, from) => {
     if (isAuthorized.value == undefined) {
         try {
             if (to.path !== '/confirm-email') {
-                // let response = await fetch(`/api/is_authenticated`, {
-                let response = await fetch(`/api/is_authenticated`, {
+                let response = await fetch(`/api/users/is_authenticated`, {
                     method: "GET",
                     credentials: "include",
                 })

@@ -556,7 +556,7 @@ export default {
 
                 this.getUserQueriesCount()
 
-                fetch(`/api/find_by_name`, {
+                fetch(`/api/queries/find_by_name`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -600,7 +600,7 @@ export default {
                 }
 
 
-                fetch(`/api/calculate_price`, {
+                fetch(`/api/queries/calculate_price`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -626,7 +626,7 @@ export default {
             }
         },
         getUserQueries(page = 1) {
-            fetch(`/api/query_getter?query_category=name&page=${page - 1}`, {
+            fetch(`/api/queries/query_getter?query_category=name&page=${page - 1}`, {
                 method: "GET",
                 credentials: "include",
                 headers: {
@@ -669,7 +669,7 @@ export default {
                 });
         },
       deleteQuery(id) {
-        fetch(`/api/delete_query?query_id=${id}`, {
+        fetch(`/api/queries/delete_query?query_id=${id}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -690,7 +690,7 @@ export default {
             });
       },
         getUserQueriesCount() {
-            fetch(`/api/queries_count?query_category=name`, {
+            fetch(`/api/queries/queries_count?query_category=name`, {
                 method: "GET",
                 credentials: "include",
                 headers: {
@@ -716,7 +716,7 @@ export default {
         },
         downloadQuery(title, id, query) {
             query.downloading = true
-            fetch(`/api/download_query`, {
+            fetch(`/api/queries/download_query`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

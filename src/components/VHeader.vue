@@ -122,14 +122,14 @@ export default {
 
             if (event_item.event_status == 'seen') return;
 
-            fetch(`/api/change_event_status`, {
+            fetch(`/api/users/change_event_status`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 credentials: "include",
                 body: JSON.stringify({
-                    event_id: event_item.event_id + "",
+                    event_id: event_item.event_id,
                 }),
 
             })

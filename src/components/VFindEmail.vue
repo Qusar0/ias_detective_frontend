@@ -471,7 +471,7 @@ export default {
 
                 this.getUserQueriesCount()
 
-                fetch(`/api/find_by_email`, {
+                fetch(`/api/queries/find_by_email`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -500,7 +500,7 @@ export default {
             }
         },
         getUserQueriesCount() {
-            fetch(`/api/queries_count?query_category=email`, {
+            fetch(`/api/queries/queries_count?query_category=email`, {
                 method: "GET",
                 credentials: "include",
                 headers: {
@@ -525,7 +525,7 @@ export default {
                 })
         },
       deleteQuery(id) {
-        fetch(`/api/delete_query?query_id=${id}`, {
+        fetch(`/api/queries/delete_query?query_id=${id}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -546,7 +546,7 @@ export default {
             });
       },
         getUserQueries(page = 1) {
-            fetch(`/api/query_getter?query_category=email&page=${page - 1}`, {
+            fetch(`/api/queries/query_getter?query_category=email&page=${page - 1}`, {
                 method: "GET",
                 credentials: "include",
                 headers: {
@@ -588,7 +588,7 @@ export default {
         },
         downloadQuery(title, id, query) {
             query.downloading = true
-            fetch(`/api/download_query`, {
+            fetch(`/api/queries/download_query`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
