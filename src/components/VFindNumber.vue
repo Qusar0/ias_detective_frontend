@@ -123,16 +123,6 @@
                         Аккаунты
                     </span>
                 </label>
-
-              <label class="flex items-center parent-prompt-hover">
-                <input type="checkbox" class="chbox" v-model="chbox.use_yandex" />
-                <small class="prompt-hover">
-                  Использовать ПС Яндекс для поиска
-                </small>
-                <span style="user-select: none">
-                  Yandex
-                </span>
-              </label>
                 <!-- <label class="flex items-center parent-prompt-hover">
                     <input type="checkbox" class="chbox" v-model="chbox.bindings" />
                     <small
@@ -272,7 +262,6 @@ export default {
                 mentions: false,
                 // leaks: false,
                 tags: false,
-              use_yandex: false,
                 bindings: false,
                 'acc search': false,
                 searchAccounts: false,
@@ -281,7 +270,6 @@ export default {
                 mentions: 5,
                 // leaks: 5,
                 tags: 20,
-              use_yandex: 0,
                 bindings: 65,
                 'acc search': 120,
             },
@@ -450,7 +438,6 @@ export default {
             ) {
                 const query_data = {
                     search_number: this.form.number.trim(),
-                  use_yandex: this.chbox.use_yandex,
                     methods_type: Object.keys(this.chbox).filter(temp_chbox => this.chbox[temp_chbox])
                 }
                 this.clearAllFields()
