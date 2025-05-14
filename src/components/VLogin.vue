@@ -53,6 +53,37 @@
             </button>
         </div>
         <div
+            style="margin-top: 10px; cursor: pointer; text-decoration: underline; color: #727476"
+            @click="showReset = !showReset"
+        >
+          Сбросить пароль
+        </div>
+        <div
+            v-if="resetSuccess"
+            style="margin-top: 10px;"
+        >
+          Письмо с дальнейшими указаниями было отправлено на указанную почту.
+        </div>
+      <div
+          v-if="showReset && !resetSuccess"
+          style="display: flex; flex-direction: column; align-items: end"
+      >
+        <input
+            v-model="form.resetEmail"
+            style="margin-top: 10px;"
+            type="email"
+            placeholder="Почта, для которой нужно сбросить пароль"
+            class="email"
+        >
+        <button
+            v-show="form.resetEmail"
+            class="btn"
+            @click="resetPassword"
+        >
+          Сбросить
+        </button>
+      </div>
+        <div
             v-show="authorization_error"
             class="flex items-center justify-between authorization_error"
         >
@@ -72,9 +103,12 @@ export default {
                 email: '',
                 password: '',
                 checked: true,
+                resetEmail: '',
             },
             authorization_error: false,
-            authorization_error_text: '«Неправильный логин или пароль»',
+            showReset: false,
+            resetSuccess: false,
+            authorization_error_text: 'Неправильная почта или пароль',
             validation_error: false
         }
     },
@@ -110,11 +144,11 @@ export default {
                     }
                     else if (response.status == 409) {
                         this.authorization_error = true
-                        this.authorization_error_text = '«Такого пользователя не существует»'
+                        this.authorization_error_text = 'Неправильная почта или пароль'
                     }
                     else if (response.status == 401) {
                         this.authorization_error = true
-                        this.authorization_error_text = '«Неправильная почта или пароль»'
+                        this.authorization_error_text = 'Неправильная почта или пароль'
                     }
                     this.validation_error = true
                 })
@@ -129,7 +163,27 @@ export default {
                 .catch((error) => {
                     console.log('error', error);
                 })
-        }
+        },
+      resetPassword() {
+        fetch(`api/v1/auth/forgot_password?email=${this.form.resetEmail}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        })
+            .then((response) => {
+              if (response.status == 200) {
+                this.resetSuccess = true;
+              } else {
+                this.authorization_error = true
+                this.authorization_error_text = 'Произошла ошибка.'
+              }
+            })
+            .catch((error) => {
+              console.log('error', error);
+            })
+      }
     },
     computed: {
       formIsEmpty() {
