@@ -54,7 +54,7 @@
         </div>
         <div
             style="margin-top: 10px; cursor: pointer; text-decoration: underline; color: #727476"
-            @click="showReset = !showReset"
+            @click="showReset = !showReset; authorization_error = false; resetSuccess = false;"
         >
           Сбросить пароль
         </div>
@@ -165,6 +165,7 @@ export default {
                 })
         },
       resetPassword() {
+        this.authorization_error = false;
         fetch(`api/v1/auth/forgot_password?email=${this.form.resetEmail}`, {
           method: "POST",
           headers: {
