@@ -130,8 +130,7 @@ export default {
                     this.registration_success = false
                   }, 3000);
                     return;
-                }
-                else if (response.status == 409) {
+                } else {
                     this.registration_error = true
                     this.registration_error_text = 'Не удалось создать аккаунт. Попробуйте позже.'
                 }
