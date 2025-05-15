@@ -141,12 +141,7 @@ export default {
                         this.get_events()
                         this.$router.push('/')
                         return response?.json();
-                    }
-                    else if (response.status == 409) {
-                        this.authorization_error = true
-                        this.authorization_error_text = 'Неправильная почта или пароль'
-                    }
-                    else if (response.status == 401) {
+                    } else {
                         this.authorization_error = true
                         this.authorization_error_text = 'Неправильная почта или пароль'
                     }
