@@ -596,6 +596,7 @@ export default {
                 const query_data = {
                     search_patronymic: this.form.search_patronymic.trim(),
                     keywords: this.keys_list.keyword.list,
+                    languages: ['ru'],
                     default_keywords_type: Object.keys(this.chbox).filter(temp_chbox => this.chbox[temp_chbox]).join(', ')
                 }
 
