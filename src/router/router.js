@@ -9,8 +9,9 @@ import VFindByTelegram from '../pages/VFindByTelegram.vue';
 import VFindByEmail from '../pages/VFindByEmail.vue';
 import VFindByCompany from '../pages/VFindByCompany.vue';
 import { isAuthorized } from '../use/index';
-import { reactive, ref } from 'vue';
 import VConfirm from "../pages/VConfirm.vue";
+import VResetPassword from "../pages/VResetPassword.vue";
+import VConfirmTelegram from "../pages/VConfirmTelegram.vue";
 
 const routes = [
     {
@@ -22,6 +23,16 @@ const routes = [
         path: '/confirm-email',
         name: 'Confirm',
         component: VConfirm
+    },
+    {
+        path: '/reset-password',
+        name: 'ResetPassword',
+        component: VResetPassword
+    },
+    {
+        path: '/connect_tg',
+        name: 'ConnectTelegram',
+        component: VConfirmTelegram
     },
     {
         path: '/payment',
@@ -83,7 +94,7 @@ router.beforeEach(async (to, from) => {
 
     if (isAuthorized.value == undefined) {
         try {
-            if (to.path !== '/confirm-email') {
+            if (to.path !== '/confirm-email' && to.path !== '/reset-password' && to.path !== '/connect_tg') {
                 let response = await fetch(`/api/users/is_authenticated`, {
                     method: "GET",
                     credentials: "include",

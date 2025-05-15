@@ -24,6 +24,7 @@
             </button>
             </div>
         </div>
+
         <div class="form">
             <div 
                 style="
@@ -35,170 +36,84 @@
             >
                 Сменить пароль
             </div>
+          <div
+              v-show="errorMessage || success"
+              class="flex items-center justify-between"
+              :class="success ? 'change-password__success' : 'change-password__error'"
+              style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px"
+          >
+            <i
+                class="fa fa-exclamation-circle"
+                aria-hidden="true"
+                style="margin-right: 4px; padding-top: 2px;"
+            ></i>
+            {{ success ? 'Пароль был изменен.' : errorMessage}}
+          </div>
             <div class="inputs">
                 <div class="flex flex-col w-full parent-prompt top-input">
-                    <input v-model="form.search_surname" type="text" title="some title ..."
+                    <input v-model="oldPassword" type="text" title="some title ..."
                         style="margin-right:0;margin-bottom: 0;" placeholder="Старый пароль">
                     <small class="prompt">Введите свой настояший пароль</small>
                 </div>
                 <div class="flex flex-col w-full parent-prompt top-input"
                     style="margin-right: 20px;margin-bottom: 0;align-items: start;">
-                    <input style="margin-right:0;margin-bottom: 0;" v-model="form.search_name" type="text"
+                    <input style="margin-right:0;margin-bottom: 0;" v-model="newPassword" type="text"
                         placeholder="Новый пароль">
                     <small class="prompt">Создайте новый пароль</small>
                 </div>
                 <div class="flex flex-col w-full parent-prompt top-input" style="margin-bottom: 0;align-items: start;">
-                    <input style="margin-right:0;margin-bottom: 0;" v-model="form.search_patronymic" type="text"
+                    <input style="margin-right:0;margin-bottom: 0;" v-model="newPasswordConfirm" type="text"
                         placeholder="Повторить новый пароль">
                     <small class="prompt">Повторите новый пароль для подтверждения</small>
                 </div>
             </div>
-            <button class="btn password-btn">Сменить пароль</button>
+            <button
+                v-show="oldPassword && newPassword && newPasswordConfirm"
+                class="btn password-btn"
+                @click="validateData"
+            >
+              Сменить пароль
+            </button>
         </div>
-
-        <!--<div class="items head-item">
-            <div class="item" style="height: 35px;">
-                <div class="item-title">ФИО</div>
-                <div class="btn-wrap">
-                    <div class="item-price">Баланс</div>
-                    <div class="item-death-time">Время жизни</div>
-                    <button class="item-btn btn" style="opacity: 0;">Скачать</button>
-                </div>
-            </div>
-        </div>
-
-
-
-        <div class="items">
-            <div class="item">
-                <div class="item-title">Копылов Егор Агафонович</div>
-                <div class="btn-wrap">
-                    <div class="item-price">17 руб.</div>
-                    <div class="item-death-time">17:24</div>
-                    <button class="item-btn btn">Скачать</button>
-                </div>
-            </div>
-            <div class="item">
-                <div class="item-title">Гуляев Архип Лукьевич</div>
-                <div class="btn-wrap">
-                    <div class="item-price">20 руб.</div>
-                    <div class="item-death-time">17:26</div>
-                    <button class="item-btn btn">Скачать</button>
-                </div>
-            </div>
-            <div class="item">
-                <div class="item-title">Егоров Филипп Михаилович</div>
-                <div class="btn-wrap">
-                    <div class="item-price">13 руб.</div>
-                    <div class="item-death-time">19:02</div>
-                    <button class="item-btn btn">Скачать</button>
-                </div>
-            </div>
-        </div>-->
     </div>
 </template>
 
-<script>
-import axios from 'axios';
-import { isAuthorized } from '../use/index'
+<script setup>
+import { ref } from 'vue';
 
+const oldPassword = ref('');
+const newPassword = ref('');
+const newPasswordConfirm = ref('');
+const errorMessage = ref('');
+const success = ref(false);
 
-export default {
-    setup() {
-        return { isAuthorized }
+const validateData = () => {
+  errorMessage.value = '';
+  if (newPassword.value !== oldPassword.value) {
+    newPassword.value === newPasswordConfirm.value
+        ? updatePassword()
+        : errorMessage.value = 'Ошибка! Новый пароль и его повтор не совпадают.';
+  } else {
+    errorMessage.value = 'Ошибка! Новый пароль и старый пароль не должны совпадать.';
+  }
+};
+
+const updatePassword = () => {
+  fetch(`/api/users/change_password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-    data() {
-        return {
-            prohibited_model: false,
-            prohibited_site: '',
-            prohibited_sites: [
-            ],
-
-            keywords_model: false,
-            keyword: '',
-            keywords: [
-            ],
-
-            form: {
-                search_surname: '',
-                search_name: '',
-                search_patronymic: '',
-            }
-        }
-    },
-    methods: {
-        hasSpaceOrСomma(text) {
-            return text.includes(' ') || text.includes(',')
-        },
-        addProhibitedSite() {
-            if (this.prohibited_site && this.prohibited_sites.find(site => site == this.prohibited_site) == undefined) this.prohibited_sites.push(this.prohibited_site)
-            this.prohibited_site = '';
-            this.prohibited_model = true
-        },
-        removeSite(site) {
-            this.prohibited_sites = this.prohibited_sites.filter(temp_site => temp_site != site)
-            if (this.prohibited_sites.length == 0) this.prohibited_model = false
-        },
-        addKeywords() {
-            if (this.keyword && this.keywords.find(key => key == this.keyword) == undefined) this.keywords.push(this.keyword)
-            this.keyword = '';
-            this.keywords_model = true
-        },
-        removeKey(key) {
-            this.keywords = this.keywords.filter(temp_key => temp_key != key)
-            if (this.keywords.length == 0) this.keywords_model = false
-        },
-        getHTMLPage() {
-            if (
-                this.form.search_surname != '' &&
-                this.form.search_name != '' &&
-                this.form.search_patronymic != '' // &&
-                //this.prohibited_sites.length &&
-                //this.keywords.length
-            ) {
-
-                fetch(`/api/queries/find_by_name`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    credentials: "include",
-                    body: JSON.stringify({
-                        search_surname: this.form.search_surname,
-                        search_name: this.form.search_name,
-                        search_patronymic: this.form.search_patronymic,
-                        prohibited_sites: this.prohibited_sites.join(', '),
-                        keywords: this.keywords.join(', '),
-                        search_plus: '',
-                        search_minus: '',
-                    }),
-                })
-                    .then((response) => {
-                        if (response?.status == 401) {
-                            this.isAuthorized = false
-                            this.$router.push('login')
-                            return;
-                        }
-
-                        return response.blob()
-                    })
-                    .then((response) => {
-
-                        let blob = new Blob([response]);
-                        let link = document.createElement("a");
-                        link.href = window.URL.createObjectURL(blob);
-                        link.download = `${this.form.search_surname}_${this.form.search_name}_${this.form.search_patronymic}.html`;
-
-                        link.click();
-                    })
-                    .catch((error) => {
-                        console.log('error', error);
-                    })
-            }
-        },
-    },
-}
-
+    credentials: "include",
+    body: JSON.stringify({
+      old_password: oldPassword.value,
+      new_password: newPassword.value,
+    }),
+  })
+      .then((response) => {
+        response?.status === 200 ? success.value = true : errorMessage.value = 'Ошибка! Не удалось изменить пароль.';
+      })
+};
 </script>
 
 <style scoped>
@@ -211,13 +126,6 @@ export default {
 
 .content {
     padding: 20px;
-}
-
-.info {
-    display: flex;
-    justify-content: space-around;
-    max-width: 700px;
-    margin: auto;
 }
 
 .info div {
@@ -275,12 +183,6 @@ export default {
     color: #a8a6a6;
 }
 
-.btn-gray-bg {
-    background: #cccccc !important;
-    cursor: default !important;
-}
-
-
 .form .btn {
     margin-top: 10px;
     margin-left: auto !important;
@@ -306,84 +208,9 @@ export default {
     margin-right: 20px;
 }
 
-.items {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 900px;
-    margin: auto;
-}
-
 .head-item .item {
     font-size: 16px;
     font-weight: 600;
-}
-
-.item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: white;
-    height: 45px;
-    padding: 0 15px;
-    margin-top: 15px;
-    border-radius: 5px;
-    line-height: 1.1;
-    font-size: 14px;
-}
-
-.item-btn {
-    background: rgb(26, 179, 148);
-    font-size: 13px;
-    border: none;
-    height: 30px;
-}
-
-.item-btn:hover {
-    background: rgb(22, 144, 119);
-}
-
-.btn-wrap {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 60%;
-}
-
-.prohibited_sites::-webkit-scrollbar {
-    width: 7px;
-    margin-left: 2px;
-}
-
-.prohibited_sites::-webkit-scrollbar-track {
-    margin-left: 2px;
-    background-color: transparent;
-}
-
-.prohibited_sites::-webkit-scrollbar-thumb {
-    /*background-color: #eaeaea;*/
-    background-color: rgb(170, 227, 255);
-    border-radius: 5px;
-}
-
-.prohibited_sites::-webkit-scrollbar-thumb:hover {
-    /*background-color: #d7d7d7;*/
-    background-color: rgb(109, 166, 221);
-}
-
-.prohibited_sites {
-    position: absolute;
-    z-index: 1;
-    top: 100%;
-    left: 0;
-    right: 0;
-    margin-top: 7px;
-    overflow: hidden;
-    overflow-y: scroll;
-    max-height: 200px;
-    background: white;
-    border: 1px solid #dadde1;
-    border-radius: 3px;
 }
 
 .prohibited_sites p:not(.prohibited_sites p:last-child) {
@@ -451,15 +278,6 @@ export default {
     transform: rotate(90deg);
 }
 
-
-.add-item {
-    background: rgb(26, 179, 148);
-    font-size: 13px;
-    border: none;
-    height: 30px;
-    transition: .15s;
-}
-
 .nav-link {
     display: flex;
     align-items: center;
@@ -476,5 +294,19 @@ button.add-item:hover {
     background: rgb(22, 144, 119) !important;
 }
 
+.change-password__error,
+.change-password__success {
+  border: 1px solid red;
+  border-radius: 3px;
+  background: #f1f4f9;
+  height: 35px;
+  justify-content: center !important;
+  color: red;
+  margin: 10px 20px 0 0;
+}
 
+.change-password__success {
+  border: 1px solid green;
+  color: green;
+}
 </style>

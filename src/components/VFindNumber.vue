@@ -3,6 +3,16 @@
         <div class="confirm-model" v-show="confirm_model" @click="confirm_model = false">
             <div class="confirm-model_body" @click.stop>
               <div
+                  v-if="isRuNumber && tagsSelected"
+                  style="margin-bottom: 10px"
+              >
+                Важно! Вы указали российский номер и выбрали теги,
+                <br>
+                (недоступно для российских номеров), поэтому они
+                <br>
+                были исключены из запроса.
+              </div>
+              <div
                   v-if="user_balance >= temp_price || temp_price === 0"
                   class="title"
               >
@@ -98,7 +108,7 @@
                 </label> -->
                 
                 <label class="flex items-center parent-prompt-hover">
-                    <input type="checkbox" class="chbox" v-model="chbox.tags" />
+                    <input type="checkbox" class="chbox" v-model="chbox.tags"/>
                     <small
                         class="prompt-hover"
                     >
@@ -111,7 +121,6 @@
                         >Теги: <span class="checkbox-price">{{ chbox_prices.tags }} ₽</span></span
                     >
                 </label>
-
                 <label class="flex items-center parent-prompt-hover">
                     <input type="checkbox" class="chbox" disabled v-model="chbox.searchAccounts" />
                     <small
@@ -123,16 +132,6 @@
                         Аккаунты
                     </span>
                 </label>
-
-              <label class="flex items-center parent-prompt-hover">
-                <input type="checkbox" class="chbox" v-model="chbox.use_yandex" />
-                <small class="prompt-hover">
-                  Использовать ПС Яндекс для поиска
-                </small>
-                <span style="user-select: none">
-                  Yandex
-                </span>
-              </label>
                 <!-- <label class="flex items-center parent-prompt-hover">
                     <input type="checkbox" class="chbox" v-model="chbox.bindings" />
                     <small
@@ -265,14 +264,14 @@ export default {
             query_list: [],
             prohibited_site: "",
             prohibited_sites: [],
-
+            isRuNumber: false,
+            tagsSelected: false,
             keyword: "",
             keywords: [],
             chbox: {
                 mentions: false,
                 // leaks: false,
                 tags: false,
-              use_yandex: false,
                 bindings: false,
                 'acc search': false,
                 searchAccounts: false,
@@ -281,7 +280,6 @@ export default {
                 mentions: 5,
                 // leaks: 5,
                 tags: 20,
-              use_yandex: 0,
                 bindings: 65,
                 'acc search': 120,
             },
@@ -308,6 +306,13 @@ export default {
             if (this.form.number == '' || !(this.form.number.slice(1, 20).match(phoneno))) {
                 this.surname_error = true;
                 return
+            }
+            if (!this.form.number.startsWith('+77') && this.form.number.length === 12 && (this.form.number.startsWith('+7') || this.form.number.startsWith('+8'))) {
+              this.isRuNumber = true;
+              if (this.chbox.tags) {
+                this.tagsSelected = true;
+                this.chbox.tags = false;
+              }
             }
 
             this.temp_price = Object.keys(this.chbox)
@@ -343,93 +348,6 @@ export default {
                 `${date.format("h:i")}, ${date.format("d.m.Y")}`
             ).trim();
         },
-        getRemainingTime(query, current_timestamp) {
-            const two_hours = 1000 * 60 * 60 * 2;
-            const default_offset = new Date().getTimezoneOffset() * 60 * 1000;
-            let result = new Date(two_hours - ((current_timestamp - query.query_unix_date.valueOf())));
-            if (query?.old_query_unix_date == '1980/01/01 00:00:00') {
-                return '02:00:00';
-            }
-            else if (result.valueOf() <= new Date(0).valueOf()) {
-                let temp_delete_queries = [];
-                this.query_list = this.query_list.filter(q => {
-                    if (q.query_id != query.query_id) {
-                        return true
-                    }
-                    else {
-                        temp_delete_queries.push(+query.query_id)
-                        return false
-                    }
-                });
-                return '00:00:00';
-            }
-            else {
-                return new Date(result.valueOf() + default_offset).format("h:i:s")
-            }
-        },
-        multiInput(event) {
-            if (event.ctrlKey && event.code == 'KeyV') {
-                this.form.number = ''
-                setTimeout(() => {
-                    let full_name = this.form.number.split(' ').filter(str => str != '')
-                    this.form.number = full_name[0] ?? ''
-                    this.form.search_name = full_name[1] ?? ''
-                    this.form.search_patronymic = full_name[2] ?? ''
-                }, 5);
-            }
-        },
-        uploadFile(event, array_name = 'prohibited_sites', modal_name = 'prohibited_model') {
-
-            let file = event.target.files[0];
-
-            let reader = new FileReader();
-
-            reader.readAsText(file);
-
-            reader.onload = () => {
-                if (reader.result) this[array_name] = reader.result.trim().split(/\r?\n/).map(item => item.trim());
-                this[modal_name] = true
-            };
-
-            reader.onerror = function() {
-                console.log(reader.error);
-            };
-
-        },
-        hasSpaceOrСomma(text) {
-            return text.includes(" ") || text.includes(",");
-        },
-        addProhibitedSite() {
-            if (
-                this.prohibited_site &&
-                this.prohibited_sites.find(
-                    (site) => site == this.prohibited_site
-                ) == undefined
-            )
-                this.prohibited_sites.push(this.prohibited_site);
-            this.prohibited_site = "";
-            this.prohibited_model = true;
-        },
-        removeSite(site) {
-            this.prohibited_sites = this.prohibited_sites.filter(
-                (temp_site) => temp_site != site
-            );
-            if (this.prohibited_sites.length == 0)
-                this.prohibited_model = false;
-        },
-        addKeywords() {
-            if (
-                this.keyword &&
-                this.keywords.find((key) => key == this.keyword) == undefined
-            )
-                this.keywords.push(this.keyword);
-            this.keyword = "";
-            this.keywords_model = true;
-        },
-        removeKey(key) {
-            this.keywords = this.keywords.filter((temp_key) => temp_key != key);
-            if (this.keywords.length == 0) this.keywords_model = false;
-        },
         clearAllFields() {
             this.form.number = '';
             this.form.search_name = '';
@@ -450,7 +368,6 @@ export default {
             ) {
                 const query_data = {
                     search_number: this.form.number.trim(),
-                  use_yandex: this.chbox.use_yandex,
                     methods_type: Object.keys(this.chbox).filter(temp_chbox => this.chbox[temp_chbox])
                 }
                 this.clearAllFields()
@@ -641,6 +558,11 @@ export default {
                 this.getUserQueries(this.selected_page)
             },
             deep: true
+        },
+        confirm_model(newVal) {
+          if (newVal === false) {
+            this.tagsSelected = false;
+          }
         }
     },
     mounted() {
