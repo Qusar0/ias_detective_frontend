@@ -543,6 +543,7 @@ export default {
             ) {
                 const query_data = {
                     search_engines: this.chbox.use_yandex ? ['yandex'] : [],
+                    languages: this.checkedLanguages.length ? this.checkedLanguages : [],
                     search_surname: this.form.search_surname.trim(),
                     search_name: this.form.search_name.trim(),
                     search_patronymic: this.form.search_patronymic.trim(),

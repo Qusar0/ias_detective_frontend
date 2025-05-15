@@ -86,7 +86,7 @@ export default {
         const res = await fetch(`/api/v1/users/available_languages`);
         const data = await res.json();
         if (data.status !== 200) {
-          localStorage.setItem('languages', JSON.stringify(['ru']))
+          localStorage.setItem('languages', JSON.stringify(['ru', 'en']))
         } else {
           localStorage.setItem('languages', data)
         }

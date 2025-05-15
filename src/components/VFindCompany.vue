@@ -434,6 +434,7 @@ export default {
             confirm_model: false,
             current_timestamp: new Date().valueOf(),
             query_list: [],
+            checkedLanguages: [],
             prohibited_site: "",
             prohibited_sites: [],
             temp_price: 0,
@@ -471,7 +472,8 @@ export default {
               this.form.company_name != ""
           ) {
             const query_data = {
-              use_yandex: this.chbox.use_yandex,
+              search_engines: this.chbox.use_yandex ? ['yandex'] : [],
+              languages: this.checkedLanguages.length ? this.checkedLanguages : [],
               company_name: this.form.company_name.trim().replace(/^"(.*)"$/, '$1'),
               extra_name: this.form.extra_name.trim().replace(/^"(.*)"$/, '$1'),
               location: this.form.location.trim(),
@@ -623,6 +625,7 @@ export default {
             ) {
                 const query_data = {
                     search_engines: this.chbox.use_yandex ? ['yandex'] : [],
+                    languages: this.checkedLanguages.length ? this.checkedLanguages : [],
                     company_name: this.form.company_name.trim().replace(/^"(.*)"$/, '$1'),
                     extra_name: this.form.extra_name.trim().replace(/^"(.*)"$/, '$1'),
                     location: this.form.location.trim(),
