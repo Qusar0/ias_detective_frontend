@@ -622,7 +622,7 @@ export default {
                 this.form.company_name != ""
             ) {
                 const query_data = {
-                  use_yandex: this.chbox.use_yandex,
+                    search_engines: this.chbox.use_yandex ? ['yandex'] : [],
                     company_name: this.form.company_name.trim().replace(/^"(.*)"$/, '$1'),
                     extra_name: this.form.extra_name.trim().replace(/^"(.*)"$/, '$1'),
                     location: this.form.location.trim(),

@@ -82,6 +82,16 @@
                 <li>Будьте внимательны при заполнении плюс и минус-слов. Изучите подсказки, всплывающие при наведении курсора на данные поля.</li>
             </ul>
         </div>
+      <div style="margin-top: 15px; margin-bottom: 15px;">
+        <multiselect
+            v-model="checkedLanguages"
+            :options="languageOptions"
+            :multiple="true"
+            :close-on-select="false"
+            placeholder="Поиск языков запроса (по умолчанию - русский)"
+            :show-labels="false"
+        ></multiselect>
+      </div>
         <div class="form">
             <div class="inputs">
                 <div class="flex flex-col w-full parent-prompt top-input">
@@ -381,6 +391,7 @@
 <script>
 import axios from "axios";
 import "../utils/index";
+import Multiselect from 'vue-multiselect'
 import { isAuthorized, prohibited_model, keywords_model, keys_list, user_balance } from "../use/index";
 import ListInput from './ListInput.vue'
 import VPagination from './UI/VPagination.vue'
@@ -393,9 +404,12 @@ export default {
     components: {
         ListInput,
         VPagination,
+        Multiselect,
     },
     data() {
         return {
+            languageOptions: JSON.parse(localStorage.getItem('languages')),
+            checkedLanguages: [],
             temp_price: 0,
             query_list_loading: true,
             confirm_model: false,
@@ -528,7 +542,7 @@ export default {
                 this.form.search_name != ""
             ) {
                 const query_data = {
-                  use_yandex: this.chbox.use_yandex,
+                    search_engines: this.chbox.use_yandex ? ['yandex'] : [],
                     search_surname: this.form.search_surname.trim(),
                     search_name: this.form.search_name.trim(),
                     search_patronymic: this.form.search_patronymic.trim(),
@@ -596,7 +610,7 @@ export default {
                 const query_data = {
                     search_patronymic: this.form.search_patronymic.trim(),
                     keywords: this.keys_list.keyword.list,
-                    languages: ['ru'],
+                    languages: this.checkedLanguages.length ? this.checkedLanguages : ['en'],
                     default_keywords_type: Object.keys(this.chbox).filter(temp_chbox => this.chbox[temp_chbox]).join(', ')
                 }
 
@@ -1204,3 +1218,5 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
   padding: 3px;
 }
 </style>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

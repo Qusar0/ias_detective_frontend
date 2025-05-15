@@ -60,34 +60,46 @@ export default {
             );
         },
     },
-    mounted() {
-        this.get_events();
+    async mounted() {
+      this.get_events();
 
-        const channel = btoa(this.user_name + this.user_created + '');
-        console.log("Connecting to channel:", channel);
-        this.source = new EventSource(`/api/sse/${channel}`);
+      const channel = btoa(this.user_name + this.user_created + '');
+      console.log("Connecting to channel:", channel);
+      this.source = new EventSource(`/api/sse/${channel}`);
 
-        this.source.addEventListener("open", () => {
-            console.log("✅ SSE connection established");
-        });
+      this.source.addEventListener("open", () => {
+        console.log("✅ SSE connection established");
+      });
 
-        this.source.addEventListener("message", this.handleGreeting);
+      this.source.addEventListener("message", this.handleGreeting);
 
-        this.source.addEventListener("error", (event) => {
-            console.error("❌ SSE connection error:", event);
+      this.source.addEventListener("error", (event) => {
+        console.error("❌ SSE connection error:", event);
 
-            if (this.source.readyState === EventSource.CLOSED) {
-                console.warn("🔌 SSE connection was closed by the server");
-            } else if (this.source.readyState === EventSource.CONNECTING) {
-                console.info("🔄 SSE is reconnecting...");
-            }
-        });
+        if (this.source.readyState === EventSource.CLOSED) {
+          console.warn("🔌 SSE connection was closed by the server");
+        } else if (this.source.readyState === EventSource.CONNECTING) {
+          console.info("🔄 SSE is reconnecting...");
+        }
+      });
+      try {
+        const res = await fetch(`/api/v1/users/available_languages`);
+        const data = await res.json();
+        if (data.status !== 200) {
+          localStorage.setItem('languages', JSON.stringify(['ru']))
+        } else {
+          localStorage.setItem('languages', data)
+        }
+      } catch (error) {
+        console.log(error)
+      }
     },
     beforeUnmount() {
         if (this.source) {
             this.source.removeEventListener("message", this.handleGreeting);
             this.source.close();
         }
+        localStorage.removeItem('languages');
     },
 }
 
