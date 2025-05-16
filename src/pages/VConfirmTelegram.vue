@@ -3,7 +3,7 @@
       class="confirm-email"
       :class="loading ? 'gray' : success ? 'green' : 'red'"
   >
-    <h2>Привязка Telegram</h2>
+    <h2>Подключение Telegram</h2>
     <p v-if="loading">Привязываем ваш Telegram...</p>
     <p v-if="message">{{ message }}</p>
     <button
