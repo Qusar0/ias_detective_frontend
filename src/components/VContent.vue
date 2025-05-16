@@ -63,7 +63,7 @@
                     </button>
                     <button
                         class="add-item confirm"
-                        :disabled="!temp_price || temp_price == 'loading...'"
+                        :disabled="temp_price == 'loading...'"
                         :style="temp_price == 'loading...' ? 'background: #ccc;' : ''"
                         @click.stop="getHTMLPage()"
                     >
@@ -88,7 +88,7 @@
             :options="languageOptions"
             :multiple="true"
             :close-on-select="false"
-            placeholder="Поиск языков запроса (по умолчанию - русский)"
+            placeholder="Поиск языков запроса"
             label="name"
             track-by="name"
             selectLabel="Нажмите enter, чтобы выбрать"
@@ -415,7 +415,7 @@ export default {
     data() {
         return {
             languageOptions: JSON.parse(localStorage.getItem('languages')),
-            checkedLanguages: [{ name: 'Русский', code: 'ru' }],
+            checkedLanguages: [],
             temp_price: 0,
             query_list_loading: true,
             confirm_model: false,
@@ -523,7 +523,7 @@ export default {
         },
         clearAllFields() {
             this.form.search_surname = '';
-            this.checkedLanguages = [{ name: 'Русский', code: 'ru' }];
+            this.checkedLanguages = [];
             this.form.search_name = '';
             this.form.search_patronymic = '';
             this.keys_list.prohibited_site.list = [];
@@ -550,7 +550,7 @@ export default {
             ) {
                 const query_data = {
                     search_engines: this.chbox.use_yandex ? ['yandex'] : [],
-                    languages: this.checkedLanguages.length ? this.checkedLanguages.map(item => item.code) : ['ru'],
+                    languages: this.checkedLanguages.length ? this.checkedLanguages.map(item => item.code) : [],
                     search_surname: this.form.search_surname.trim(),
                     search_name: this.form.search_name.trim(),
                     search_patronymic: this.form.search_patronymic.trim(),
@@ -618,7 +618,7 @@ export default {
                 const query_data = {
                     search_patronymic: this.form.search_patronymic.trim(),
                     keywords: this.keys_list.keyword.list,
-                  languages: this.checkedLanguages.length ? this.checkedLanguages.map(item => item.code) : ['ru'],
+                    languages: this.checkedLanguages.length ? this.checkedLanguages.map(item => item.code) : [],
                     default_keywords_type: Object.keys(this.chbox).filter(temp_chbox => this.chbox[temp_chbox]).join(', ')
                 }
 

@@ -117,7 +117,7 @@
             :options="languageOptions"
             :multiple="true"
             :close-on-select="false"
-            placeholder="Поиск языков запроса (по умолчанию - русский)"
+            placeholder="Поиск языков запроса"
             label="name"
             track-by="name"
             selectLabel="Нажмите enter, чтобы выбрать"
@@ -453,7 +453,7 @@ export default {
             current_timestamp: new Date().valueOf(),
             query_list: [],
             languageOptions: JSON.parse(localStorage.getItem('languages')),
-            checkedLanguages: [{ name: 'Русский', code: 'ru' }],
+            checkedLanguages: [],
             prohibited_site: "",
             prohibited_sites: [],
             temp_price: 0,
@@ -492,7 +492,7 @@ export default {
           ) {
             const query_data = {
               search_engines: this.chbox.use_yandex ? ['yandex'] : [],
-              languages: this.checkedLanguages.length ? this.checkedLanguages.map(item => item.code) : ['ru'],
+              languages: this.checkedLanguages.length ? this.checkedLanguages.map(item => item.code) : [],
               company_name: this.form.company_name.trim().replace(/^"(.*)"$/, '$1'),
               extra_name: this.form.extra_name.trim().replace(/^"(.*)"$/, '$1'),
               location: this.form.location.trim(),
@@ -625,7 +625,7 @@ export default {
         clearAllFields() {
             this.form.company_name = '';
             this.form.extra_name = '';
-            this.checkedLanguages = [{ name: 'Русский', code: 'ru' }];
+            this.checkedLanguages = [];
             this.form.location = '';
             this.form.search_name = '';
             this.form.search_patronymic = '';
@@ -645,7 +645,7 @@ export default {
             ) {
                 const query_data = {
                     search_engines: this.chbox.use_yandex ? ['yandex'] : [],
-                    languages: this.checkedLanguages.length ? this.checkedLanguages.map(item => item.code) : ['ru'],
+                    languages: this.checkedLanguages.length ? this.checkedLanguages.map(item => item.code) : [],
                     company_name: this.form.company_name.trim().replace(/^"(.*)"$/, '$1'),
                     extra_name: this.form.extra_name.trim().replace(/^"(.*)"$/, '$1'),
                     location: this.form.location.trim(),
