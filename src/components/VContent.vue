@@ -681,8 +681,6 @@ export default {
                 .finally(() => {
                     this.query_list_loading = false
 
-                    console.log(this.query_list, 'second')
-
                     let hasPendingQuery = this.query_list.find(query => (query.query_status == 'pending')) !== undefined
                     if (hasPendingQuery) {
                         setTimeout(() => {
