@@ -111,6 +111,22 @@
                 <li>Будьте внимательны при заполнении плюс и минус-слов. Изучите подсказки, всплывающие при наведении курсора на данные поля.</li>
             </ul>
         </div>
+      <div style="margin: 15px auto;max-width: 900px;">
+        <multiselect
+            v-model="checkedLanguages"
+            :options="languageOptions"
+            :multiple="true"
+            :close-on-select="false"
+            placeholder="Поиск языков запроса (по умолчанию - русский)"
+            label="name"
+            track-by="name"
+            selectLabel="Нажмите enter, чтобы выбрать"
+            deselectLabel="Нажмите enter, чтобы удалить"
+            selectedLabel="Выбрано"
+            :limitText="count => `и еще ${count}`"
+            :limit="4"
+        ></multiselect>
+      </div>
         <div class="form">
             <div class="inputs">
                     <div class="flex flex-col w-full parent-prompt top-input">
@@ -419,12 +435,14 @@ import { isAuthorized, prohibited_model, keywords_model, keys_list, user_balance
 import ListInput from './ListInput.vue'
 import VPagination from './UI/VPagination.vue'
 import { events } from "../utils/notification"
+import Multiselect from "vue-multiselect";
 
 export default {
     setup() {
         return { isAuthorized, prohibited_model, keywords_model, keys_list, events, user_balance };
     },
     components: {
+      Multiselect,
         ListInput,
         VPagination,
     },
@@ -434,7 +452,8 @@ export default {
             confirm_model: false,
             current_timestamp: new Date().valueOf(),
             query_list: [],
-            checkedLanguages: [],
+            languageOptions: JSON.parse(localStorage.getItem('languages')),
+            checkedLanguages: [{ name: 'Русский', code: 'ru' }],
             prohibited_site: "",
             prohibited_sites: [],
             temp_price: 0,
@@ -473,7 +492,7 @@ export default {
           ) {
             const query_data = {
               search_engines: this.chbox.use_yandex ? ['yandex'] : [],
-              languages: this.checkedLanguages.length ? this.checkedLanguages : [],
+              languages: this.checkedLanguages.length ? this.checkedLanguages.map(item => item.code) : ['ru'],
               company_name: this.form.company_name.trim().replace(/^"(.*)"$/, '$1'),
               extra_name: this.form.extra_name.trim().replace(/^"(.*)"$/, '$1'),
               location: this.form.location.trim(),
@@ -606,6 +625,7 @@ export default {
         clearAllFields() {
             this.form.company_name = '';
             this.form.extra_name = '';
+            this.checkedLanguages = [{ name: 'Русский', code: 'ru' }];
             this.form.location = '';
             this.form.search_name = '';
             this.form.search_patronymic = '';
@@ -625,7 +645,7 @@ export default {
             ) {
                 const query_data = {
                     search_engines: this.chbox.use_yandex ? ['yandex'] : [],
-                    languages: this.checkedLanguages.length ? this.checkedLanguages : [],
+                    languages: this.checkedLanguages.length ? this.checkedLanguages.map(item => item.code) : ['ru'],
                     company_name: this.form.company_name.trim().replace(/^"(.*)"$/, '$1'),
                     extra_name: this.form.extra_name.trim().replace(/^"(.*)"$/, '$1'),
                     location: this.form.location.trim(),
@@ -1275,5 +1295,21 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
   color: orange;
   margin: 10px 0 0 0;
   padding: 3px;
+}
+</style>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+
+<style>
+.multiselect__tag {
+  background-color: #1AB394;
+}
+
+.multiselect__tag-icon::after {
+  color: #ffffff;
+}
+
+.multiselect__option--highlight {
+  background: #1AB394;
 }
 </style>

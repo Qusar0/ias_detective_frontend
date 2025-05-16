@@ -83,15 +83,16 @@ export default {
         }
       });
       try {
-        const res = await fetch(`/api/v1/users/available_languages`);
-        const data = await res.json();
-        if (data.status !== 200) {
-          localStorage.setItem('languages', JSON.stringify(['ru', 'en']))
+        const res = await fetch(`/api/queries/available_languages`);
+        let data = await res.json();
+        data = Object.entries(data).map(([name, code]) => ({ name, code }));
+        if (res?.status !== 200) {
+          localStorage.setItem('languages', JSON.stringify([{ name: 'Русский', code: 'ru' }]))
         } else {
-          localStorage.setItem('languages', data)
+          localStorage.setItem('languages', JSON.stringify(data))
         }
       } catch (error) {
-        console.log(error)
+        localStorage.setItem('languages', JSON.stringify([{ name: 'Русский', code: 'ru' }]))
       }
     },
     beforeUnmount() {

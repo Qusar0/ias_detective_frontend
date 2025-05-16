@@ -82,14 +82,20 @@
                 <li>Будьте внимательны при заполнении плюс и минус-слов. Изучите подсказки, всплывающие при наведении курсора на данные поля.</li>
             </ul>
         </div>
-      <div style="margin-top: 15px; margin-bottom: 15px;">
+      <div style="margin: 15px auto;max-width: 900px;">
         <multiselect
             v-model="checkedLanguages"
             :options="languageOptions"
             :multiple="true"
             :close-on-select="false"
             placeholder="Поиск языков запроса (по умолчанию - русский)"
-            :show-labels="false"
+            label="name"
+            track-by="name"
+            selectLabel="Нажмите enter, чтобы выбрать"
+            deselectLabel="Нажмите enter, чтобы удалить"
+            selectedLabel="Выбрано"
+            :limitText="count => `и еще ${count}`"
+            :limit="4"
         ></multiselect>
       </div>
         <div class="form">
@@ -409,7 +415,7 @@ export default {
     data() {
         return {
             languageOptions: JSON.parse(localStorage.getItem('languages')),
-            checkedLanguages: [],
+            checkedLanguages: [{ name: 'Русский', code: 'ru' }],
             temp_price: 0,
             query_list_loading: true,
             confirm_model: false,
@@ -517,6 +523,7 @@ export default {
         },
         clearAllFields() {
             this.form.search_surname = '';
+            this.checkedLanguages = [{ name: 'Русский', code: 'ru' }];
             this.form.search_name = '';
             this.form.search_patronymic = '';
             this.keys_list.prohibited_site.list = [];
@@ -543,7 +550,7 @@ export default {
             ) {
                 const query_data = {
                     search_engines: this.chbox.use_yandex ? ['yandex'] : [],
-                    languages: this.checkedLanguages.length ? this.checkedLanguages : [],
+                    languages: this.checkedLanguages.length ? this.checkedLanguages.map(item => item.code) : ['ru'],
                     search_surname: this.form.search_surname.trim(),
                     search_name: this.form.search_name.trim(),
                     search_patronymic: this.form.search_patronymic.trim(),
@@ -611,7 +618,7 @@ export default {
                 const query_data = {
                     search_patronymic: this.form.search_patronymic.trim(),
                     keywords: this.keys_list.keyword.list,
-                    languages: this.checkedLanguages.length ? this.checkedLanguages : ['en'],
+                  languages: this.checkedLanguages.length ? this.checkedLanguages.map(item => item.code) : ['ru'],
                     default_keywords_type: Object.keys(this.chbox).filter(temp_chbox => this.chbox[temp_chbox]).join(', ')
                 }
 
@@ -1221,3 +1228,17 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
 </style>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+
+<style>
+.multiselect__tag {
+  background-color: #1AB394;
+}
+
+.multiselect__tag-icon::after {
+  color: #ffffff;
+}
+
+.multiselect__option--highlight {
+  background: #1AB394;
+}
+</style>
