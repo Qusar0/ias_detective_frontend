@@ -21,7 +21,7 @@
       <div style="display: flex; justify-content: space-between; gap: 10px">
         <button
             class="btn"
-            @click="router.push('/login')"
+            @click="isAuthorized = false; router.push('/login')"
         >
           На главную
         </button>
@@ -47,6 +47,7 @@
 import router from "../router/router.js";
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import { isAuthorized } from '../use/index';
 
 const password = ref('');
 const token = ref('');
