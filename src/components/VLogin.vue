@@ -59,13 +59,13 @@
           Сбросить пароль
         </div>
         <div
-            v-if="resetSuccess"
+            v-if="resetSuccess || resetLoading"
             style="margin-top: 10px;"
         >
-          Письмо с дальнейшими указаниями было отправлено на указанную почту.
+          {{ resetSuccess ? 'Письмо с дальнейшими указаниями было отправлено на указанную почту.' : 'Загрузка...' }}
         </div>
       <div
-          v-if="showReset && !resetSuccess"
+          v-if="showReset && !resetSuccess && !resetLoading"
           style="display: flex; flex-direction: column; align-items: end"
       >
         <input
@@ -78,6 +78,7 @@
         <button
             v-show="form.resetEmail"
             class="btn"
+            :disabled="resetLoading"
             @click="resetPassword"
         >
           Сбросить
@@ -107,6 +108,7 @@ export default {
             },
             authorization_error: false,
             showReset: false,
+            resetLoading: false,
             resetSuccess: false,
             authorization_error_text: 'Неправильная почта или пароль',
             validation_error: false
@@ -161,6 +163,7 @@ export default {
         },
       resetPassword() {
         this.authorization_error = false;
+        this.resetLoading = true;
         fetch(`api/v1/auth/forgot_password?email=${this.form.resetEmail}`, {
           method: "POST",
           headers: {
@@ -169,6 +172,7 @@ export default {
           credentials: "include",
         })
             .then((response) => {
+              this.resetLoading = false;
               if (response.status == 200) {
                 this.resetSuccess = true;
               } else {
@@ -177,6 +181,7 @@ export default {
               }
             })
             .catch((error) => {
+              this.resetLoading = false;
               console.log('error', error);
             })
       }
