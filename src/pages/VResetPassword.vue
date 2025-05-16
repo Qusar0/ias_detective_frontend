@@ -27,6 +27,7 @@
         </button>
         <button
             class="btn"
+            :disabled="password.length < 8"
             @click="resetPassword"
         >
           Сбросить
