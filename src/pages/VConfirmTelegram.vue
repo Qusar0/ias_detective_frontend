@@ -40,7 +40,7 @@ export default {
         this.success = true;
         this.message = 'Ваш Telegram успешно привяязан!';
       } else {
-        this.message = 'Не удалось привязать Telegram. Ваш токен истек или неправильно указан.';
+        this.message = `Не удалось привязать Telegram. ${data.detail}.`;
       }
     } catch (error) {
       this.message = 'Не удалось привязать Telegram. Попробуйте еще или обратитесь в поддержку.';
