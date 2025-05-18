@@ -82,22 +82,6 @@
                 <li>Будьте внимательны при заполнении плюс и минус-слов. Изучите подсказки, всплывающие при наведении курсора на данные поля.</li>
             </ul>
         </div>
-      <div style="margin: 15px auto;max-width: 900px;">
-        <multiselect
-            v-model="checkedLanguages"
-            :options="languageOptions"
-            :multiple="true"
-            :close-on-select="false"
-            placeholder="Поиск языков запроса"
-            label="name"
-            track-by="name"
-            selectLabel="Нажмите enter, чтобы выбрать"
-            deselectLabel="Нажмите enter, чтобы удалить"
-            selectedLabel="Выбрано"
-            :limitText="count => `и еще ${count}`"
-            :limit="4"
-        ></multiselect>
-      </div>
         <div class="form">
             <div class="inputs">
                 <div class="flex flex-col w-full parent-prompt top-input">
@@ -297,7 +281,60 @@
                 </button>
             </div>
         </div>
+      <div style="margin: 15px auto;max-width: 900px;">
+        <multiselect
+            v-model="checkedLanguages"
+            :options="languageOptions"
+            :multiple="true"
+            :close-on-select="false"
+            placeholder="Поиск языков запроса"
+            label="name"
+            track-by="name"
+            selectLabel="Нажмите enter, чтобы выбрать"
+            deselectLabel="Нажмите enter, чтобы удалить"
+            selectedLabel="Выбрано"
+            :limitText="count => `и еще ${count}`"
+            :limit="4"
+        ></multiselect>
+      </div>
 
+        <div style="margin: 15px auto; max-width: 900px;">
+            <div class="search-engines-container">
+                <h4 style="margin-bottom: 10px; font-weight: 500;">Поисковые системы:</h4>
+                <div class="flex items-center" style="gap: 20px;">
+                    <label class="flex items-center search-engine-label parent-prompt-hover">
+                        <input 
+                            type="checkbox" 
+                            class="chbox" 
+                            v-model="engines.google"
+                        />
+                        <span style="user-select: none; margin-left: 5px;">
+                            Google
+                        </span>
+                        <small class="prompt-hover">
+                            Использовать ПС Google для поиска
+                        </small>
+                    </label>
+                    
+                    <label class="flex items-center search-engine-label parent-prompt-hover">
+                        <input 
+                            type="checkbox" 
+                            class="chbox" 
+                            v-model="engines.yandex"
+                        />
+                        <span style="user-select: none; margin-left: 5px;">
+                            Yandex
+                        </span>
+                        <small class="prompt-hover">
+                            Использовать ПС Яндекс для поиска
+                        </small>
+                    </label>
+                </div>
+                <small v-if="!engines.google && !engines.yandex" style="color: #ec5e5e;">
+                    Выберите хотя бы одну поисковую систему
+                </small>
+            </div>
+        </div>
       <div class="items head-item">
         <div class="item select-none" style="height: 35px">
           <div class="item__header item-title">ФИО</div>
@@ -427,7 +464,6 @@ export default {
             keyword: "",
             keywords: [],
             chbox: {
-              use_yandex: false,
                 negativ: false,
                 reputation: false,
                 relations: false,
@@ -435,7 +471,10 @@ export default {
                 //company: false,
                 //default_keywords: false,
             },
-
+            engines: {
+                google: true,
+                yandex: false
+            },
             form: {
                 search_surname: "",
                 search_name: "",
@@ -549,7 +588,10 @@ export default {
                 this.form.search_name != ""
             ) {
                 const query_data = {
-                    search_engines: this.chbox.use_yandex ? ['yandex'] : [],
+                    search_engines: [
+                        ...(this.engines.google ? ['google'] : []),
+                        ...(this.engines.yandex ? ['yandex'] : [])
+                    ],
                     languages: this.checkedLanguages.length ? this.checkedLanguages.map(item => item.code) : [],
                     search_surname: this.form.search_surname.trim(),
                     search_name: this.form.search_name.trim(),
@@ -609,6 +651,9 @@ export default {
             this.surname_error = this.form.search_surname == "";
             this.name_error = this.form.search_name == "";
             if (this.surname_error || this.name_error || this.form.search_surname == '' || this.form.search_name == '') return;
+            if (!this.engines.google && !this.engines.yandex) {
+                return;
+            }
             this.temp_price = 'loading...';
             this.confirm_model = true;
             if (
@@ -616,6 +661,10 @@ export default {
                 this.form.search_name != ""
             ) {
                 const query_data = {
+                    search_engines: [
+                        ...(this.engines.google ? ['google'] : []),
+                        ...(this.engines.yandex ? ['yandex'] : [])
+                    ],
                     search_patronymic: this.form.search_patronymic.trim(),
                     keywords: this.keys_list.keyword.list,
                     languages: this.checkedLanguages.length ? this.checkedLanguages.map(item => item.code) : [],

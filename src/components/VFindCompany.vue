@@ -111,22 +111,6 @@
                 <li>Будьте внимательны при заполнении плюс и минус-слов. Изучите подсказки, всплывающие при наведении курсора на данные поля.</li>
             </ul>
         </div>
-      <div style="margin: 15px auto;max-width: 900px;">
-        <multiselect
-            v-model="checkedLanguages"
-            :options="languageOptions"
-            :multiple="true"
-            :close-on-select="false"
-            placeholder="Поиск языков запроса"
-            label="name"
-            track-by="name"
-            selectLabel="Нажмите enter, чтобы выбрать"
-            deselectLabel="Нажмите enter, чтобы удалить"
-            selectedLabel="Выбрано"
-            :limitText="count => `и еще ${count}`"
-            :limit="4"
-        ></multiselect>
-      </div>
         <div class="form">
             <div class="inputs">
                     <div class="flex flex-col w-full parent-prompt top-input">
@@ -290,15 +274,6 @@
                     </small>
                     <span style="user-select: none">Досье</span>
                 </label>
-              <label class="flex items-center parent-prompt-hover">
-                <input type="checkbox" class="chbox" v-model="chbox.use_yandex" />
-                <small class="prompt-hover">
-                  Использовать ПС Яндекс для поиска
-                </small>
-                <span style="user-select: none">
-                  Yandex
-                </span>
-              </label>
             </div>
             <div
                 class="flex items-center justify-between message--warning"
@@ -327,7 +302,60 @@
                 </label>-->
             <!--</div>-->
         </div>
+        <div style="margin: 15px auto;max-width: 900px;">
+            <multiselect
+                v-model="checkedLanguages"
+                :options="languageOptions"
+                :multiple="true"
+                :close-on-select="false"
+                placeholder="Поиск языков запроса"
+                label="name"
+                track-by="name"
+                selectLabel="Нажмите enter, чтобы выбрать"
+                deselectLabel="Нажмите enter, чтобы удалить"
+                selectedLabel="Выбрано"
+                :limitText="count => `и еще ${count}`"
+                :limit="4"
+            ></multiselect>
+        </div>
 
+        <div style="margin: 15px auto; max-width: 900px;">
+            <div class="search-engines-container">
+                <h4 style="margin-bottom: 10px; font-weight: 500;">Поисковые системы:</h4>
+                <div class="flex items-center" style="gap: 20px;">
+                    <label class="flex items-center search-engine-label parent-prompt-hover">
+                        <input 
+                            type="checkbox" 
+                            class="chbox" 
+                            v-model="engines.google"
+                        />
+                        <span style="user-select: none; margin-left: 5px;">
+                            Google
+                        </span>
+                        <small class="prompt-hover">
+                            Использовать ПС Google для поиска
+                        </small>
+                    </label>
+                    
+                    <label class="flex items-center search-engine-label parent-prompt-hover">
+                        <input 
+                            type="checkbox" 
+                            class="chbox" 
+                            v-model="engines.yandex"
+                        />
+                        <span style="user-select: none; margin-left: 5px;">
+                            Yandex
+                        </span>
+                        <small class="prompt-hover">
+                            Использовать ПС Яндекс для поиска
+                        </small>
+                    </label>
+                </div>
+                <small v-if="!engines.google && !engines.yandex" style="color: #ec5e5e;">
+                    Выберите хотя бы одну поисковую систему
+                </small>
+            </div>
+        </div>
         <!-- <div class="items head-item">
             <div class="item select-none" style="height: 35px">
                 <div class="item-title">ФИО</div>
@@ -460,13 +488,14 @@ export default {
             keyword: "",
             keywords: [],
             chbox: {
-              use_yandex: false,
                 company_negativ: true,
                 company_reputation: true,
                 company_relations: true,
                 company_report: true,
-                //company: false,
-                //default_keywords: false,
+            },
+            engines: {
+                google: true,
+                yandex: false
             },
 
             form: {
@@ -484,6 +513,9 @@ export default {
     },
     methods: {
         getPrice() {
+          if (!this.engines.google && !this.engines.yandex) {
+            return;
+          }
           this.temp_price = 'loading...';
           this.confirm_model = true;
           this.surname_error = this.form.company_name == "";
@@ -491,7 +523,10 @@ export default {
               this.form.company_name != ""
           ) {
             const query_data = {
-              search_engines: this.chbox.use_yandex ? ['yandex'] : [],
+              search_engines: [
+                ...(this.engines.google ? ['google'] : []),
+                ...(this.engines.yandex ? ['yandex'] : [])
+              ],
               languages: this.checkedLanguages.length ? this.checkedLanguages.map(item => item.code) : [],
               company_name: this.form.company_name.trim().replace(/^"(.*)"$/, '$1'),
               extra_name: this.form.extra_name.trim().replace(/^"(.*)"$/, '$1'),
@@ -501,7 +536,6 @@ export default {
               search_plus: this.keys_list.plus.list.map(keyword => `+${keyword}`).join(""),
               default_keywords_type: Object.keys(this.chbox).filter(temp_chbox => this.chbox[temp_chbox]).join(', ')
             }
-
 
             fetch(`/api/calculate_price`, {
               method: "POST",
@@ -644,7 +678,10 @@ export default {
                 this.form.company_name != ""
             ) {
                 const query_data = {
-                    search_engines: this.chbox.use_yandex ? ['yandex'] : [],
+                    search_engines: [
+                        ...(this.engines.google ? ['google'] : []),
+                        ...(this.engines.yandex ? ['yandex'] : [])
+                    ],
                     languages: this.checkedLanguages.length ? this.checkedLanguages.map(item => item.code) : [],
                     company_name: this.form.company_name.trim().replace(/^"(.*)"$/, '$1'),
                     extra_name: this.form.extra_name.trim().replace(/^"(.*)"$/, '$1'),

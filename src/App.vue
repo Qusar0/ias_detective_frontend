@@ -21,7 +21,7 @@ export default {
             return;
           }
           
-          data.message.task_created_at = new Date(data.message.task_created_at).minus('minute', new Date().getTimezoneOffset()).format('Y-m-d h:i:s');
+          data.message.task_created_at = new Date(data.message.task_created_at).format('Y-m-d h:i:s');
 
           this.events.unshift(data)
           this.getNotificationSound();

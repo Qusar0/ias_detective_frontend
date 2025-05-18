@@ -307,7 +307,7 @@ export default {
                 this.surname_error = true;
                 return
             }
-            if (!this.form.number.startsWith('+77') && this.form.number.length === 12 && (this.form.number.startsWith('+7') || this.form.number.startsWith('+8'))) {
+            if (!this.form.number.startsWith('+77') && (this.form.number.startsWith('+7') || this.form.number.startsWith('8'))) {
               this.isRuNumber = true;
               if (this.chbox.tags) {
                 this.tagsSelected = true;

@@ -83,6 +83,6 @@ export default {
 
 .btn {
   width: fit-content;
-  margin-top: 40px;
+  margin-top: 20px;
 }
 </style>
