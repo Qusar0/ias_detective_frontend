@@ -12,7 +12,43 @@
             :menu="menu"
             @toggle-menu="toggleMenu"
         />
+        <div v-if="resultReceived" class="payment-result">
+          <div style="width: 100%; display: flex; justify-content: end;">
+            <i
+                class="fa fa-xmark gray"
+                style="cursor: pointer"
+                aria-hidden="true"
+                @click="resultReceived = false"
+            ></i>
+          </div>
+          <div class="payment-result__container">
+            <div>
+              <i
+                  :class="iconClass"
+                  style="margin-top: 6px"
+              ></i>
+            </div>
+            <div class="payment-result__info">
+              <h3>
+                Пополнение баланса
+              </h3>
+            </div>
+          </div>
+          <span style="margin-left: 32px; margin-top: 12px">
+            {{ message }}
+          </span>
+          <div style="width: 100%; display: flex; justify-content: end;">
+            <button
+                class="btn"
+                style="margin-top: 20px"
+                @click="resultReceived = false"
+            >
+              OK
+            </button>
+          </div>
+        </div>
         <div
+            v-else
             class="w-full"
             style="flex-direction: column; margin-top: 50px"
         >
@@ -85,6 +121,9 @@ export default {
         confirmationError: false,
         transactionId: 0,
         transactionDate: 0,
+        message: 'Транзакция прошла успешно, баланс пополнен.',
+        iconClass: 'fa fa-circle-check green',
+        resultReceived: false,
     }),
     methods: {
       toggleMenu(bool) {
@@ -175,8 +214,19 @@ export default {
               requireEmail: true,
             }).then((widgetResult) => {
               console.log('result', widgetResult.data);
+              if (widgetResult.data.ReasonCode) {
+                this.message = 'Произошла ошибка, баланс не пополнен.';
+                this.iconClass = 'fa fa-circle-exclamation red';
+              } else {
+                this.message = 'Транзакция прошла успешно, баланс пополнен.';
+                this.iconClass = 'fa fa-circle-check green';
+              }
+              this.resultReceived = true;
               this.sendData(this.amount, widgetResult.data.transactionId)
             }).catch(function(error) {
+              this.resultReceived = true;
+              this.message = 'Произошла ошибка, баланс не пополнен.';
+              this.iconClass = 'fa fa-circle-exclamation red';
               console.log('error', error);
             });
         },
@@ -185,6 +235,42 @@ export default {
 </script>
 
 <style>
+.payment-result {
+  margin: 200px auto;
+  display: flex;
+  background-color: white;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  max-width: 500px;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+.payment-result__container {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+}
+
+.payment-result__info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.green {
+  color: #1AB394FF;
+}
+
+.gray {
+  color: gray;
+}
+
+.red {
+  color: red;
+}
 
 .payment-title {
     color: rgb(26,179,148);
