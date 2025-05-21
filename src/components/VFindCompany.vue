@@ -63,8 +63,8 @@
               </button>
               <button
                   class="add-item confirm"
-                  :disabled="temp_price == 'loading...'"
-                  :style="temp_price == 'loading...' ? 'background: #ccc;' : ''"
+                  :disabled="temp_price === 'loading...' || languageError"
+                  :style="temp_price === 'loading...' || languageError ? 'background: #ccc;' : ''"
                   @click.stop="getHTMLPage()"
               >
                 Да
@@ -300,7 +300,10 @@
           <li>Переводятся предустановленные ключевые слова (негатив, репутация, связи) и слова, указанные пользователем в поле «Ключевые слова, характеризующие объект».</li>
         </ul>
       </div>
-        <div style="margin: 15px auto;max-width: 900px;">
+        <div
+            style="margin: 15px auto;max-width: 900px;"
+            :style="languageError ? 'border: 1px solid red; border-radius: 5px; margin-bottom: 8px' : ''"
+        >
             <multiselect
                 v-model="checkedLanguages"
                 :options="languageOptions"
@@ -316,6 +319,9 @@
                 :limit="4"
             ></multiselect>
         </div>
+        <small v-if="languageError" style="color: #ec5e5e;">
+          Выберите хотя бы один язык, если нажаты чекбоксы: "Негатив", "Связи", "Репутация" и/или "Досье".
+        </small>
 
         <div style="margin: 15px auto; max-width: 900px;">
             <div class="search-engines-container">
@@ -515,6 +521,7 @@ export default {
             error_model: false,
             surname_error: false,
             name_error: false,
+            languageError: false,
             patronymic_error: false,
             selected_page: 1,
             news_count: 0,
@@ -522,8 +529,12 @@ export default {
     },
     methods: {
         getPrice() {
+          this.languageError = false;
           if (!this.engines.google && !this.engines.yandex) {
             return;
+          }
+          if ((this.chbox.company_negativ || this.chbox.company_reputation || this.chbox.company_relations || this.chbox.company_report) && !this.checkedLanguages.length) {
+            this.languageError = true;
           }
           this.temp_price = 'loading...';
           this.confirm_model = true;
@@ -669,6 +680,7 @@ export default {
             this.form.company_name = '';
             this.form.extra_name = '';
             this.checkedLanguages = [];
+            this.languageError = false;
             this.form.location = '';
             this.form.search_name = '';
             this.form.search_patronymic = '';

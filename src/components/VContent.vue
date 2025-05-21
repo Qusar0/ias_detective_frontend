@@ -63,8 +63,8 @@
                     </button>
                     <button
                         class="add-item confirm"
-                        :disabled="temp_price == 'loading...'"
-                        :style="temp_price == 'loading...' ? 'background: #ccc;' : ''"
+                        :disabled="temp_price === 'loading...' || languageError"
+                        :style="temp_price === 'loading...' || languageError ? 'background: #ccc;' : ''"
                         @click.stop="getHTMLPage()"
                     >
                         Да
@@ -264,7 +264,10 @@
           <li>Переводятся предустановленные ключевые слова (негатив, репутация, связи) и слова, указанные пользователем в поле «Ключевые слова, характеризующие объект».</li>
         </ul>
       </div>
-      <div style="margin: 15px auto;max-width: 900px;">
+      <div
+          style="margin: 15px auto;max-width: 900px;"
+          :style="languageError ? 'border: 1px solid red; border-radius: 5px; margin-bottom: 8px' : ''"
+      >
         <multiselect
             v-model="checkedLanguages"
             :options="languageOptions"
@@ -280,6 +283,9 @@
             :limit="4"
         ></multiselect>
       </div>
+      <small v-if="languageError" style="color: #ec5e5e;">
+        Выберите хотя бы один язык, если нажаты чекбоксы: "Негатив", "Связи", "Репутация" и/или "Досье".
+      </small>
 
         <div style="margin: 15px auto; max-width: 900px;">
             <div class="search-engines-container">
@@ -454,7 +460,7 @@ export default {
             query_list: [],
             prohibited_site: "",
             prohibited_sites: [],
-
+            languageError: false,
             keyword: "",
             keywords: [],
             chbox: {
@@ -558,6 +564,7 @@ export default {
             this.form.search_surname = '';
             this.checkedLanguages = [];
             this.form.search_name = '';
+            this.languageError = false;
             this.form.search_patronymic = '';
             this.keys_list.prohibited_site.list = [];
             this.keys_list.keyword.list = [];
@@ -642,12 +649,16 @@ export default {
             }
         },
         getPrice() {
+            this.languageError = false;
+            if (!this.engines.google && !this.engines.yandex) {
+              return;
+            }
+            if ((this.chbox.negativ || this.chbox.reputation || this.chbox.relations || this.chbox.report) && !this.checkedLanguages.length) {
+              this.languageError = true;
+            }
             this.surname_error = this.form.search_surname == "";
             this.name_error = this.form.search_name == "";
-            if (this.surname_error || this.name_error || this.form.search_surname == '' || this.form.search_name == '') return;
-            if (!this.engines.google && !this.engines.yandex) {
-                return;
-            }
+            if (this.surname_error || this.name_error || this.form.search_surname == '' || this.form.search_name == '' || this.languageError) return;
             this.temp_price = 'loading...';
             this.confirm_model = true;
             if (
