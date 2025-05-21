@@ -239,32 +239,6 @@
                     </small>
                     <span style="user-select: none">Досье</span>
                 </label>
-              <label class="flex items-center parent-prompt-hover">
-                <input type="checkbox" class="chbox" v-model="chbox.use_yandex" />
-                <small class="prompt-hover">
-                  Использовать ПС Яндекс для поиска
-                </small>
-                <span style="user-select: none">
-                  Yandex
-                </span>
-              </label>
-                <!--<label class="flex items-center">
-                    <input type="checkbox" class="chbox" v-model="chbox.company" />
-                    <span style="user-select: none"
-                        >Компания</span
-                    >
-                </label>-->
-            </div>
-            <div
-                class="flex items-center justify-between message--warning"
-                style="display: flex; justify-content: center; align-items: center;"
-            >
-              <i
-                  class="fa fa-exclamation-circle"
-                  aria-hidden="true"
-                  style="margin-right: 4px; padding-top: 2px;"
-              ></i>
-              Важно! Все запросы автоматически удаляются спустя 2 часа после скачивания.
             </div>
             <div class="flex items-center">
                 <!--<label class="flex items-center">
@@ -281,6 +255,15 @@
                 </button>
             </div>
         </div>
+      <div
+          class="form"
+          style="padding: 15px 25px !important;margin: 15px auto;"
+      >
+        <ul>
+          <li>При выборе языка запрос будет обработан с автоматическим переводом ключевых слов на выбранный язык. </li>
+          <li>Переводятся предустановленные ключевые слова (негатив, репутация, связи) и слова, указанные пользователем в поле «Ключевые слова, характеризующие объект».</li>
+        </ul>
+      </div>
       <div style="margin: 15px auto;max-width: 900px;">
         <multiselect
             v-model="checkedLanguages"
@@ -343,6 +326,17 @@
           <div class="item__header item__control"></div>
           <div class="item__header delete-icon"></div>
         </div>
+      </div>
+      <div
+          class="flex items-center justify-between message--warning"
+          style="display: flex; justify-content: center; align-items: center; "
+      >
+        <i
+            class="fa fa-exclamation-circle"
+            aria-hidden="true"
+            style="margin-right: 4px; padding-top: 2px;"
+        ></i>
+        Важно! Все запросы автоматически удаляются спустя 2 часа после скачивания.
       </div>
         <div class="items">
             <div
@@ -1263,13 +1257,13 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
 }
 
 .message--warning {
+  max-width: 900px;
   border: 1px solid orange;
   border-radius: 3px;
-  background: #f1f4f9;
   text-align: center;
   justify-content: center !important;
   color: orange;
-  margin: 10px 0 0 0;
+  margin: 15px auto 0;
   padding: 3px;
 }
 </style>

@@ -1,22 +1,44 @@
 <template>
-  <div
-      class="confirm-email"
-      :class="loading ? 'gray' : success ? 'green' : 'red'"
-  >
-    <h2>Подтверждение почты</h2>
-    <p v-if="loading">Подтверждаем вашу почту...</p>
-    <p v-if="message">{{ message }}</p>
-    <button
-        class="btn"
-        @click="router().push('/')"
-    >
-      На главную
-    </button>
+  <div class="confirm-email">
+    <div style="width: 100%; display: flex; justify-content: end;">
+      <i
+          class="fa fa-xmark gray"
+          style="cursor: pointer"
+          aria-hidden="true"
+          @click="router().push('/login')"
+      ></i>
+    </div>
+    <div class="confirm-email__container">
+      <div>
+        <i
+            :class="iconClass"
+            style="margin-top: 8px"
+        ></i>
+      </div>
+      <div class="confirm-email__info">
+        <h2>
+          {{ modalTitle }}
+        </h2>
+      </div>
+    </div>
+    <span style="margin-left: 32px; margin-top: 12px">
+        {{ message }}
+    </span>
+    <div style="width: 100%; display: flex; justify-content: end;">
+      <button
+          class="btn"
+          :style="`background-color: ${ buttonColor }`"
+          @click="router().push('/login')"
+      >
+        На главную
+      </button>
+    </div>
   </div>
 </template>
 
 <script>
 import router from "../router/router.js";
+import { isAuthorized } from '../use/index';
 
 export default {
   methods: {
@@ -26,26 +48,34 @@ export default {
   },
   data() {
     return {
-      loading: true,
-      success: false,
-      message: '',
+      message: 'Пожалуйста, подождите. Выполняется подтверждение адреса электронной почты.',
+      iconClass: 'fa fa-spinner fa-spin gray',
+      modalTitle: 'Проверяем ссылку...',
+      buttonColor: 'gray',
     }
   },
   async mounted() {
+    isAuthorized.value = false;
     const token = this.$route.query.token;
     try {
       const res = await fetch(`/api/v1/auth/confirm/${token}`);
       const data = await res.json();
       if (data.status === 'success') {
-        this.success = true;
-        this.message = 'Ваша почта успешно подтверждена!';
+        this.iconClass = 'fa fa-circle-check green';
+        this.buttonColor = '#1AB394FF';
+        this.modalTitle = 'Адрес электронной почты подтвержден!';
+        this.message = 'Спасибо! Ваш адрес электронной почты подтвержден. Нажмите на кнопку ниже, чтобы войти в аккаунт.';
       } else {
-        this.message = 'Не удалось подтвердить почту. Ваш токен истек или неправильно указан.';
+        this.iconClass = 'fa fa-circle-exclamation red';
+        this.buttonColor = 'red';
+        this.modalTitle = 'Не удалось подтвердить адрес электронной почты.';
+        this.message = 'Ссылка недействительна или срок ее действия истек. Пожалуйста, запросите новую.';
       }
     } catch (error) {
-      this.message = 'Не удалось подтвердить почту. Попробуйте еще или обратитесь в поддержку.';
-    } finally {
-      this.loading = false;
+      this.iconClass = 'fa fa-circle-exclamation red';
+      this.buttonColor = 'red';
+      this.modalTitle = 'Произошла ошибка при подтверждении.';
+      this.message = 'Попробуйте позже или обратитесь в службу поддержки.';
     }
   }
 }
@@ -53,31 +83,39 @@ export default {
 
 <style scoped>
 .confirm-email {
-  border: 1px solid black;
-  border-radius: 3px;
-  text-align: center;
-  height: fit-content;
+  margin: auto;
+  display: flex;
+  background-color: white;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  max-width: 500px;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+.confirm-email__container {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+}
+
+.confirm-email__info {
   display: flex;
   flex-direction: column;
-  justify-content: center !important;
-  align-items: center;
-  color: black;
-  margin: auto;
-  padding: 10px;
+  justify-content: center;
+  margin-right: 12px;
 }
 
 .gray {
-  border: 1px solid gray;
   color: gray;
 }
 
 .green {
-  border: 1px solid green;
-  color: green;
+  color: #1AB394FF;
 }
 
 .red {
-  border: 1px solid red;
   color: red;
 }
 
