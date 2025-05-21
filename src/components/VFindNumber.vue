@@ -45,22 +45,11 @@
         <div class="form">
             <div class="inputs">
                 <label class="flex flex-col w-full parent-prompt top-input" style="margin-right: 0;">
-                    <vue-tel-input v-model="form.number" :inputOptions="{placeholder:'Введите номер телефона'}"></vue-tel-input>
-                    <!-- <input
-                        :value="form.number"
-                        @input="inputNumber"
-                        @focusin="form.number[0] == '+' && form.number[1] == '7' ? true : form.number = '+7'"
-                        @focusout="form.number[0] == '+' && form.number[1] == '7' && form.number.length > 2 ? true : form.number = ''"
-                        type="tel"
-                        title="some title ..."
-                        style="margin-right: 0; margin-bottom: 0"
-                        placeholder="Введите номер телефона"
-                        :class="{
-                            'border-color-red':
-                                surname_error,
-                        }"
-                        @keydown="multiInput"
-                    /> -->
+                    <vue-tel-input 
+                        v-model="phoneNumber"
+                        @input="onInput"
+                        v-bind="bindProps"
+                    ></vue-tel-input>
                     <small
                         class="prompt"
                         :class="{
@@ -121,67 +110,11 @@
                         Аккаунты
                     </span>
                 </label>
-                <!-- <label class="flex items-center parent-prompt-hover">
-                    <input type="checkbox" class="chbox" v-model="chbox.bindings" />
-                    <small
-                        class="prompt-hover"
-                        >Поиск связанных аккаунтов, проверка наличия<br> аккаунтов в веб-сервисах, соц. сетях.</small
-                    >
-                    <span style="user-select: none"
-                        >Привязки: <span class="checkbox-price">{{ chbox_prices.bindings }} ₽</span></span
-                    >
-                </label> -->
-                <!-- <label class="flex items-center parent-prompt-hover">
-                    <input type="checkbox" class="chbox" v-model="chbox['acc search']" />
-                    <small
-                        class="prompt-hover"
-                        >Поиск связанных аккаунтов<br> в соц. сетях, веб-сервисах.</small
-                    >
-                    <span style="user-select: none"
-                        >Поиск аккаунтов: <span class="checkbox-price">{{ chbox_prices['acc search'] }} ₽</span></span
-                    >
-                </label> -->
                 <button class="btn" style="white-space: nowrap;margin-top: 0;margin-left: 0 !important;" @click="getPrice()">
                     Отправить запрос
                 </button>
             </div>
-            <!--<div class="flex items-center">-->
-                <!--<label class="flex items-center">
-                    <input type="checkbox" class="chbox" v-model="chbox.default_keywords" />
-                    <span style="user-select: none"
-                        >стандартные ключевые слова</span
-                    >
-                </label>-->
-            <!--</div>-->
         </div>
-
-        <!-- <div class="items head-item">
-            <div class="item select-none" style="height: 35px">
-                <div class="item-title">ФИО</div>
-                <div class="btn-wrap">
-                    <div class="item-price">Стоимость</div>
-                    <div class="item-death-time">Время до удаления</div>
-                    <button class="item-btn btn" style="opacity: 0">
-                        Скачать
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="items">
-            <div class="item" v-for="query in query_list" :key="query.query_id">
-                <div class="item-title">{{ query.query_title }}</div>
-                <div class="btn-wrap">
-                    <div class="item-price">17 руб.</div>
-                    <div class="item-death-time">{{ getRemainingTime(query, current_timestamp) }}</div>
-                    <i class="fa-solid fa-spinner" v-if="query.query_status == 'pending'"></i>
-                    <button v-else class="item-btn btn" @click="downloadQuery(query.query_title, query.query_id, query)">Скачать <i class="fa-solid fa-spinner" v-show="query.downloading" style="margin-left: 5px;"></i></button>
-                </div>
-            </div>
-            <div class="item" v-show="query_list_loading" style="background-color: transparent;justify-content: center;margin-top: 0;">
-                <i class="fa-solid fa-spinner"></i>
-            </div>
-        </div> -->
 
         
         <div class="items head-item">
@@ -240,7 +173,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import "../utils/index";
 import { isAuthorized, prohibited_model, keywords_model, keys_list, user_balance } from "../use/index";
 import ListInput from './ListInput.vue'
@@ -284,10 +216,11 @@ export default {
             },
 
             form: {
-                number: "",
                 search_name: "",
                 search_patronymic: "",
             },
+            phoneNumber: '+',
+            phone: '',
             surname_error: false,
             name_error: false,
             patronymic_error: false,
@@ -295,18 +228,41 @@ export default {
             news_count: 0,
         };
     },
+    computed: {
+      bindProps() {
+        return {
+          enabledFlags: true,
+          dropdownOptions: {
+            showDialCodeInList: true,
+            showFlags: true,
+          },
+          inputOptions: {
+            placeholder: "Введите номер телефона",
+            type: "tel",
+          },
+          mode: "international",
+          validCharactersOnly: true,
+        };
+      },
+    },
     methods: {
+        onInput() {
+          this.phoneNumber = this.phoneNumber.replace(/(?!^)\+/g, '');
+          if (!this.phoneNumber) {
+            this.phoneNumber = '+';
+          }
+        },
         getPrice() {
-            this.form.number = document.querySelector("input.vti__input")?.value?.replace ( /[^\d.|\+]/g, '' ) ?? '';
-            if (this.form.number.charAt(0) == 8) {
-                this.form.number = '+7'+this.form.number.slice(1);
+            this.phoneNumber = document.querySelector("input.vti__input")?.value?.replace ( /[^\d.|\+]/g, '' ) ?? '';
+            if (this.phoneNumber.charAt(0) == 8) {
+                this.phoneNumber = '+7'+this.phoneNumber.slice(1);
             }
             let phoneno = /^\d{1,}$/;
-            if (this.form.number == '' || !(this.form.number.slice(1, 20).match(phoneno))) {
+            if (this.phoneNumber == '' || !(this.phoneNumber.slice(1, 20).match(phoneno))) {
                 this.surname_error = true;
                 return
             }
-            if (!this.form.number.startsWith('+77') && (this.form.number.startsWith('+7') || this.form.number.startsWith('8'))) {
+            if (!this.phoneNumber.startsWith('+77') && (this.phoneNumber.startsWith('+7') || this.phoneNumber.startsWith('8'))) {
               this.isRuNumber = true;
               if (this.chbox.tags) {
                 this.tagsSelected = true;
@@ -323,21 +279,6 @@ export default {
 
             this.confirm_model = true;
         },
-        inputNumber(event) {
-            if (this.form.number[0] != '+' || this.form.number[1] != '7') {
-                this.form.number = '+7';
-                return;
-            }
-            let phoneno = /^\d{1,}$/;
-            if (!(event.target.value.slice(1,20).match(phoneno)))
-            {
-                this.surname_error = true;
-            }
-            else {
-                this.surname_error = false;
-            }
-            this.form.number = event.target.value
-        },
         set_selected_page(page) {
             this.query_list_loading = true;
             this.selected_page = parseInt(page);
@@ -348,7 +289,7 @@ export default {
             ).trim();
         },
         clearAllFields() {
-            this.form.number = '';
+            this.phoneNumber = '+';
             this.form.search_name = '';
             this.form.search_patronymic = '';
             this.keys_list.prohibited_site.list = [];
@@ -361,12 +302,12 @@ export default {
         },
         getHTMLPage() {
             this.confirm_model = false;
-            this.surname_error = this.form.number == "";
+            this.surname_error = this.phoneNumber == "";
             if (
-                this.form.number != ""
+                this.phoneNumber != ""
             ) {
                 const query_data = {
-                    search_number: this.form.number.trim(),
+                    search_number: this.phoneNumber.trim(),
                     methods_type: Object.keys(this.chbox).filter(temp_chbox => this.chbox[temp_chbox])
                 }
                 this.clearAllFields()

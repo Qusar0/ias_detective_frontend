@@ -4,8 +4,8 @@ import App from './App.vue'
 import router from './router/router';
 import Vue3Toasity from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
-import VueTelInput from 'vue3-tel-input'
-import 'vue3-tel-input/dist/vue3-tel-input.css'
+import VueTelInput from 'vue-tel-input'
+import 'vue-tel-input/vue-tel-input.css';
 
 Number.prototype.push_space = function () {
     return [...[...this.toString()].reverse().join('').match(/.{1,3}/g).join(' ')].reverse().join('')
