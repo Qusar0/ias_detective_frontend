@@ -46,7 +46,7 @@
                   class="add-item confirm"
                   :disabled="temp_price == 'loading...'"
                   :style="temp_price == 'loading...' ? 'background: #ccc;' : ''"
-                  @click="confirm_model = false"
+                  @click="confirm_model = false; router().push('/payment')"
               >
                 Пополнить баланс
               </button>
@@ -319,9 +319,11 @@
                 :limit="4"
             ></multiselect>
         </div>
-        <small v-if="languageError" style="color: #ec5e5e;">
-          Выберите хотя бы один язык, если нажаты чекбоксы: "Негатив", "Связи", "Репутация" и/или "Досье".
-        </small>
+        <div style="margin: 0 auto 10px;max-width: 900px;">
+          <small v-if="languageError" style="color: #ec5e5e;">
+            Выберите хотя бы один язык, если нажаты чекбоксы: "Негатив", "Связи", "Репутация" и/или "Досье".
+          </small>
+        </div>
 
         <div style="margin: 15px auto; max-width: 900px;">
             <div class="search-engines-container">
@@ -479,6 +481,7 @@ import ListInput from './ListInput.vue'
 import VPagination from './UI/VPagination.vue'
 import { events } from "../utils/notification"
 import Multiselect from "vue-multiselect";
+import router from "../router/router.js";
 
 export default {
     setup() {
@@ -496,7 +499,7 @@ export default {
             current_timestamp: new Date().valueOf(),
             query_list: [],
             languageOptions: JSON.parse(localStorage.getItem('languages')),
-            checkedLanguages: [],
+            checkedLanguages: [{name: "Русский", code: "ru"}],
             prohibited_site: "",
             prohibited_sites: [],
             temp_price: 0,
@@ -528,6 +531,9 @@ export default {
         };
     },
     methods: {
+      router() {
+        return router
+      },
         getPrice() {
           this.languageError = false;
           if (!this.engines.google && !this.engines.yandex) {
@@ -575,7 +581,9 @@ export default {
                   return response.json();
                 })
                 .then((response) => {
+                  //TODO: remove mock when ready
                   if (response) this.temp_price = response.price;
+                  this.temp_price = 10;
                 })
                 .catch((error) => {
                   console.log("error", error);
@@ -679,7 +687,7 @@ export default {
         clearAllFields() {
             this.form.company_name = '';
             this.form.extra_name = '';
-            this.checkedLanguages = [];
+            this.checkedLanguages = [{name: "Русский", code: "ru"}];
             this.languageError = false;
             this.form.location = '';
             this.form.search_name = '';

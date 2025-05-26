@@ -46,7 +46,7 @@
                         class="add-item confirm" 
                         :disabled="!temp_price || temp_price == 'loading...'"
                         :style="temp_price == 'loading...' ? 'background: #ccc;' : ''"
-                        @click="confirm_model = false"
+                        @click="confirm_model = false; router().push('/payment')"
                     >
                       Пополнить баланс
                     </button>
@@ -283,9 +283,11 @@
             :limit="4"
         ></multiselect>
       </div>
-      <small v-if="languageError" style="color: #ec5e5e;">
-        Выберите хотя бы один язык, если нажаты чекбоксы: "Негатив", "Связи", "Репутация" и/или "Досье".
-      </small>
+      <div style="margin: 0 auto 10px;max-width: 900px;">
+        <small v-if="languageError" style="color: #ec5e5e;">
+          Выберите хотя бы один язык, если нажаты чекбоксы: "Негатив", "Связи", "Репутация" и/или "Досье".
+        </small>
+      </div>
 
         <div style="margin: 15px auto; max-width: 900px;">
             <div class="search-engines-container">
@@ -358,18 +360,10 @@
               <div class="item__content item-price">
                 {{ query.balance }} руб.
               </div>
-              <div
+              <i
                   v-if="query.query_status == 'pending'"
-                  class="item__content"
-                  style="height: 26px;position: relative; pointer-events: none;"
-              >
-                <button
-                    class="item-btn btn"
-                    style="width: 120px; background: #A4CFFA;color: #333;"
-                >
-                  Выполняется
-                </button>
-              </div>
+                  class="item__content fa-solid fa-spinner"
+              ></i>
               <div
                   v-else-if="query.query_status == 'queue'"
                   class="item__content"
@@ -439,6 +433,7 @@ import { isAuthorized, prohibited_model, keywords_model, keys_list, user_balance
 import ListInput from './ListInput.vue'
 import VPagination from './UI/VPagination.vue'
 import { events } from "../utils/notification"
+import router from "../router/router.js";
 
 export default {
     setup() {
@@ -452,7 +447,7 @@ export default {
     data() {
         return {
             languageOptions: JSON.parse(localStorage.getItem('languages')),
-            checkedLanguages: [],
+            checkedLanguages: [{name: "Русский", code: "ru"}],
             temp_price: 0,
             query_list_loading: true,
             confirm_model: false,
@@ -488,6 +483,9 @@ export default {
         };
     },
     methods: {
+      router() {
+        return router
+      },
         set_selected_page(page) {
             this.query_list_loading = true;
             this.selected_page = parseInt(page);
@@ -562,7 +560,7 @@ export default {
         },
         clearAllFields() {
             this.form.search_surname = '';
-            this.checkedLanguages = [];
+            this.checkedLanguages = [{name: "Русский", code: "ru"}];
             this.form.search_name = '';
             this.languageError = false;
             this.form.search_patronymic = '';

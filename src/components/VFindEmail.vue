@@ -23,6 +23,14 @@
                 >
                   Да
                 </button>
+                <button
+                    v-if="user_balance < temp_price"
+                    class="add-item confirm"
+                    style="cursor: pointer"
+                    @click="router().push('/payment')"
+                >
+                  Пополнить баланс
+                </button>
               </div>
             </div>
         </div>
@@ -69,7 +77,7 @@
             </div>
             <div class="flex items-center justify-between" style="height: 30px">
                 <label class="flex items-center parent-prompt-hover">
-                    <input type="checkbox" class="chbox" v-model="chbox.mentions" />
+                    <input type="checkbox" class="chbox" v-model="chbox.mentions" disabled/>
                     <small
                         class="prompt-hover"
                     >
@@ -141,10 +149,20 @@
                         >Чекеры аккаунтов: <span class="checkbox-price">{{ chbox_prices['acc checker'] }} ₽</span></span
                     >
                 </label> -->
-                <button class="btn" style="white-space: nowrap;" @click="getPrice()">
+                <button
+                    class="btn"
+                    style="white-space: nowrap;"
+                    @click="getPrice()"
+                    :disabled="!chbox.mentions"
+                >
                     Отправить запрос
                 </button>
             </div>
+          <div style="margin: auto;max-width: 900px;">
+            <small v-if="!chbox.mentions" style="color: #ec5e5e;">
+              Должен быть выбран хотя бы один чекбокс
+            </small>
+          </div>
             <!--<div class="flex items-center">-->
                 <!--<label class="flex items-center">
                     <input type="checkbox" class="chbox" v-model="chbox.default_keywords" />
@@ -247,6 +265,7 @@ import { isAuthorized, prohibited_model, keywords_model, keys_list, user_balance
 import ListInput from './ListInput.vue'
 import VPagination from './UI/VPagination.vue'
 import { events } from "../utils/notification"
+import router from "../router/router.js";
 
 export default {
     setup() {
@@ -268,7 +287,7 @@ export default {
             keyword: "",
             keywords: [],
             chbox: {
-                mentions: false,
+                mentions: true,
                 // leaks: false,
                 'acc search': false,
                 'acc search premium': false,
@@ -300,6 +319,9 @@ export default {
         };
     },
     methods: {
+      router() {
+        return router
+      },
         getPrice() {
             if (this.surname_error || this.form.email == '') {
                 this.error_model = true
@@ -430,7 +452,8 @@ export default {
             this.keys_list.plus.list = [];
             Object.keys(this.chbox).forEach(temp_chbox => {
                 this.chbox[temp_chbox] = false;
-            })
+            });
+            this.chbox.mentions = true;
         },
         getHTMLPage() {
             this.confirm_model = false;

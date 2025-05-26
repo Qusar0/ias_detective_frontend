@@ -13,13 +13,13 @@
                 были исключены из запроса.
               </div>
               <div
-                  v-if="user_balance >= temp_price || temp_price === 0"
+                  v-if="(user_balance >= temp_price || temp_price === 0) && (chbox.tags || chbox.mentions)"
                   class="title"
               >
                 Вы уверены, что хотите сделать запрос за {{ temp_price }} руб. ?
               </div>
               <div
-                  v-else
+                  v-else-if="user_balance < temp_price"
                   class="title"
               >
                 Недостаточно средств для совершения действия
@@ -27,11 +27,19 @@
               <div class="flex items-center">
                 <button class="add-item cancel" @click="confirm_model = false">Отмена</button>
                 <button
-                    v-if="user_balance >= temp_price || temp_price === 0"
+                    v-if="(user_balance >= temp_price || temp_price === 0) && (chbox.tags || chbox.mentions)"
                     class="add-item confirm"
                     @click.stop="getHTMLPage()"
                 >
                   Да
+                </button>
+                <button
+                    v-if="user_balance < temp_price"
+                    class="add-item confirm"
+                    style="cursor: pointer"
+                    @click="router().push('/payment')"
+                >
+                  Пополнить баланс
                 </button>
               </div>
             </div>
@@ -86,7 +94,7 @@
                 </label> -->
                 
                 <label class="flex items-center parent-prompt-hover">
-                    <input type="checkbox" class="chbox" v-model="chbox.tags"/>
+                    <input type="checkbox" class="chbox" v-model="chbox.tags" :disabled="tagsDisabled"/>
                     <small
                         class="prompt-hover"
                     >
@@ -110,9 +118,19 @@
                         Аккаунты
                     </span>
                 </label>
-                <button class="btn" style="white-space: nowrap;margin-top: 0;margin-left: 0 !important;" @click="getPrice()">
+                <button
+                    class="btn"
+                    style="white-space: nowrap;margin-top: 0;margin-left: 0 !important;"
+                    :disabled="!chbox.mentions && !chbox.tags"
+                    @click="getPrice()"
+                >
                     Отправить запрос
                 </button>
+            </div>
+            <div style="margin: auto;max-width: 900px;">
+              <small v-if="!chbox.mentions && !chbox.tags" style="color: #ec5e5e;">
+                Должен быть выбран хотя бы один чекбокс
+              </small>
             </div>
         </div>
 
@@ -178,6 +196,7 @@ import { isAuthorized, prohibited_model, keywords_model, keys_list, user_balance
 import ListInput from './ListInput.vue'
 import VPagination from './UI/VPagination.vue'
 import { events } from "../utils/notification"
+import router from "../router/router.js";
 
 export default {
     setup() {
@@ -199,8 +218,9 @@ export default {
             tagsSelected: false,
             keyword: "",
             keywords: [],
+            tagsDisabled: false,
             chbox: {
-                mentions: false,
+                mentions: true,
                 // leaks: false,
                 tags: false,
                 bindings: false,
@@ -246,10 +266,20 @@ export default {
       },
     },
     methods: {
+      router() {
+        return router
+      },
         onInput() {
           this.phoneNumber = this.phoneNumber.replace(/(?!^)\+/g, '');
           if (!this.phoneNumber) {
             this.phoneNumber = '+';
+          }
+          const number = this.phoneNumber.replaceAll(' ', '');
+          if (number.startsWith('+7') && !number.startsWith('+77') && number.length === 12) {
+            this.chbox.tags = false;
+            this.tagsDisabled = true;
+          } else {
+            this.tagsDisabled = false;
           }
         },
         getPrice() {
@@ -298,7 +328,8 @@ export default {
             this.keys_list.plus.list = [];
             Object.keys(this.chbox).forEach(temp_chbox => {
                 this.chbox[temp_chbox] = false;
-            })
+            });
+            this.chbox.mentions = true;
         },
         getHTMLPage() {
             this.confirm_model = false;
