@@ -146,7 +146,7 @@
         </div>
       <div
           class="flex items-center justify-between message--warning"
-          style="display: flex; justify-content: center; align-items: center;"
+          style="display: flex; justify-content: center; align-items: center; background: white;"
       >
         <i
             class="fa fa-exclamation-circle"

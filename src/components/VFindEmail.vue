@@ -201,7 +201,17 @@
             </div>
         </div> -->
 
-
+      <div
+          class="flex items-center justify-between message--warning"
+          style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px; background: white;"
+      >
+        <i
+            class="fa fa-exclamation-circle"
+            aria-hidden="true"
+            style="margin-right: 4px; padding-top: 2px;"
+        ></i>
+        Важно! Все запросы автоматически удаляются спустя 2 часа после скачивания.
+      </div>
       <div class="items head-item">
         <div class="item select-none" style="height: 35px">
           <div class="item__header item-title">Почта</div>
@@ -211,19 +221,6 @@
           <div class="item__header delete-icon"></div>
         </div>
       </div>
-      <div
-          class="flex items-center justify-between message--warning"
-          style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px"
-      >
-        <i
-            class="fa fa-exclamation-circle"
-            aria-hidden="true"
-            style="margin-right: 4px; padding-top: 2px;"
-        ></i>
-        Важно! Все запросы автоматически удаляются спустя 2 часа после скачивания.
-      </div>
-
-        
         <div class="items">
             <div class="item" v-for="query in query_list" :key="query.query_id">
                 <div class="item__content item__content-title item-title">{{ query.query_title }}</div>
