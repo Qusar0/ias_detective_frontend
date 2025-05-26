@@ -220,9 +220,9 @@ export default {
               } else {
                 this.message = 'Транзакция прошла успешно, баланс пополнен.';
                 this.iconClass = 'fa fa-circle-check green';
+                this.sendData(this.amount, widgetResult.data.transactionId)
               }
               this.resultReceived = true;
-              this.sendData(this.amount, widgetResult.data.transactionId)
             }).catch(function(error) {
               this.resultReceived = true;
               this.message = 'Произошла ошибка, баланс не пополнен.';
