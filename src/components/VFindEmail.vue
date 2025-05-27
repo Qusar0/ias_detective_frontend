@@ -203,7 +203,7 @@
 
       <div
           class="flex items-center justify-between message--warning"
-          style="display: flex; justify-content: center; align-items: center; margin-bottom: 10px; background: white;"
+          style="display: flex; justify-content: center; align-items: center; background: white;"
       >
         <i
             class="fa fa-exclamation-circle"
