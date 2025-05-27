@@ -423,11 +423,11 @@
               <div
                   v-if="query.query_status == 'pending'"
                   class="item__content"
-                  style="height: 26px;position: relative; pointer-events: none;"
+                  style="height: 30px;position: relative; pointer-events: none;"
               >
                 <button
                     class="item-btn btn"
-                    style="width: 120px; background: #A4CFFA;color: #333;"
+                    style="width: 130px; background: #A4CFFA;color: #333;"
                 >
                   Выполняется
                 </button>
