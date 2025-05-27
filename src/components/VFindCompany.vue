@@ -420,10 +420,18 @@
                 <div class="item__content item__content-title item-title">{{ query.query_title }}</div>
               <div class="item__content item-date">{{ getItemDate(new Date(query?.query_created_at)) }}</div>
               <div class="item__content item-price">{{ query.balance }} руб.</div>
-              <i
+              <div
                   v-if="query.query_status == 'pending'"
-                  class="item__content fa-solid fa-spinner"
-              ></i>
+                  class="item__content"
+                  style="height: 26px;position: relative; pointer-events: none;"
+              >
+                <button
+                    class="item-btn btn"
+                    style="width: 120px; background: #A4CFFA;color: #333;"
+                >
+                  Выполняется
+                </button>
+              </div>
               <i
                   v-else-if="query.query_status == 'xmlriver on update'"
                   class="item__content fa-solid fa-circle-exclamation"

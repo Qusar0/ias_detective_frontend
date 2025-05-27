@@ -98,7 +98,7 @@
                         class="prompt"
                         :class="{ 'bg-red': surname_error && form.search_surname == '', }"
                     >
-                      Введите фамилию объекта в именительном падеже
+                      Фамилия объекта в именительном падеже. "Ё" сохранять (например: Ковалёв (а не Ковалев)
                     </small>
                 </div>
                 <div
@@ -120,7 +120,7 @@
                         class="prompt"
                         :class="{ 'bg-red': name_error && form.search_name == '', }"
                     >
-                      Введите имя объекта в именительном падеже
+                      Имя объекта в именительном падеже
                     </small>
                 </div>
                 <div
@@ -138,7 +138,7 @@
                         class="prompt"
                         :class="{ 'bg-red': patronymic_error && form.search_patronymic == '', }"
                     >
-                      Введите отчество объекта в именительном падеже (при наличии)
+                      Отчество объекта в именительном падеже (при наличии)
                     </small>
                 </div>
             </div>
@@ -361,10 +361,18 @@
               <div class="item__content item-price">
                 {{ query.balance }} руб.
               </div>
-              <i
+              <div
                   v-if="query.query_status == 'pending'"
-                  class="item__content fa-solid fa-spinner"
-              ></i>
+                  class="item__content"
+                  style="height: 26px;position: relative; pointer-events: none;"
+              >
+                <button
+                    class="item-btn btn"
+                    style="width: 120px; background: #A4CFFA;color: #333;"
+                >
+                  Выполняется
+                </button>
+              </div>
               <div
                   v-else-if="query.query_status == 'queue'"
                   class="item__content"

@@ -231,7 +231,18 @@
               <div class="item__content item-price">
                 {{ query.balance }} руб.
               </div>
-              <i class="item__content fa-solid fa-spinner" v-if="query.query_status == 'pending'"></i>
+              <div
+                  v-if="query.query_status == 'pending'"
+                  class="item__content"
+                  style="height: 26px;position: relative; pointer-events: none;"
+              >
+                <button
+                    class="item-btn btn"
+                    style="width: 120px; background: #A4CFFA;color: #333;"
+                >
+                  Выполняется
+                </button>
+              </div>
               <i class="item__content fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'xmlriver on update'" :title="'Сервис на обновлении!\n\nПопробуйте позже.'" style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"></i>
               <i class="item__content fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'failed'" :title="'Ошибка сервера!\n\nПопробуйте позже.'" style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"></i>
               <button v-else class="download item__control item-btn btn" @click="downloadQuery(query.query_title, query.query_id, query)">Скачать <i class="fa-solid fa-spinner" v-show="query.downloading" style="margin-left: 5px;"></i></button>

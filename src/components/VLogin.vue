@@ -141,7 +141,7 @@ export default {
                         this.isAuthorized = true
                         //this.user_name = response?.body?.name
                         this.get_events()
-                        this.$router.push('/')
+                        this.$router.go('/')
                         return response?.json();
                     } else {
                         this.authorization_error = true
