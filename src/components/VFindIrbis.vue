@@ -444,7 +444,7 @@ const validateDateFormat = (date) => {
 const loadRegions = async () => {
   regionsLoading.value = true;
   try {
-    const response = await fetch('/api/regions', {
+    const response = await fetch('/api/irbis/regions', {
       method: 'GET',
       credentials: 'include'
     });
@@ -452,8 +452,8 @@ const loadRegions = async () => {
     if (response.ok) {
       const data = await response.json();
       regionsOptions.value = data.map(region => ({
-        code: region.code,
-        name: `${region.code} - ${region.name}`
+        code: region.id,
+        name: `${region.id} - ${region.name}`
       }));
     } else {
       regionsOptions.value = [
