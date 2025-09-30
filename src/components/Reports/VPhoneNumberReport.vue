@@ -1,6 +1,5 @@
 <template>
   <div class="number-report" @click="closeModal">
-    <!-- Tab Header -->
     <div class="tab-head" @click="closeModal">
       <div class="flex items-center" style="flex-wrap: wrap;">
         <h2 class="object-full_name">
@@ -9,23 +8,24 @@
       </div>
 
       <div class="tabs flex flex-wrap items-center">
-        <div 
-          :class="['tab-1', { selected: selectedTabIndex === 1 }]" 
+        <div
+          :class="['tab-1', { selected: selectedTabIndex === 1 }]"
           @click="selectTab(1)"
         >
           Упоминания
           <span class="tab-count">{{ items.main?.length || 0 }}</span>
         </div>
-        <div 
-          :class="['tab-2', { selected: selectedTabIndex === 2 }]" 
+        <div
+          v-if="!isRussianNumber"
+          :class="['tab-2', { selected: selectedTabIndex === 2 }]"
           @click="selectTab(2)"
         >
           Теги
           <span class="tab-count">{{ processedTags.length }}</span>
         </div>
-        <div 
+        <div
           v-if="osintResults?.length"
-          :class="['tab-3', { selected: selectedTabIndex === 3 }]" 
+          :class="['tab-3', { selected: selectedTabIndex === 3 }]"
           @click="selectTab(3)"
         >
           OSINT
@@ -34,7 +34,6 @@
       </div>
     </div>
 
-    <!-- Controls Section -->
     <div 
       v-show="hasItemsForCurrentTab"
       class="flex items-center flex-col wrap-reverse-container only-for-mentions"
@@ -74,7 +73,6 @@
         </div>
       </div>
 
-      <!-- Pagination -->
       <div class="pagination-container" @click="closeModal">
         <VPagination
           :selected_page="currentPage"
@@ -87,7 +85,7 @@
 
     <!-- Content Section -->
     <div class="content" @click="closeModal">
-      <!-- Tab 1: Mentions -->
+      <!-- Mentions -->
       <div :class="['tab-content-1', { selected: selectedTabIndex === 1 }]">
         <div v-if="!renderedItems.length" class="empty-list">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -96,7 +94,6 @@
           Нет найденных результатов!
         </div>
 
-        <!-- Grouped View -->
         <template v-if="isGroupingEnabled">
           <div 
             v-for="(group, domain) in groupedItems" 
@@ -119,7 +116,6 @@
                 :id="makeSafeForCSS(item.link)"
               >
                 <div class="item" style="position:relative">
-                  <!-- Viewed indicator -->
                   <svg 
                     v-if="seenLinks[item.link]" 
                     class="checkmark" 
@@ -184,7 +180,6 @@
           </div>
         </template>
 
-        <!-- Regular View -->
         <div 
           v-else
           v-for="item in renderedItems" 
@@ -193,7 +188,6 @@
           :id="makeSafeForCSS(item.link)"
         >
           <div class="item" style="position:relative">
-            <!-- Viewed indicator -->
             <svg 
               v-if="seenLinks[item.link]" 
               class="checkmark" 
@@ -256,7 +250,7 @@
         </div>
       </div>
 
-      <!-- Tab 2: Tags -->
+      <!-- Tags -->
       <div :class="['tab-content-2', { selected: selectedTabIndex === 2 }]" style="overflow-x: scroll;min-height: calc(100vh - 103px);">
         <div>
           <div class="leaks" style="margin-bottom: 15px;margin-left:10px;">
@@ -283,7 +277,7 @@
         </div>
       </div>
 
-      <!-- Tab 3: OSINT Results -->
+      <!-- Tab 3: OSINT -->
       <div :class="['tab-content-3', { selected: selectedTabIndex === 3 }]">
         <table 
           v-if="osintResults?.length" 
@@ -314,7 +308,6 @@
       </div>
     </div>
 
-    <!-- Bottom Pagination -->
     <div 
       v-show="selectedTabIndex === 1 && hasItemsForCurrentTab" 
       class="flex only-for-mentions" 
@@ -336,7 +329,6 @@
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import VPagination from '../UI/VPagination.vue'
 
-// Types
 interface Item {
   link: string
   title: string
@@ -359,7 +351,6 @@ interface OSINTResult {
   result: string
 }
 
-// Props
 const props = defineProps<{
   title: string
   items: {
@@ -372,13 +363,11 @@ const props = defineProps<{
   lampyreHtml?: string
 }>()
 
-// Emits
 const emit = defineEmits<{
   'item-viewed': [payload: { link: string; timestamp: number }]
   'filter-changed': [payload: { tab: number; filters: FilterConfig }]
 }>()
 
-// Constants
 const TAB_NAMES = {
   1: 'main',
   2: 'arbitrary'
@@ -389,7 +378,6 @@ const ITEMS_PER_PAGE = 20
 
 type TabIndex = keyof typeof TAB_NAMES
 
-// State management
 const selectedTabIndex = ref(1)
 const searchQuery = ref('')
 const showArbitraryKeys = ref(false)
@@ -397,47 +385,42 @@ const onfocused = ref(false)
 const seenLinks = reactive<Record<string, boolean>>({})
 const tempLinkClasses = reactive<Record<string, string>>({})
 
-// Range slider state
 const startRangeValue = ref(0)
 const endRangeValue = ref(100)
 const minRange = ref(0)
 const maxRange = ref(100)
 
-// Pagination state
 const currentPage = ref(1)
 
-// Filters state
 const filters = reactive<Record<number, FilterConfig>>({ ...props.filters })
 
-// Sorting and grouping state
 const sortOrder = ref<'none' | 'asc' | 'desc'>('none')
 const isGroupingEnabled = ref(false)
 const expandedDomains = reactive<Record<string, boolean>>({})
 
-// Store original order for reset
 const originalItems = ref<Item[]>([])
 
-// Check if current tab has items to show controls
 const hasItemsForCurrentTab = computed(() => {
   if (selectedTabIndex.value === 1) {
-    // Tab 1: Mentions - check if we have main items
     return (props.items.main?.length || 0) > 0
   } else if (selectedTabIndex.value === 2) {
-    // Tab 2: Tags - check if we have tags
     return processedTags.value.length > 0
   } else if (selectedTabIndex.value === 3) {
-    // Tab 3: OSINT - check if we have OSINT results
     return (props.osintResults?.length || 0) > 0
   }
   return false
 })
 
-// Cleanup function for scroll listener
 let scrollCleanup: (() => void) | null = null
+
+const isRussianNumber = computed((): boolean => {
+  const number = props.title
+  return number.startsWith('+7') && !number.startsWith('+77') && number.length === 12
+})
 
 const processedTags = computed((): TagData[] => {
   if (!props.tags?.length) return []
-  
+
   const tagCounts: Record<string, TagData> = {}
   props.tags.forEach(tag => {
     if (tagCounts[tag]) {
@@ -446,7 +429,7 @@ const processedTags = computed((): TagData[] => {
       tagCounts[tag] = { name: tag, count: 1 }
     }
   })
-  
+
   return Object.values(tagCounts).sort((a, b) => b.count - a.count)
 })
 computed((): string[] => {
@@ -480,7 +463,6 @@ const filteredItems = computed((): Item[] => {
     )
   }
 
-  // Apply sorting only when not grouping (grouping handles domain sorting separately)
   if (!isGroupingEnabled.value) {
     if (sortOrder.value === 'asc') {
       tempItems.sort((a, b) => a.link.localeCompare(b.link))
@@ -492,13 +474,11 @@ const filteredItems = computed((): Item[] => {
   return tempItems
 })
 
-// Group ALL filtered items by domain (not just current page)
 const allGroupedItems = computed(() => {
   if (!isGroupingEnabled.value) return {}
   
   const groups: Record<string, Item[]> = {}
-  
-  // Group ALL filtered items, not just current page
+
   filteredItems.value.forEach(item => {
     const domain = getDomainName(item.link)
     if (!groups[domain]) {
@@ -506,8 +486,7 @@ const allGroupedItems = computed(() => {
     }
     groups[domain].push(item)
   })
-  
-  // Sort domains based on current sort order
+
   const sortedGroups: Record<string, Item[]> = {}
   let domainKeys = Object.keys(groups)
   
@@ -516,7 +495,6 @@ const allGroupedItems = computed(() => {
   } else if (sortOrder.value === 'desc') {
     domainKeys = domainKeys.sort((a, b) => b.localeCompare(a))
   } else {
-    // Default alphabetical sort when no specific order is set
     domainKeys = domainKeys.sort((a, b) => a.localeCompare(b))
   }
   
@@ -527,7 +505,6 @@ const allGroupedItems = computed(() => {
   return sortedGroups
 })
 
-// Get domains for current page (paginate domains, not items)
 const paginatedDomains = computed(() => {
   if (!isGroupingEnabled.value) return []
   
@@ -538,7 +515,6 @@ const paginatedDomains = computed(() => {
   return domains.slice(start, end)
 })
 
-// Get grouped items for current page domains only
 const groupedItems = computed(() => {
   if (!isGroupingEnabled.value) return {}
   
@@ -554,7 +530,6 @@ const groupedItems = computed(() => {
 })
 
 const renderedItems = computed((): Item[] => {
-  // If grouping is enabled, return all items from current page domains
   if (isGroupingEnabled.value) {
     const allPageItems: Item[] = []
     
@@ -563,8 +538,7 @@ const renderedItems = computed((): Item[] => {
         allPageItems.push(...allGroupedItems.value[domain])
       }
     })
-    
-    // Apply keyword filtering if needed
+
     if (isFilterableTab()) {
       const hasActiveFilters = filters[selectedTabIndex.value] && 
         Object.values(filters[selectedTabIndex.value]).some(active => active)
@@ -579,15 +553,13 @@ const renderedItems = computed((): Item[] => {
     
     return allPageItems
   }
-  
-  // Regular pagination for non-grouped view
+
   const start = (currentPage.value - 1) * ITEMS_PER_PAGE
   const end = start + ITEMS_PER_PAGE
   
   let slicedItems = filteredItems.value.slice(start, end)
   
   if (isFilterableTab()) {
-    // Check if any filters are active for the current tab
     const hasActiveFilters = filters[selectedTabIndex.value] && 
       Object.values(filters[selectedTabIndex.value]).some(active => active)
     
@@ -597,13 +569,11 @@ const renderedItems = computed((): Item[] => {
         keyword_list: item.keyword_list?.filter(keyword => filters[selectedTabIndex.value]?.[keyword]) || []
       }))
     }
-    // If no filters are active, show all keywords
   }
 
   return slicedItems
 })
 
-// Helper functions
 const getTabName = (tabIndex: number): string => {
   return TAB_NAMES[tabIndex as TabIndex] || 'main'
 }
@@ -616,7 +586,6 @@ const truncateText = (text: string, maxLength: number): string => {
   return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
 }
 
-// Sorting and grouping functions
 const setSortOrder = (order: 'asc' | 'desc') => {
   sortOrder.value = order
   currentPage.value = 1
@@ -624,8 +593,7 @@ const setSortOrder = (order: 'asc' | 'desc') => {
 
 const toggleGrouping = () => {
   isGroupingEnabled.value = !isGroupingEnabled.value
-  
-  // If enabling grouping, collapse all domains by default
+
   if (isGroupingEnabled.value) {
     Object.keys(groupedItems.value).forEach(domain => {
       expandedDomains[domain] = false
@@ -643,13 +611,11 @@ const resetFilters = () => {
   sortOrder.value = 'none'
   isGroupingEnabled.value = false
   currentPage.value = 1
-  
-  // Clear expanded domains
+
   Object.keys(expandedDomains).forEach(domain => {
     delete expandedDomains[domain]
   })
-  
-  // Reset range values if on main tab
+
   if (selectedTabIndex.value === 1 && originalItems.value.length) {
     const weights = originalItems.value
       .map(item => +(item.link_weight || 0))
@@ -664,7 +630,6 @@ const resetFilters = () => {
   }
 }
 
-// Utility functions
 const makeSafeForCSS = (name: string): string => {
   return name.replace(/[^a-z0-9]/g, (s) => {
     const c = s.charCodeAt(0)
@@ -674,7 +639,6 @@ const makeSafeForCSS = (name: string): string => {
   })
 }
 
-// Punycode decoder implementation
 const decodePunycode = (input: string): string => {
   const base = 36
   const tMin = 1
@@ -689,30 +653,26 @@ const decodePunycode = (input: string): string => {
   let bias = initialBias
   let output: number[] = []
 
-  // Remove 'xn--' prefix
   const punycode = input.slice(4)
-  
-  // Find the last occurrence of the delimiter
+
   let basic = punycode.lastIndexOf('-')
   if (basic < 0) basic = 0
 
-  // Copy basic code points
   for (let j = 0; j < basic; ++j) {
     const charCode = punycode.charCodeAt(j)
     if (charCode >= 0x80) {
-      return input // Invalid basic code point
+      return input
     }
     output.push(charCode)
   }
 
-  // Main decoding loop
   for (let index = basic > 0 ? basic + 1 : 0; index < punycode.length; ) {
     const oldi = i
     let w = 1
     
     for (let k = base; ; k += base) {
       if (index >= punycode.length) {
-        return input // Invalid input
+        return input
       }
       
       const digit = punycode.charCodeAt(index++)
@@ -725,7 +685,7 @@ const decodePunycode = (input: string): string => {
       } else if (digit >= 0x61 && digit <= 0x7A) {
         d = digit - 0x61 // a-z
       } else {
-        return input // Invalid digit
+        return input
       }
       
       i += d * w
@@ -762,8 +722,7 @@ const getDomainName = (url: string): string => {
   try {
     const urlObj = new URL(url)
     const hostname = urlObj.hostname
-    
-    // If hostname contains punycode domains, decode them
+
     if (hostname.includes('xn--')) {
       const parts = hostname.split('.')
       const decodedParts = parts.map(part => {
@@ -772,7 +731,7 @@ const getDomainName = (url: string): string => {
             const decoded = decodePunycode(part)
             return decoded
           } catch {
-            return part // Return original if decoding fails
+            return part
           }
         }
         return part
@@ -783,13 +742,11 @@ const getDomainName = (url: string): string => {
     
     return hostname
   } catch {
-    // Fallback to the old anchor method
     try {
       const a = document.createElement('a')
       a.href = url
       const hostname = a.hostname
-      
-      // Apply punycode decoding to fallback as well
+
       if (hostname.includes('xn--')) {
         const parts = hostname.split('.')
         const decodedParts = parts.map(part => {
@@ -814,13 +771,11 @@ const getDomainName = (url: string): string => {
 
 const copyToClipboard = async (text: string): Promise<void> => {
   try {
-    // Try modern clipboard API first
     if (navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(text)
       return
     }
-    
-    // Fallback to legacy method
+
     const inp = document.createElement('input')
     document.body.appendChild(inp)
     inp.value = text
@@ -832,14 +787,12 @@ const copyToClipboard = async (text: string): Promise<void> => {
   }
 }
 
-// Tab management
 const selectTab = (newTabIndex: number): void => {
   if (selectedTabIndex.value === newTabIndex) return
   
   selectedTabIndex.value = newTabIndex
   currentPage.value = 1
-  
-  // Emit filter change event
+
   emit('filter-changed', {
     tab: newTabIndex,
     filters: filters[newTabIndex] || {}
@@ -857,15 +810,12 @@ const closeModal = (event?: Event): void => {
 }
 
 const updateList = (): void => {
-  // Reactive computation handles filtering automatically
 }
 
-// Pagination handlers
 const setPage = (page: number): void => {
   currentPage.value = page
 }
 
-// Viewport tracking
 const isInViewport = (el: Element | null): boolean => {
   if (!el) return false
   const rect = el.getBoundingClientRect()
@@ -883,10 +833,8 @@ const checkAllItems = (): void => {
     if (element && isInViewport(element)) {
       const originalLink = tempLinkClasses[linkClassName]
       if (!seenLinks[originalLink]) {
-        // Mark as seen immediately when in viewport
         seenLinks[originalLink] = true
-        
-        // Emit event for parent component
+
         emit('item-viewed', { link: originalLink, timestamp: Date.now() })
         
         const checkmark = element.querySelector('.checkmark.unseen')
@@ -903,7 +851,6 @@ const checkAllItems = (): void => {
   })
 }
 
-// Enhanced viewport checking with intersection observer for better performance
 let intersectionObserver: IntersectionObserver | null = null
 
 const setupIntersectionObserver = (): void => {
@@ -921,8 +868,7 @@ const setupIntersectionObserver = (): void => {
           
           if (originalLink && !seenLinks[originalLink]) {
             seenLinks[originalLink] = true
-            
-            // Emit event for parent component
+
             emit('item-viewed', { link: originalLink, timestamp: Date.now() })
             
             const checkmark = element.querySelector('.checkmark.unseen')
@@ -946,13 +892,10 @@ const setupIntersectionObserver = (): void => {
   )
 }
 
-// Lifecycle hooks
 onMounted(() => {
-  // Store original items for reset functionality
   const tabName = getTabName(selectedTabIndex.value)
   originalItems.value = [...(props.items[tabName as keyof typeof props.items] || [])]
-  
-  // Initialize range values based on data
+
   if (props.items.main?.length) {
     const weights = props.items.main
       .map(item => +(item.link_weight || 0))
@@ -966,7 +909,6 @@ onMounted(() => {
     }
   }
 
-  // Set up scroll listener for tracking viewed items
   const handleScroll = (): void => {
     checkAllItems()
   }
@@ -988,18 +930,14 @@ onUnmounted(() => {
   }
 })
 
-// Watchers
 watch(renderedItems, () => {
   nextTick(() => {
-    // Clear previous tracking data
     Object.keys(tempLinkClasses).forEach(key => {
       delete tempLinkClasses[key]
     })
-    
-    // Update temp link classes for viewport tracking
+
     const itemsToTrack = isGroupingEnabled.value 
       ? Object.values(groupedItems.value).flat().filter((item) => {
-          // Only track items in expanded domains
           const domain = getDomainName(item.link)
           return expandedDomains[domain]
         })
@@ -1009,11 +947,9 @@ watch(renderedItems, () => {
       const safeName = makeSafeForCSS(item.link)
       tempLinkClasses[safeName] = item.link
     })
-    
-    // Setup intersection observer for better performance
+
     setupIntersectionObserver()
-    
-    // Observe all item elements
+
     setTimeout(() => {
       Object.keys(tempLinkClasses).forEach(linkClassName => {
         const element = document.getElementById(linkClassName)
@@ -1022,19 +958,16 @@ watch(renderedItems, () => {
         }
       })
     }, 100)
-    
-    // Fallback to original method
+
     checkAllItems()
   })
 })
 
-// Watch for domain expansion changes to update intersection observer
 watch(expandedDomains, () => {
   if (isGroupingEnabled.value) {
     nextTick(() => {
       setupIntersectionObserver()
-      
-      // Re-observe elements in newly expanded domains
+
       setTimeout(() => {
         Object.keys(tempLinkClasses).forEach(linkClassName => {
           const element = document.getElementById(linkClassName)
@@ -1057,24 +990,20 @@ watch(filteredItems, () => {
   }
 })
 
-// Watch for grouping changes to reset pagination
 watch(isGroupingEnabled, () => {
   currentPage.value = 1
 })
 
-// Watch for external filter changes
 watch(() => props.filters, (newFilters) => {
   if (newFilters) {
     Object.assign(filters, newFilters)
   }
 }, { deep: true })
 
-// Watch for tab changes to update original items
 watch(selectedTabIndex, (newTabIndex) => {
   const tabName = getTabName(newTabIndex)
   originalItems.value = [...(props.items[tabName as keyof typeof props.items] || [])]
-  
-  // Reset sorting and grouping when switching tabs
+
   sortOrder.value = 'none'
   isGroupingEnabled.value = false
   Object.keys(expandedDomains).forEach(domain => {

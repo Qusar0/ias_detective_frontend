@@ -72,25 +72,45 @@ export default {
     this.queryType = this.$route.query.query_type;
     this.queryTitle = this.$route.query.result_title;
     try {
-      const res = await fetch(`/api/queries/query_data`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          query_id: this.query_id,
-          keyword_type_category: 'free word',
-          page: 1,
-          size: 20
-        })
-      });
-      let rawData = await res.json();
-
       if (this.queryType === 'number') {
         this.queryTitle = `+${this.queryTitle.split(' ').join('')}`;
-        this.numberItems.main = rawData.data
-            .map(({title, info, url, publication_date}) => {
+
+        // Сначала получаем информацию о количестве результатов
+        const categoryRes = await fetch(`/api/queries/category_query_data`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            query_id: this.query_id,
+            keyword_type_category: 'free word',
+            size: 20
+          })
+        });
+        const categoryData = await categoryRes.json();
+
+        // Вычисляем общее количество результатов
+        const totalResults = categoryData.total || (categoryData.size * categoryData.total_pages) || 0;
+
+        // Получаем все результаты одним запросом
+        const res = await fetch(`/api/queries/query_data`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            query_id: this.query_id,
+            keyword_type_category: 'free word',
+            page: 1,
+            size: totalResults
+          })
+        });
+        let rawData = await res.json();
+
+        this.numberItems.main = rawData
+            .map(({title, info, url, publication_date, keywords}) => {
               return {
                 title: title,
                 link: url,
@@ -100,14 +120,59 @@ export default {
               };
             });
       } else if (this.queryType === 'company') {
+        const res = await fetch(`/api/queries/query_data`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            query_id: this.query_id,
+            keyword_type_category: 'free word',
+            page: 1,
+            size: 20
+          })
+        });
+        let rawData = await res.json();
+
         this.translationLanguages = rawData.languages;
         this.companyItems.items.main = [];
         this.searchCategories = rawData.categories.map(item => {
           return item.name;
         });
       } else if (this.queryType === 'email') {
+        const res = await fetch(`/api/queries/query_data`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            query_id: this.query_id,
+            keyword_type_category: 'free word',
+            page: 1,
+            size: 20
+          })
+        });
+        let rawData = await res.json();
+
         this.emailItems.main = rawData;
       } else if (this.queryType === 'person') {
+        const res = await fetch(`/api/queries/query_data`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            query_id: this.query_id,
+            keyword_type_category: 'free word',
+            page: 1,
+            size: 20
+          })
+        });
+        let rawData = await res.json();
+
         this.personData.objectName = rawData.query_title;
         this.personData.categories = rawData.categories;
         this.personData.minus = rawData.minus_words;
@@ -115,6 +180,21 @@ export default {
         this.personData.languages = rawData.languages.map(item => item.name);
         console.log(this.personData);
       } else if (this.queryType === 'irbis') {
+        const res = await fetch(`/api/queries/query_data`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            query_id: this.query_id,
+            keyword_type_category: 'free word',
+            page: 1,
+            size: 20
+          })
+        });
+        let rawData = await res.json();
+
         console.log(rawData)
       }
     } catch (error) {
