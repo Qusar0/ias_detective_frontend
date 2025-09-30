@@ -141,6 +141,25 @@ export default {
           return item.name;
         });
       } else if (this.queryType === 'email') {
+        // Сначала получаем информацию о количестве результатов
+        const categoryRes = await fetch(`/api/queries/category_query_data`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            query_id: this.query_id,
+            keyword_type_category: 'free word',
+            size: 20
+          })
+        });
+        const categoryData = await categoryRes.json();
+
+        // Вычисляем общее количество результатов
+        const totalResults = categoryData.total || (categoryData.size * categoryData.total_pages) || 0;
+
+        // Получаем все результаты одним запросом
         const res = await fetch(`/api/queries/query_data`, {
           method: 'POST',
           headers: {
@@ -151,12 +170,21 @@ export default {
             query_id: this.query_id,
             keyword_type_category: 'free word',
             page: 1,
-            size: 20
+            size: totalResults
           })
         });
         let rawData = await res.json();
 
-        this.emailItems.main = rawData;
+        this.emailItems.main = rawData
+            .map(({title, info, url, publication_date, keywords}) => {
+              return {
+                title: title,
+                link: url,
+                content: info,
+                publication_date: publication_date,
+                keyword_list: [this.queryTitle]
+              };
+            });
       } else if (this.queryType === 'person') {
         const res = await fetch(`/api/queries/query_data`, {
           method: 'POST',

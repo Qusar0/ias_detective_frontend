@@ -42,28 +42,42 @@
       <!-- Sort and Filter Controls -->
       <div class="controls-section" @click="closeModal">
         <div class="sort-controls">
-          <button 
+          <button
             @click="setSortOrder('asc')"
             :class="['sort-btn', { active: sortOrder === 'asc' }]"
             :title="isGroupingEnabled ? 'Сортировать домены по возрастанию' : 'Сортировать ссылки по возрастанию'"
           >
             ↑ {{ isGroupingEnabled ? 'Домены А-Я' : 'Ссылки А-Я' }}
           </button>
-          <button 
+          <button
             @click="setSortOrder('desc')"
             :class="['sort-btn', { active: sortOrder === 'desc' }]"
             :title="isGroupingEnabled ? 'Сортировать домены по убыванию' : 'Сортировать ссылки по убыванию'"
           >
             ↓ {{ isGroupingEnabled ? 'Домены Я-А' : 'Ссылки Я-А' }}
           </button>
-          <button 
+          <button
+            @click="setDateSortOrder('date-asc')"
+            :class="['sort-btn', { active: sortOrder === 'date-asc' }]"
+            title="Сортировать по дате по возрастанию"
+          >
+            ↑ Дата (старые)
+          </button>
+          <button
+            @click="setDateSortOrder('date-desc')"
+            :class="['sort-btn', { active: sortOrder === 'date-desc' }]"
+            title="Сортировать по дате по убыванию"
+          >
+            ↓ Дата (новые)
+          </button>
+          <button
             @click="toggleGrouping"
             :class="['group-btn', { active: isGroupingEnabled }]"
             title="Группировать по доменам"
           >
             📁 Группировка
           </button>
-          <button 
+          <button
             @click="resetFilters"
             class="reset-btn"
             title="Сбросить фильтры"
@@ -145,6 +159,10 @@
                       {{ truncateText(getDomainName(item.link), 20) }}
                     </a>
 
+                    <span v-if="item.publication_date" class="publication-date" style="margin-left:9.6px;color:#666;font-size:11px;">
+                      {{ item.publication_date }}
+                    </span>
+
                     <div class="mt-auto item-keywords" style="margin-left:9.6px">
                       <div class="item-param">
                         <div class="query-content">
@@ -216,6 +234,10 @@
               <a :href="item.link" target="_blank" style="color: #4d4dff;" :title="getDomainName(item.link)">
                 {{ truncateText(getDomainName(item.link), 20) }}
               </a>
+
+              <span v-if="item.publication_date" class="publication-date" style="margin-left:9.6px;color:#666;font-size:11px;">
+                {{ item.publication_date }}
+              </span>
 
               <div class="mt-auto item-keywords" style="margin-left:9.6px">
                 <div class="item-param">
@@ -335,6 +357,7 @@ interface Item {
   content: string
   keyword_list?: string[]
   link_weight?: number | string
+  publication_date?: string
 }
 
 interface FilterConfig {
@@ -394,11 +417,34 @@ const currentPage = ref(1)
 
 const filters = reactive<Record<number, FilterConfig>>({ ...props.filters })
 
-const sortOrder = ref<'none' | 'asc' | 'desc'>('none')
+const sortOrder = ref<'none' | 'asc' | 'desc' | 'date-asc' | 'date-desc'>('none')
 const isGroupingEnabled = ref(false)
 const expandedDomains = reactive<Record<string, boolean>>({})
 
 const originalItems = ref<Item[]>([])
+
+// Функция для парсинга даты формата "24 июн. 2019г."
+const parseDate = (dateStr: string): Date | null => {
+  if (!dateStr) return null
+
+  const monthMap: Record<string, number> = {
+    'янв': 0, 'фев': 1, 'мар': 2, 'апр': 3, 'май': 4, 'мая': 4, 'июн': 5,
+    'июл': 6, 'авг': 7, 'сен': 8, 'окт': 9, 'нояб': 10, 'дек': 11
+  }
+
+  // Парсим строку вида "24 июн. 2019г."
+  const match = dateStr.match(/(\d+)\s+([а-я]+)\.?\s*(\d+)г?\.?/)
+  if (!match) return null
+
+  const day = parseInt(match[1])
+  const monthStr = match[2].toLowerCase()
+  const year = parseInt(match[3])
+
+  const month = monthMap[monthStr]
+  if (month === undefined) return null
+
+  return new Date(year, month, day)
+}
 
 const hasItemsForCurrentTab = computed(() => {
   if (selectedTabIndex.value === 1) {
@@ -468,6 +514,19 @@ const filteredItems = computed((): Item[] => {
       tempItems.sort((a, b) => a.link.localeCompare(b.link))
     } else if (sortOrder.value === 'desc') {
       tempItems.sort((a, b) => b.link.localeCompare(a.link))
+    } else if (sortOrder.value === 'date-asc' || sortOrder.value === 'date-desc') {
+      tempItems.sort((a, b) => {
+        const dateA = a.publication_date ? parseDate(a.publication_date) : null
+        const dateB = b.publication_date ? parseDate(b.publication_date) : null
+
+        // Элементы без даты идут в конец
+        if (!dateA && !dateB) return 0
+        if (!dateA) return 1
+        if (!dateB) return -1
+
+        const comparison = dateA.getTime() - dateB.getTime()
+        return sortOrder.value === 'date-asc' ? comparison : -comparison
+      })
     }
   }
 
@@ -587,6 +646,11 @@ const truncateText = (text: string, maxLength: number): string => {
 }
 
 const setSortOrder = (order: 'asc' | 'desc') => {
+  sortOrder.value = order
+  currentPage.value = 1
+}
+
+const setDateSortOrder = (order: 'date-asc' | 'date-desc') => {
   sortOrder.value = order
   currentPage.value = 1
 }

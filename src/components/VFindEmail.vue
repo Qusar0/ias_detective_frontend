@@ -134,7 +134,13 @@
     </div>
     <div class="items">
       <div class="item" v-for="query in query_list" :key="query.query_id">
-        <div class="item__content item__content-title item-title">{{ query.query_title }}</div>
+        <div
+            class="item__content item__content-title item-title"
+            :style="query?.query_status !== 'pending' ? 'cursor: pointer' : ''"
+            @click="goToQueryPage(query)"
+        >
+          {{ query.query_title }}
+        </div>
         <div class="item__content item-date">
           {{ getItemDate(new Date(query?.query_created_at)) }}
         </div>
@@ -272,6 +278,11 @@ const inputEmail = (event) => {
   form.email = event.target.value;
 };
 
+const goToQueryPage = (query) => {
+  if (query?.query_status === 'done') {
+    window.open(`/query?result_id=${query.query_id}&query_type=email&result_title=${query.query_title}`, '_blank');
+  }
+}
 
 const multiInput = (event) => {
   if (event.ctrlKey && event.code == 'KeyV') {
