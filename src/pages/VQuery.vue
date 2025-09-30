@@ -25,6 +25,10 @@
       fullname-counters=""
       :items="personData.items"
   />
+  <VIrbisReport
+      v-if="queryType === 'irbis'"
+      :query-id="query_id"
+  />
 </template>
 
 <script>
@@ -33,9 +37,10 @@ import VNumberReport from '../components/Reports/VPhoneNumberReport.vue';
 import VCompanyReport from '../components/Reports/VCompanyReport.vue';
 import VEmailReport from '../components/Reports/VEmailReport.vue';
 import VPersonReport from '../components/Reports/VPersonReport.vue';
+import VIrbisReport from '../components/Reports/VIrbisReport.vue';
 
 export default {
-  components: {VPersonReport, VEmailReport, VCompanyReport, VNumberReport},
+  components: {VIrbisReport, VPersonReport, VEmailReport, VCompanyReport, VNumberReport},
   methods: {
     router() {
       return router;
@@ -43,6 +48,7 @@ export default {
   },
   data() {
     return {
+      query_id: null,
       queryType: '',
       queryTitle: '',
       numberItems: {
@@ -62,7 +68,7 @@ export default {
     };
   },
   async mounted() {
-    const queryId = this.$route.query.result_id;
+    this.query_id = this.$route.query.result_id;
     this.queryType = this.$route.query.query_type;
     this.queryTitle = this.$route.query.result_title;
     try {
@@ -73,26 +79,26 @@ export default {
         },
         credentials: 'include',
         body: JSON.stringify({
-          query_id: queryId,
+          query_id: this.query_id,
           keyword_type_category: 'free word',
           page: 1,
           size: 20
         })
-      })
+      });
       let rawData = await res.json();
 
       if (this.queryType === 'number') {
         this.queryTitle = `+${this.queryTitle.split(' ').join('')}`;
         this.numberItems.main = rawData.data
-            .map(({ title, info, url, publication_date }) => {
+            .map(({title, info, url, publication_date}) => {
               return {
                 title: title,
                 link: url,
                 content: info,
                 publication_date: publication_date,
-                keyword_list: [this.queryTitle],
+                keyword_list: [this.queryTitle]
               };
-            })
+            });
       } else if (this.queryType === 'company') {
         this.translationLanguages = rawData.languages;
         this.companyItems.items.main = [];
@@ -102,19 +108,19 @@ export default {
       } else if (this.queryType === 'email') {
         this.emailItems.main = rawData;
       } else if (this.queryType === 'person') {
-        this.personData.objectName = rawData.query_title
-        this.personData.categories = rawData.categories
-        this.personData.minus = rawData.minus_words
-        this.personData.plus = rawData.plus_words
-        this.personData.languages = rawData.languages.map(item => item.name)
-        console.log(this.personData)
+        this.personData.objectName = rawData.query_title;
+        this.personData.categories = rawData.categories;
+        this.personData.minus = rawData.minus_words;
+        this.personData.plus = rawData.plus_words;
+        this.personData.languages = rawData.languages.map(item => item.name);
+        console.log(this.personData);
       } else if (this.queryType === 'irbis') {
-
+        console.log(rawData)
       }
     } catch (error) {
       //await router.push('/')
     }
-  },
+  }
 };
 </script>
 

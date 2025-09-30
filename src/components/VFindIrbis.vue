@@ -322,7 +322,7 @@
         <button
             v-else
             class="item-btn download btn"
-            @click="viewQuery(query.query_title, query.query_id, query)"
+            @click="viewQuery(query)"
         >
           Посмотреть
           <i
@@ -502,6 +502,12 @@ const clearAllFields = () => {
   selectedRegions.value = [];
   birth_date_error.value = false;
   regions_error.value = false;
+};
+
+const viewQuery = (query) => {
+  if (query?.query_status === 'done') {
+    window.open(`/query?result_id=${query.query_id}&query_type=irbis`, '_blank');
+  }
 };
 
 const getHTMLPage = () => {
