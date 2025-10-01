@@ -16,12 +16,14 @@
   />
   <VPersonReport
       v-if="queryType === 'person'"
-      :minus-words="personData.minus"
+      :minus-words="personData.minus.join(', ')"
       :translation-languages="personData.languages"
       :object-name="personData.objectName"
-      :search-categories="personData.categories"
-      :plus-words="personData.plus"
-      :arbitrary-keywords="''"
+      :search-categories="personData.categories.join(', ')"
+      :plus-words="personData.plus.join(', ')"
+      :arbitrary-keywords="personData.freeWords.join(', ')"
+      :keyword-stats="personData.keywordStats"
+      :query-id="query_id"
       fullname-counters=""
       :items="personData.items"
   />
@@ -62,8 +64,23 @@ export default {
         main: []
       },
       personData: {
-        items: [],
-        languages: []
+        objectName: '',
+        categories: [],
+        minus: [],
+        plus: [],
+        languages: [],
+        keywordStats: {},
+        freeWords: [],
+        items: {
+          main: [],
+          arbitrary: [],
+          negative: [],
+          reputation: [],
+          connections: [],
+          socials: [],
+          documents: [],
+          all_materials: []
+        }
       }
     };
   },
@@ -186,26 +203,36 @@ export default {
               };
             });
       } else if (this.queryType === 'person') {
-        const res = await fetch(`/api/queries/query_data`, {
-          method: 'POST',
+        // Получаем общую информацию о запросе
+        const generalRes = await fetch(`/api/queries/general_query_data?query_id=${this.query_id}`, {
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json'
           },
-          credentials: 'include',
-          body: JSON.stringify({
-            query_id: this.query_id,
-            keyword_type_category: 'free word',
-            page: 1,
-            size: 20
-          })
+          credentials: 'include'
         });
-        let rawData = await res.json();
+        let generalData = await generalRes.json();
 
-        this.personData.objectName = rawData.query_title;
-        this.personData.categories = rawData.categories;
-        this.personData.minus = rawData.minus_words;
-        this.personData.plus = rawData.plus_words;
-        this.personData.languages = rawData.languages.map(item => item.name);
+        this.personData.objectName = generalData.query_title;
+        this.personData.categories = generalData.categories.map(item => item.name);
+        this.personData.minus = generalData.minus_words || [];
+        this.personData.plus = generalData.plus_words || [];
+        this.personData.languages = generalData.languages.map(item => item.name);
+        this.personData.keywordStats = generalData.keyword_stats || {};
+        this.personData.freeWords = generalData.free_words || [];
+
+        // Инициализируем items для всех вкладок (пустые, данные загрузятся при переключении)
+        this.personData.items = {
+          main: [],
+          arbitrary: [],
+          negative: [],
+          reputation: [],
+          connections: [],
+          socials: [],
+          documents: [],
+          all_materials: []
+        };
+
         console.log(this.personData);
       } else if (this.queryType === 'irbis') {
         const res = await fetch(`/api/queries/query_data`, {
