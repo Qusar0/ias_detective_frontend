@@ -129,6 +129,30 @@
             :totalCount="statistics?.corruption || 0"
         />
       </div>
+
+      <!-- Террористы -->
+      <div
+          :class="['tab-content-8', { selected: selectedTabIndex === 8 }]"
+          v-show="selectedTabIndex === 8"
+      >
+        <VIrbisTerroristsTab
+            :queryId="queryId"
+            :isActive="selectedTabIndex === 8"
+            :totalCount="statistics?.terrorists || 0"
+        />
+      </div>
+
+      <!-- Налоговые задолженности -->
+      <div
+          :class="['tab-content-9', { selected: selectedTabIndex === 9 }]"
+          v-show="selectedTabIndex === 9"
+      >
+        <VIrbisTaxArrearsTab
+            :queryId="queryId"
+            :isActive="selectedTabIndex === 9"
+            :totalCount="statistics?.tax_arrears || 0"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -142,6 +166,8 @@ import VIrbisBankruptcyTab from './tabs/VIrbisBankruptcyTab.vue';
 import VIrbisDisqualifiedTab from './tabs/VIrbisDisqualifiedTab.vue';
 import VIrbisPledgesTab from './tabs/VIrbisPledgesTab.vue';
 import VIrbisCorruptionTab from './tabs/VIrbisCorruptionTab.vue';
+import VIrbisTerroristsTab from './tabs/VIrbisTerroristsTab.vue';
+import VIrbisTaxArrearsTab from './tabs/VIrbisTaxArrearsTab.vue';
 
 const tabs = [
   'Общее',
@@ -150,7 +176,9 @@ const tabs = [
   'Банкротства',
   'Дисквалифицированные лица',
   'Залоги',
-  'Коррупция'
+  'Коррупция',
+  'Террористы',
+  'Налоговые задолженности'
 ];
 
 const props = defineProps({
@@ -175,7 +203,9 @@ const tabCounts = reactive({
   4: '?', // Банкротства
   5: '?', // Дисквалифицированные лица
   6: '?', // Залоги
-  7: '?' // Коррупция
+  7: '?', // Коррупция
+  8: '?', // Террористы
+  9: '?' // Налоговые задолженности
 });
 
 const selectTab = (tabIndex) => {
@@ -226,6 +256,8 @@ const fetchStatistics = async () => {
         tabCounts[5] = statistics.value.disqualified_person || 0;
         tabCounts[6] = statistics.value.pledgess || 0;
         tabCounts[7] = statistics.value.corruption || 0;
+        tabCounts[8] = statistics.value.terrorists || 0;
+        tabCounts[9] = statistics.value.tax_arrears || 0;
       }
     }
   } catch (err) {

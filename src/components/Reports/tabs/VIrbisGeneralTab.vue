@@ -90,7 +90,9 @@ const totalResults = computed(() => {
       (localStatistics.value.bankruptcy || 0) +
       (localStatistics.value.disqualified_person || 0) +
       (localStatistics.value.pledgess || 0) +
-      (localStatistics.value.corruption || 0)
+      (localStatistics.value.corruption || 0) +
+      (localStatistics.value.terrorists || 0) +
+      (localStatistics.value.tax_arrears || 0)
   );
 });
 
@@ -106,7 +108,9 @@ const chartData = computed(() => {
     '#ef5350', // Банкротства
     '#4caf50', // Дисквалифицированные лица
     '#2196f3', // Залоги
-    '#ff9800'  // Коррупция
+    '#ff9800', // Коррупция
+    '#7c3aed', // Террористы
+    '#a855f7'  // Налоговые задолженности
   ];
 
   const labels = [
@@ -115,10 +119,12 @@ const chartData = computed(() => {
     'Банкротства',
     'Дисквалифицированные лица',
     'Залоги',
-    'Коррупция'
+    'Коррупция',
+    'Террористы',
+    'Налоговые задолженности'
   ];
 
-  const keys = ['court_general', 'arbitration_court', 'bankruptcy', 'disqualified_person', 'pledgess', 'corruption'];
+  const keys = ['court_general', 'arbitration_court', 'bankruptcy', 'disqualified_person', 'pledgess', 'corruption', 'terrorists', 'tax_arrears'];
 
   return keys.map((key, index) => {
     const count = stats[key] || 0;
