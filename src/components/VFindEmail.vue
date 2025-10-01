@@ -77,7 +77,8 @@
           >
             Поиск упоминаний email на сайтах,<br> проиндексированных поисковыми системами.
           </small>
-          <span style="user-select: none"
+          <span
+              style="user-select: none"
           >Упоминания: <span class="checkbox-price">{{ chbox_prices.mentions }} ₽</span></span
           >
         </label>
@@ -157,12 +158,16 @@
             Выполняется
           </button>
         </div>
-        <i class="item__content fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'xmlriver on update'"
-           :title="'Сервис на обновлении!\n\nПопробуйте позже.'"
-           style="font-size: 17px;color: #ec5e5e; width: 260px;"></i>
-        <i class="item__content fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'failed'"
-           :title="'Ошибка сервера!\n\nПопробуйте позже.'"
-           style="font-size: 17px;color: #ec5e5e; width: 260px;"></i>
+        <i
+            class="item__content fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'xmlriver on update'"
+            :title="'Сервис на обновлении!\n\nПопробуйте позже.'"
+            style="font-size: 17px;color: #ec5e5e; width: 260px;"
+        ></i>
+        <i
+            class="item__content fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'failed'"
+            :title="'Ошибка сервера!\n\nПопробуйте позже.'"
+            style="font-size: 17px;color: #ec5e5e; width: 260px;"
+        ></i>
         <div
             v-else
             class="item__content"
@@ -194,8 +199,10 @@
             @click="deleteQuery(query.query_id, update_current_timestamp)"
         ></i>
       </div>
-      <div class="item" v-show="query_list_loading"
-           style="background-color: transparent;justify-content: center;margin-top: 0;">
+      <div
+          class="item" v-show="query_list_loading"
+          style="background-color: transparent;justify-content: center;margin-top: 0;"
+      >
         <i class="fa-solid fa-spinner"></i>
       </div>
     </div>
@@ -214,17 +221,17 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref, watch} from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import '../utils/index';
-import {isAuthorized, user_balance} from '../use/index';
+import { isAuthorized, user_balance } from '../use/index';
 import VPagination from './UI/VPagination.vue';
-import {events} from '../utils/notification';
+import { events } from '../utils/notification';
 import router from '../router/router.js';
-import {useQueryManagement} from '../composables/useQueryManagement.js';
-import {usePagination} from '../composables/usePagination.js';
-import {useTimestamp} from '../composables/useTimestamp.js';
-import {getItemDate} from '../utils/dateUtils.js';
-import {clearCheckboxes, clearKeysList} from '../utils/fieldUtils.js';
+import { useQueryManagement } from '../composables/useQueryManagement.js';
+import { usePagination } from '../composables/usePagination.js';
+import { useTimestamp } from '../composables/useTimestamp.js';
+import { getItemDate } from '../utils/dateUtils.js';
+import { clearCheckboxes, clearKeysList } from '../utils/fieldUtils.js';
 
 const confirm_model = ref(false);
 
@@ -269,7 +276,6 @@ const surname_error = ref(false);
 const name_error = ref(false);
 const patronymic_error = ref(false);
 
-
 const getPrice = () => {
   if (surname_error.value || form.email == '') {
     error_model.value = true;
@@ -300,7 +306,7 @@ const goToQueryPage = (query) => {
   if (query?.query_status === 'done') {
     window.open(`/query?result_id=${query.query_id}&query_type=email&result_title=${query.query_title}`, '_blank');
   }
-}
+};
 
 const multiInput = (event) => {
   if (event.ctrlKey && event.code == 'KeyV') {

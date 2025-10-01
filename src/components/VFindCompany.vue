@@ -446,19 +446,19 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref, watch} from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import '../utils/index';
-import {isAuthorized, keys_list, user_balance} from '../use/index';
+import { isAuthorized, keys_list, user_balance } from '../use/index';
 import ListInput from './ListInput.vue';
 import VPagination from './UI/VPagination.vue';
-import {events} from '../utils/notification';
+import { events } from '../utils/notification';
 import Multiselect from 'vue-multiselect';
 import router from '../router/router.js';
-import {useQueryManagement} from '../composables/useQueryManagement.js';
-import {usePagination} from '../composables/usePagination.js';
-import {useTimestamp} from '../composables/useTimestamp.js';
-import {getItemDate} from '../utils/dateUtils.js';
-import {clearCheckboxes, clearKeysList} from '../utils/fieldUtils.js';
+import { useQueryManagement } from '../composables/useQueryManagement.js';
+import { usePagination } from '../composables/usePagination.js';
+import { useTimestamp } from '../composables/useTimestamp.js';
+import { getItemDate } from '../utils/dateUtils.js';
+import { clearCheckboxes, clearKeysList } from '../utils/fieldUtils.js';
 
 const confirm_model = ref(false);
 
@@ -475,7 +475,12 @@ const {selected_page, set_selected_page} = usePagination();
 const {update_current_timestamp} = useTimestamp();
 const languageOptions = JSON.parse(localStorage.getItem('languages'));
 const defaultLanguage = localStorage.getItem('defaultLanguage');
-const checkedLanguages = ref(defaultLanguage && defaultLanguage !== 'null' ? [JSON.parse(defaultLanguage)] : [{name: 'Русский', code: 'ru'}]);
+const checkedLanguages = ref(defaultLanguage && defaultLanguage !== 'null' ? [JSON.parse(defaultLanguage)] : [
+  {
+    name: 'Русский',
+    code: 'ru'
+  }
+]);
 const temp_price = ref(0);
 
 const chbox = reactive({
@@ -504,7 +509,7 @@ const goToQueryPage = (query) => {
   if (query?.query_status === 'done') {
     window.open(`/query?result_id=${query.query_id}&query_type=company&result_title=${query.query_title}`, '_blank');
   }
-}
+};
 
 const getPrice = () => {
   languageError.value = false;
@@ -562,12 +567,16 @@ const getPrice = () => {
   }
 };
 
-
 const clearAllFields = () => {
   form.company_name = '';
   form.extra_name = '';
   const defaultLang = localStorage.getItem('defaultLanguage');
-  checkedLanguages.value = defaultLang && defaultLang !== 'null' ? [JSON.parse(defaultLang)] : [{name: 'Русский', code: 'ru'}];
+  checkedLanguages.value = defaultLang && defaultLang !== 'null' ? [JSON.parse(defaultLang)] : [
+    {
+      name: 'Русский',
+      code: 'ru'
+    }
+  ];
   languageError.value = false;
   form.location = '';
   clearKeysList();
@@ -638,7 +647,6 @@ const getHTMLPage = () => {
 
   }
 };
-
 
 watch(selected_page, (page) => {
   query_list_loading.value = true;

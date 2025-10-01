@@ -1,6 +1,6 @@
-import {ref} from 'vue';
-import dayjs from "dayjs"
-import {isAuthorized} from '../use/index';
+import { ref } from 'vue';
+import dayjs from 'dayjs';
+import { isAuthorized } from '../use/index';
 import router from '../router/router.js';
 
 export function useQueryManagement(category) {
@@ -30,9 +30,9 @@ export function useQueryManagement(category) {
           if (response) {
             query_list.value = response.map(query => {
               query.old_query_unix_date = query.query_unix_date;
-              const createdAt = dayjs(query.query_created_at, "YYYY/MM/DD HH:mm:ss");
-              const adjusted = createdAt.subtract(new Date().getTimezoneOffset(), "minute");
-              query.query_created_at = adjusted.format("YYYY-MM-DD HH:mm:ss");
+              const createdAt = dayjs(query.query_created_at, 'YYYY/MM/DD HH:mm:ss');
+              const adjusted = createdAt.subtract(new Date().getTimezoneOffset(), 'minute');
+              query.query_created_at = adjusted.format('YYYY-MM-DD HH:mm:ss');
               return query;
             });
           }

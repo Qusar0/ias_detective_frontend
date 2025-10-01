@@ -1,4 +1,4 @@
-import {ref} from 'vue';
+import { ref } from 'vue';
 
 export function useTimestamp() {
   const current_timestamp = ref(new Date().valueOf());

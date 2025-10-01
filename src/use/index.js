@@ -1,5 +1,5 @@
-import {reactive, ref} from 'vue';
-import {bell_opened} from '../utils/notification';
+import { reactive, ref } from 'vue';
+import { bell_opened } from '../utils/notification';
 
 export const isAuthorized = reactive(ref(undefined));
 export const bool = reactive(ref(true));
@@ -7,7 +7,6 @@ export const user_name = reactive(ref(localStorage.getItem('user_name')));
 export const user_balance = reactive(ref(0));
 export const user_id = reactive(ref(0));
 export const user_created = reactive(ref(localStorage.getItem('user_created')));
-
 
 export const prohibited_model = reactive(ref(false));
 export const keywords_model = reactive(ref(false));

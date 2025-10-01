@@ -46,9 +46,9 @@
 
 <script setup>
 import router from '../router/router.js';
-import {onMounted, ref} from 'vue';
-import {useRoute} from 'vue-router';
-import {isAuthorized} from '../use/index';
+import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import { isAuthorized } from '../use/index';
 
 const password = ref('');
 const token = ref('');

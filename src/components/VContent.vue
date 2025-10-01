@@ -432,23 +432,28 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref, watch} from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import '../utils/index';
 import Multiselect from 'vue-multiselect';
-import {isAuthorized, keys_list, user_balance} from '../use/index';
+import { isAuthorized, keys_list, user_balance } from '../use/index';
 import ListInput from './ListInput.vue';
 import VPagination from './UI/VPagination.vue';
-import {events} from '../utils/notification';
+import { events } from '../utils/notification';
 import router from '../router/router.js';
-import {useQueryManagement} from '../composables/useQueryManagement.js';
-import {usePagination} from '../composables/usePagination.js';
-import {useTimestamp} from '../composables/useTimestamp.js';
-import {getItemDate} from '../utils/dateUtils.js';
-import {clearCheckboxes, clearKeysList} from '../utils/fieldUtils.js';
+import { useQueryManagement } from '../composables/useQueryManagement.js';
+import { usePagination } from '../composables/usePagination.js';
+import { useTimestamp } from '../composables/useTimestamp.js';
+import { getItemDate } from '../utils/dateUtils.js';
+import { clearCheckboxes, clearKeysList } from '../utils/fieldUtils.js';
 
 const languageOptions = JSON.parse(localStorage.getItem('languages'));
 const defaultLanguage = localStorage.getItem('defaultLanguage');
-const checkedLanguages = ref(defaultLanguage && defaultLanguage !== 'null' ? [JSON.parse(defaultLanguage)] : [{name: 'Русский', code: 'ru'}]);
+const checkedLanguages = ref(defaultLanguage && defaultLanguage !== 'null' ? [JSON.parse(defaultLanguage)] : [
+  {
+    name: 'Русский',
+    code: 'ru'
+  }
+]);
 const temp_price = ref(0);
 const confirm_model = ref(false);
 
@@ -491,7 +496,7 @@ const goToQueryPage = (query) => {
   if (query?.query_status === 'done') {
     window.open(`/query?result_id=${query.query_id}&query_type=person&result_title=${query.query_title}`, '_blank');
   }
-}
+};
 
 const multiInput = (event) => {
   if (event.ctrlKey && event.code === 'KeyV') {
@@ -508,7 +513,12 @@ const multiInput = (event) => {
 const clearAllFields = () => {
   form.search_surname = '';
   const defaultLang = localStorage.getItem('defaultLanguage');
-  checkedLanguages.value = defaultLang && defaultLang !== 'null' ? [JSON.parse(defaultLang)] : [{name: 'Русский', code: 'ru'}];
+  checkedLanguages.value = defaultLang && defaultLang !== 'null' ? [JSON.parse(defaultLang)] : [
+    {
+      name: 'Русский',
+      code: 'ru'
+    }
+  ];
   form.search_name = '';
   languageError.value = false;
   form.search_patronymic = '';
@@ -619,7 +629,6 @@ const getPrice = () => {
       default_keywords_type: Object.keys(chbox).filter(temp_chbox => chbox[temp_chbox]).join(', ')
     };
 
-
     fetch(`/api/queries/calculate_price`, {
       method: 'POST',
       headers: {
@@ -645,7 +654,6 @@ const getPrice = () => {
         });
   }
 };
-
 
 watch(selected_page, (page) => {
   query_list.value = [];

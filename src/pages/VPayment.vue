@@ -100,7 +100,7 @@ import VLogin from '../components/VLogin.vue';
 import VRegister from '../components/VRegister.vue';
 import VSidebar from '../components/VSidebar.vue';
 import VHeader from '../components/VHeader.vue';
-import {bool, menu, refresh, user_id, user_name} from '../use/index';
+import { bool, menu, refresh, user_id, user_name } from '../use/index';
 import PersonInfo from '../components/PersonInfo.vue';
 
 export default {

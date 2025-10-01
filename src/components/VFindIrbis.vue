@@ -77,7 +77,8 @@
       <ul>
         <li>Обязательные поля для заполнения: Фамилия, Имя и Регионы.</li>
         <li>Регионы вводите по одному на строке, после чего нажмите Enter или
-          кнопку «Выбрать» - повторите для нужного количества регионов (но учтите, что можно указать только 1-2 региона).
+          кнопку «Выбрать» - повторите для нужного количества регионов (но учтите, что можно указать только 1-2
+          региона).
         </li>
       </ul>
     </div>
@@ -360,20 +361,25 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref, watch} from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import '../utils/index';
-import {isAuthorized, user_balance} from '../use/index';
+import { isAuthorized, user_balance } from '../use/index';
 import VPagination from './UI/VPagination.vue';
-import {events} from '../utils/notification';
+import { events } from '../utils/notification';
 import Multiselect from 'vue-multiselect';
 import router from '../router/router.js';
-import {useQueryManagement} from '../composables/useQueryManagement.js';
-import {usePagination} from '../composables/usePagination.js';
-import {useTimestamp} from '../composables/useTimestamp.js';
-import {getItemDate} from '../utils/dateUtils.js';
+import { useQueryManagement } from '../composables/useQueryManagement.js';
+import { usePagination } from '../composables/usePagination.js';
+import { useTimestamp } from '../composables/useTimestamp.js';
+import { getItemDate } from '../utils/dateUtils.js';
 
 const defaultLanguage = localStorage.getItem('defaultLanguage');
-const checkedLanguages = ref(defaultLanguage && defaultLanguage !== 'null' ? [JSON.parse(defaultLanguage)] : [{name: 'Русский', code: 'ru'}]);
+const checkedLanguages = ref(defaultLanguage && defaultLanguage !== 'null' ? [JSON.parse(defaultLanguage)] : [
+  {
+    name: 'Русский',
+    code: 'ru'
+  }
+]);
 const temp_price = ref(0);
 const confirm_model = ref(false);
 
@@ -438,8 +444,8 @@ const validateDateFormat = (date) => {
   const dateObj = new Date(year, month - 1, day);
 
   return dateObj.getDate() === day &&
-         dateObj.getMonth() === month - 1 &&
-         dateObj.getFullYear() === year;
+      dateObj.getMonth() === month - 1 &&
+      dateObj.getFullYear() === year;
 };
 
 const loadRegions = async () => {
@@ -458,17 +464,17 @@ const loadRegions = async () => {
       }));
     } else {
       regionsOptions.value = [
-        { code: 77, name: '77 - Москва' },
-        { code: 78, name: '78 - Санкт-Петербург' },
-        { code: 50, name: '50 - Московская область' }
+        {code: 77, name: '77 - Москва'},
+        {code: 78, name: '78 - Санкт-Петербург'},
+        {code: 50, name: '50 - Московская область'}
       ];
     }
   } catch (error) {
     console.error('Error loading regions:', error);
     regionsOptions.value = [
-      { code: 77, name: '77 - Москва' },
-      { code: 78, name: '78 - Санкт-Петербург' },
-      { code: 50, name: '50 - Московская область' }
+      {code: 77, name: '77 - Москва'},
+      {code: 78, name: '78 - Санкт-Петербург'},
+      {code: 50, name: '50 - Московская область'}
     ];
   } finally {
     regionsLoading.value = false;
@@ -494,7 +500,12 @@ const multiInput = (event) => {
 const clearAllFields = () => {
   form.search_surname = '';
   const defaultLang = localStorage.getItem('defaultLanguage');
-  checkedLanguages.value = defaultLang && defaultLang !== 'null' ? [JSON.parse(defaultLang)] : [{name: 'Русский', code: 'ru'}];
+  checkedLanguages.value = defaultLang && defaultLang !== 'null' ? [JSON.parse(defaultLang)] : [
+    {
+      name: 'Русский',
+      code: 'ru'
+    }
+  ];
   form.search_name = '';
   languageError.value = false;
   form.search_patronymic = '';
@@ -538,7 +549,7 @@ const getHTMLPage = () => {
       passport_series: form.passport_series.trim(),
       passport_number: form.passport_number.trim(),
       inn: form.inn.trim(),
-      regions: selectedRegions.value.map(region => region.code),
+      regions: selectedRegions.value.map(region => region.code)
     };
     clearAllFields();
 
@@ -601,7 +612,6 @@ const getPrice = () => {
     temp_price.value = 100;
   }
 };
-
 
 watch(selected_page, (page) => {
   query_list.value = [];

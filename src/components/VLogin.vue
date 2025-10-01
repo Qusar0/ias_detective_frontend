@@ -94,8 +94,8 @@
 </template>
 
 <script>
-import {isAuthorized, user_created, user_id, user_name} from '../use/index';
-import {get_events} from '../utils/notification';
+import { isAuthorized, user_created, user_id, user_name } from '../use/index';
+import { get_events } from '../utils/notification';
 
 export default {
   data() {

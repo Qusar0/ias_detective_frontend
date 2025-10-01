@@ -3,11 +3,11 @@
 </template>
 
 <script>
-import {h} from 'vue';
-import {toast} from 'vue3-toastify';
-import {events, get_events, getNotificationSound} from './utils/notification';
+import { h } from 'vue';
+import { toast } from 'vue3-toastify';
+import { events, get_events, getNotificationSound } from './utils/notification';
 import ToastifyMessage from './components/UI/ToastifyMessage.vue';
-import {set_user_balance, user_created, user_name} from './use';
+import { set_user_balance, user_created, user_name } from './use';
 
 export default {
   components: {
@@ -104,7 +104,7 @@ export default {
       this.source.close();
     }
     localStorage.removeItem('languages');
-    localStorage.removeItem('defaultLanguage')
+    localStorage.removeItem('defaultLanguage');
   }
 };
 

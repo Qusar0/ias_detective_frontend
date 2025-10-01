@@ -7,7 +7,9 @@
 
     <div v-else-if="error" class="error-container">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-        <path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z" />
+        <path
+            d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
+        />
       </svg>
       <div class="error-text">
         Ошибка загрузки данных: {{ error }}
@@ -19,7 +21,9 @@
 
     <div v-else-if="!localGeneralInfo" class="empty-list">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-        <path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z" />
+        <path
+            d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
+        />
       </svg>
       Нет данных для отображения!
     </div>
@@ -58,9 +62,9 @@
             <span class="info-label">Регионы:</span>
             <div class="regions-list">
               <span
-                v-for="(region, index) in localGeneralInfo.regions"
-                :key="index"
-                class="region-tag"
+                  v-for="(region, index) in localGeneralInfo.regions"
+                  :key="index"
+                  class="region-tag"
               >
                 {{ region }}
               </span>
@@ -78,7 +82,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { onMounted, ref, watch } from 'vue';
 
 const props = defineProps({
   queryId: {
@@ -89,52 +93,52 @@ const props = defineProps({
     type: Boolean,
     default: false
   }
-})
+});
 
-const emit = defineEmits(['update-count'])
+const emit = defineEmits(['update-count']);
 
-const loading = ref(false)
-const error = ref(null)
-const localGeneralInfo = ref(null)
+const loading = ref(false);
+const error = ref(null);
+const localGeneralInfo = ref(null);
 
 const fetchGeneralInfo = async () => {
   if (!props.queryId) {
-    error.value = 'Query ID не предоставлен'
-    return
+    error.value = 'Query ID не предоставлен';
+    return;
   }
 
-  loading.value = true
-  error.value = null
+  loading.value = true;
+  error.value = null;
 
   try {
-    const response = await fetch(`/api/irbis/person_info/${props.queryId}`)
+    const response = await fetch(`/api/irbis/person_info/${props.queryId}`);
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json()
-    localGeneralInfo.value = data
-    emit('update-count', data ? 1 : 0)
+    const data = await response.json();
+    localGeneralInfo.value = data;
+    emit('update-count', data ? 1 : 0);
   } catch (err) {
-    error.value = err.message || 'Произошла ошибка при загрузке данных'
-    console.error('Error fetching general info:', err)
+    error.value = err.message || 'Произошла ошибка при загрузке данных';
+    console.error('Error fetching general info:', err);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 watch(() => props.isActive, (isActive) => {
   if (isActive && !localGeneralInfo.value && props.queryId) {
-    fetchGeneralInfo()
+    fetchGeneralInfo();
   }
-})
+});
 
 onMounted(() => {
   if (props.isActive && !localGeneralInfo.value && props.queryId) {
-    fetchGeneralInfo()
+    fetchGeneralInfo();
   }
-})
+});
 </script>
 
 <style scoped>
@@ -294,8 +298,12 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Error Styles */

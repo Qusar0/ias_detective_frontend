@@ -1,4 +1,4 @@
-import {computed, reactive, ref} from 'vue';
+import { computed, reactive, ref } from 'vue';
 
 export const events = reactive(ref([]));
 export const bell_animation = reactive(ref(false));
@@ -13,7 +13,6 @@ export function getNotificationSound() {
   audio.pause();
   audio.currentTime = 0;
   audio.play();
-
 
   bell_animation.value = false;
   bell_animation.value = true;
@@ -48,7 +47,6 @@ export function get_events() {
         events.value = data ?? [];
       });
 }
-
 
 export const has_notifications = computed(() => {
   return Boolean(events.value.filter(event => event?.event_status === 'unseen')?.length);

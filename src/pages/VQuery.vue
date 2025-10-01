@@ -81,7 +81,7 @@ export default {
     this.queryTitle = this.$route.query.result_title;
 
     if (!this.query_id || !this.queryType || (this.queryType && this.queryType !== 'irbis' && !this.queryTitle)) {
-      await router.push('/')
+      await router.push('/');
     }
 
     try {
@@ -213,7 +213,7 @@ export default {
         // может тут что-то тоже появится для пагинации
       }
     } catch (error) {
-      await router.push('/')
+      await router.push('/');
     }
   }
 };

@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import {bool, isAuthorized} from '../use/index';
+import { bool, isAuthorized } from '../use/index';
 
 export default {
   setup() {

@@ -38,7 +38,7 @@
 
 <script>
 import router from '../router/router.js';
-import {isAuthorized} from '../use/index';
+import { isAuthorized } from '../use/index';
 
 export default {
   methods: {

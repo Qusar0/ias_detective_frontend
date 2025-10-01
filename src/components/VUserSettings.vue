@@ -53,19 +53,27 @@
       </div>
       <div class="inputs">
         <div class="flex flex-col w-full parent-prompt top-input">
-          <input v-model="oldPassword" type="text" title="some title ..."
-                 style="margin-right:0;margin-bottom: 0;" placeholder="Старый пароль">
+          <input
+              v-model="oldPassword" type="text" title="some title ..."
+              style="margin-right:0;margin-bottom: 0;" placeholder="Старый пароль"
+          >
           <small class="prompt">Введите свой настояший пароль</small>
         </div>
-        <div class="flex flex-col w-full parent-prompt top-input"
-             style="margin-right: 20px;margin-bottom: 0;align-items: start;">
-          <input style="margin-right:0;margin-bottom: 0;" v-model="newPassword" type="text"
-                 placeholder="Новый пароль">
+        <div
+            class="flex flex-col w-full parent-prompt top-input"
+            style="margin-right: 20px;margin-bottom: 0;align-items: start;"
+        >
+          <input
+              style="margin-right:0;margin-bottom: 0;" v-model="newPassword" type="text"
+              placeholder="Новый пароль"
+          >
           <small class="prompt">Создайте новый пароль</small>
         </div>
         <div class="flex flex-col w-full parent-prompt top-input" style="margin-bottom: 0;align-items: start;">
-          <input style="margin-right:0;margin-bottom: 0;" v-model="newPasswordConfirm" type="text"
-                 placeholder="Повторить новый пароль">
+          <input
+              style="margin-right:0;margin-bottom: 0;" v-model="newPasswordConfirm" type="text"
+              placeholder="Повторить новый пароль"
+          >
           <small class="prompt">Повторите новый пароль для подтверждения</small>
         </div>
       </div>
@@ -132,12 +140,15 @@
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import { ref } from 'vue';
 import Multiselect from 'vue-multiselect';
 
 const languageOptions = JSON.parse(localStorage.getItem('languages'));
 const defaultLanguage = localStorage.getItem('defaultLanguage');
-const checkedLanguage = ref(defaultLanguage && defaultLanguage !== 'null' ? JSON.parse(defaultLanguage) : {name: 'Русский', code: 'ru'});
+const checkedLanguage = ref(defaultLanguage && defaultLanguage !== 'null' ? JSON.parse(defaultLanguage) : {
+  name: 'Русский',
+  code: 'ru'
+});
 const languageErrorMessage = ref('');
 const languageSuccess = ref(false);
 const oldPassword = ref('');
@@ -197,7 +208,7 @@ const setDefaultLanguage = () => {
             defaultLanguage
                 ? localStorage.setItem('defaultLanguage', JSON.stringify(defaultLanguage))
                 : localStorage.setItem('defaultLanguage', JSON.stringify([{name: 'Русский', code: 'ru'}]));
-            languageSuccess.value = true
+            languageSuccess.value = true;
           } catch (error) {
             languageErrorMessage.value = 'Ошибка! Не удалось применить настройки. Попробуйте обновить страницу.';
           }

@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import {toggleItemList} from '../use/index';
+import { toggleItemList } from '../use/index';
 
 export default {
   props: {

@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 import VMain from '../pages/VMain.vue';
 import VAuthorize from '../pages/VAuthorize.vue';
 import VPayment from '../pages/VPayment.vue';
@@ -8,7 +8,7 @@ import VFindByNumber from '../pages/VFindByNumber.vue';
 import VFindByTelegram from '../pages/VFindByTelegram.vue';
 import VFindByEmail from '../pages/VFindByEmail.vue';
 import VFindByCompany from '../pages/VFindByCompany.vue';
-import {isAuthorized} from '../use/index';
+import { isAuthorized } from '../use/index';
 import VConfirm from '../pages/VConfirm.vue';
 import VResetPassword from '../pages/VResetPassword.vue';
 import VConfirmTelegram from '../pages/VConfirmTelegram.vue';
@@ -100,7 +100,6 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from) => {
-
 
   if (isAuthorized.value === undefined) {
     try {

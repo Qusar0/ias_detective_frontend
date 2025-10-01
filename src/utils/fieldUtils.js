@@ -1,4 +1,4 @@
-import {keys_list} from '../use/index';
+import { keys_list } from '../use/index';
 
 export const clearKeysList = () => {
   keys_list.value.prohibited_site.list = [];

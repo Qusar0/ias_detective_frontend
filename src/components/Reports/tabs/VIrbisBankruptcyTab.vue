@@ -10,19 +10,19 @@
             <div class="checkboxes-container">
               <label class="checkbox-item">
                 <input
-                  type="radio"
-                  value="name"
-                  v-model="filters.search_type"
-                  @change="onFiltersChange"
+                    type="radio"
+                    value="name"
+                    v-model="filters.search_type"
+                    @change="onFiltersChange"
                 >
                 <span>По инициалам ФИО</span>
               </label>
               <label class="checkbox-item">
                 <input
-                  type="radio"
-                  value="inn"
-                  v-model="filters.search_type"
-                  @change="onFiltersChange"
+                    type="radio"
+                    value="inn"
+                    v-model="filters.search_type"
+                    @change="onFiltersChange"
                 >
                 <span>По ИНН</span>
               </label>
@@ -48,7 +48,9 @@
 
     <div v-else-if="error" class="error-container">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-        <path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z" />
+        <path
+            d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
+        />
       </svg>
       <div class="error-text">{{ error }}</div>
       <button @click="fetchCases" class="retry-button">Повторить попытку</button>
@@ -56,16 +58,18 @@
 
     <div v-else-if="!cases.length && !loading" class="empty-list">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-        <path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z" />
+        <path
+            d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
+        />
       </svg>
       Нет найденных дел о банкротстве!
     </div>
 
     <div v-else class="cases-list">
       <div
-        v-for="bankruptcyCase in cases"
-        :key="bankruptcyCase.id"
-        class="case-item"
+          v-for="bankruptcyCase in cases"
+          :key="bankruptcyCase.id"
+          class="case-item"
       >
         <div class="case-header" @click="toggleCaseDetails(bankruptcyCase.id)">
           <div class="case-main-info">
@@ -94,18 +98,20 @@
 
           <div class="case-expand">
             <svg
-              :class="{ rotated: expandedCases.includes(bankruptcyCase.id) }"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 448 512"
+                :class="{ rotated: expandedCases.includes(bankruptcyCase.id) }"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
             >
-              <path d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/>
+              <path
+                  d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"
+              />
             </svg>
           </div>
         </div>
 
         <div
-          v-if="expandedCases.includes(bankruptcyCase.id)"
-          class="case-details"
+            v-if="expandedCases.includes(bankruptcyCase.id)"
+            class="case-details"
         >
           <div v-if="loadingDetails[bankruptcyCase.id]" class="details-loading">
             <div class="small-spinner"></div>
@@ -137,7 +143,9 @@
 
                 <div class="detail-item">
                   <span class="detail-label">Дата рождения:</span>
-                  <span class="detail-value">{{ formatDate(caseDetails[bankruptcyCase.id].birth_date) || 'Не указана' }}</span>
+                  <span class="detail-value">{{
+                      formatDate(caseDetails[bankruptcyCase.id].birth_date) || 'Не указана'
+                    }}</span>
                 </div>
 
                 <div class="detail-item">
@@ -195,9 +203,9 @@
                 <h4 class="section-title">Ссылка на источник</h4>
                 <div class="link-container">
                   <a
-                    :href="caseDetails[bankruptcyCase.id].link"
-                    target="_blank"
-                    class="source-link"
+                      :href="caseDetails[bankruptcyCase.id].link"
+                      target="_blank"
+                      class="source-link"
                   >
                     Открыть в источнике ↗
                   </a>
@@ -216,17 +224,17 @@
       </div>
       <div class="pagination-controls">
         <button
-          @click="changePage(currentPage - 1)"
-          :disabled="currentPage <= 1 || loading"
-          class="page-button"
+            @click="changePage(currentPage - 1)"
+            :disabled="currentPage <= 1 || loading"
+            class="page-button"
         >
           ← Предыдущая
         </button>
         <span class="page-display">{{ currentPage }}</span>
         <button
-          @click="changePage(currentPage + 1)"
-          :disabled="currentPage >= Math.ceil(totalItems / pageSize) || loading"
-          class="page-button"
+            @click="changePage(currentPage + 1)"
+            :disabled="currentPage >= Math.ceil(totalItems / pageSize) || loading"
+            class="page-button"
         >
           Следующая →
         </button>
@@ -247,65 +255,65 @@ const props = defineProps({
     type: Boolean,
     default: false
   }
-})
+});
 
-const emit = defineEmits(['update-count'])
+const emit = defineEmits(['update-count']);
 
-const loading = ref(false)
-const error = ref(null)
-const cases = ref([])
-const totalItems = ref(0)
-const currentPage = ref(1)
-const pageSize = ref(20)
-const cumulativeCount = ref(0)
+const loading = ref(false);
+const error = ref(null);
+const cases = ref([]);
+const totalItems = ref(0);
+const currentPage = ref(1);
+const pageSize = ref(20);
+const cumulativeCount = ref(0);
 
 const filters = reactive({
   search_type: 'name'
-})
+});
 
-const expandedCases = ref([])
-const caseDetails = ref({})
-const loadingDetails = ref({})
-const detailsErrors = ref({})
+const expandedCases = ref([]);
+const caseDetails = ref({});
+const loadingDetails = ref({});
+const detailsErrors = ref({});
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'Неизвестно'
+  if (!dateString) return 'Неизвестно';
   try {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-      return 'Неизвестно'
+      return 'Неизвестно';
     }
-    return date.toLocaleDateString('ru-RU')
+    return date.toLocaleDateString('ru-RU');
   } catch {
-    return 'Неизвестно'
+    return 'Неизвестно';
   }
-}
+};
 
 const getFullName = (person) => {
-  if (!person) return ''
-  const parts = [person.last_name, person.first_name, person.second_name].filter(Boolean)
-  return parts.join(' ') || 'Имя не указано'
-}
+  if (!person) return '';
+  const parts = [person.last_name, person.first_name, person.second_name].filter(Boolean);
+  return parts.join(' ') || 'Имя не указано';
+};
 
 const getSearchTypeName = (searchType) => {
   switch (searchType) {
     case 'name':
-      return 'По ФИО'
+      return 'По ФИО';
     case 'inn':
-      return 'По ИНН'
+      return 'По ИНН';
     default:
-      return 'Все записи'
+      return 'Все записи';
   }
-}
+};
 
 const fetchCases = async () => {
   if (!props.queryId) {
-    error.value = 'Query ID не предоставлен'
-    return
+    error.value = 'Query ID не предоставлен';
+    return;
   }
 
-  loading.value = true
-  error.value = null
+  loading.value = true;
+  error.value = null;
 
   try {
     const requestBody = {
@@ -313,7 +321,7 @@ const fetchCases = async () => {
       page: currentPage.value,
       size: pageSize.value,
       search_type: filters.search_type
-    }
+    };
 
     const response = await fetch('/api/irbis/bankruptcy/data', {
       method: 'POST',
@@ -321,101 +329,101 @@ const fetchCases = async () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(requestBody)
-    })
+    });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json()
-    cases.value = data
-    totalItems.value = data.length === pageSize.value ? currentPage.value * pageSize.value + 1 : (currentPage.value - 1) * pageSize.value + data.length
+    const data = await response.json();
+    cases.value = data;
+    totalItems.value = data.length === pageSize.value ? currentPage.value * pageSize.value + 1 : (currentPage.value - 1) * pageSize.value + data.length;
 
     if (currentPage.value === 1) {
-      cumulativeCount.value = data.length
+      cumulativeCount.value = data.length;
     } else {
-      cumulativeCount.value = (currentPage.value - 1) * pageSize.value + data.length
+      cumulativeCount.value = (currentPage.value - 1) * pageSize.value + data.length;
     }
 
-    emit('update-count', cumulativeCount.value)
+    emit('update-count', cumulativeCount.value);
   } catch (err) {
-    error.value = err.message || 'Произошла ошибка при загрузке данных'
-    console.error('Error fetching bankruptcy cases:', err)
+    error.value = err.message || 'Произошла ошибка при загрузке данных';
+    console.error('Error fetching bankruptcy cases:', err);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const fetchCaseDetails = async (caseId) => {
-  if (caseDetails.value[caseId]) return
+  if (caseDetails.value[caseId]) return;
 
-  loadingDetails.value[caseId] = true
-  detailsErrors.value[caseId] = null
+  loadingDetails.value[caseId] = true;
+  detailsErrors.value[caseId] = null;
 
   try {
-    const response = await fetch(`/api/irbis/bankruptcy/case_full/${caseId}`)
+    const response = await fetch(`/api/irbis/bankruptcy/case_full/${caseId}`);
 
     if (!response.ok) {
-      throw new Error(`Ошибка сервера: ${response.status}`)
+      throw new Error(`Ошибка сервера: ${response.status}`);
     }
 
-    caseDetails.value[caseId] = await response.json()
+    caseDetails.value[caseId] = await response.json();
   } catch (err) {
-    console.error('Error fetching case details:', err)
-    detailsErrors.value[caseId] = err.message || 'Произошла ошибка при загрузке деталей'
+    console.error('Error fetching case details:', err);
+    detailsErrors.value[caseId] = err.message || 'Произошла ошибка при загрузке деталей';
   } finally {
-    loadingDetails.value[caseId] = false
+    loadingDetails.value[caseId] = false;
   }
-}
+};
 
 const retryFetchDetails = (caseId) => {
-  delete caseDetails.value[caseId]
-  delete detailsErrors.value[caseId]
-  fetchCaseDetails(caseId)
-}
+  delete caseDetails.value[caseId];
+  delete detailsErrors.value[caseId];
+  fetchCaseDetails(caseId);
+};
 
 const toggleCaseDetails = (caseId) => {
-  const index = expandedCases.value.indexOf(caseId)
+  const index = expandedCases.value.indexOf(caseId);
   if (index > -1) {
-    expandedCases.value.splice(index, 1)
+    expandedCases.value.splice(index, 1);
   } else {
-    expandedCases.value.push(caseId)
-    fetchCaseDetails(caseId)
+    expandedCases.value.push(caseId);
+    fetchCaseDetails(caseId);
   }
-}
+};
 
 const onFiltersChange = () => {
   // applyFilters()
-}
+};
 
 const applyFilters = () => {
-  currentPage.value = 1
-  fetchCases()
-}
+  currentPage.value = 1;
+  fetchCases();
+};
 
 const resetFilters = () => {
-  filters.search_type = 'name'
-  currentPage.value = 1
-  fetchCases()
-}
+  filters.search_type = 'name';
+  currentPage.value = 1;
+  fetchCases();
+};
 
 const changePage = (page) => {
-  if (page < 1) return
-  currentPage.value = page
-  fetchCases()
-}
+  if (page < 1) return;
+  currentPage.value = page;
+  fetchCases();
+};
 
 watch(() => props.isActive, (isActive) => {
   if (isActive && cases.value.length === 0 && props.queryId) {
-    fetchCases()
+    fetchCases();
   }
-})
+});
 
 onMounted(() => {
   if (props.isActive && props.queryId) {
-    fetchCases()
+    fetchCases();
   }
-})
+});
 </script>
 
 <style scoped>
@@ -549,8 +557,12 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error-container svg {

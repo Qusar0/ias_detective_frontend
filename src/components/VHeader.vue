@@ -37,14 +37,16 @@
               @mouseenter="seen_notification(event_item)"
           >
             <div :class="`seen_dot ${event_item?.event_status == 'seen' ? 'seen-animation' : ''}`"></div>
-            <ToastifyMessage :event_data="{
+            <ToastifyMessage
+                :event_data="{
                             event_id: event_item?.event_id,
                             event_status: event_item?.event_status,
                             task_category: event_item?.message?.task_category,
                             task_title: event_item?.message?.task_title,
                             task_status: event_item?.message?.status,
                             task_created_at: event_item?.message?.task_created_at,
-                        }"/>
+                        }"
+            />
           </div>
         </div>
       </div>
@@ -88,8 +90,8 @@
 </template>
 
 <script>
-import {dropdown, get_user_balance, isAuthorized, user_balance, user_name} from '../use/index';
-import {bell_animation, bell_opened, events, getNotificationSound, has_notifications} from '../utils/notification';
+import { dropdown, get_user_balance, isAuthorized, user_balance, user_name } from '../use/index';
+import { bell_animation, bell_opened, events, getNotificationSound, has_notifications } from '../utils/notification';
 import ToastifyMessage from './UI/ToastifyMessage.vue';
 
 export default {
@@ -145,7 +147,6 @@ export default {
           })
           .catch(error => console.error(error));
 
-
       event_item.event_status = 'seen';
     },
     logout() {
@@ -164,7 +165,7 @@ export default {
               localStorage.removeItem('user_id');
               localStorage.removeItem('user_name');
               this.$router.push('login');
-              return;
+
             }
           })
           .catch((error) => {

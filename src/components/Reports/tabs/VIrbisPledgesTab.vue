@@ -7,7 +7,9 @@
 
     <div v-else-if="error" class="error-container">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-        <path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z" />
+        <path
+            d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
+        />
       </svg>
       <div class="error-text">{{ error }}</div>
       <button @click="fetchPledges" class="retry-button">Повторить попытку</button>
@@ -15,16 +17,18 @@
 
     <div v-else-if="!pledges.length && !loading" class="empty-list">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-        <path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z" />
+        <path
+            d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
+        />
       </svg>
       Нет найденных залогов!
     </div>
 
     <div v-else class="pledges-list">
       <div
-        v-for="pledge in pledges"
-        :key="pledge.case_id"
-        class="pledge-item"
+          v-for="pledge in pledges"
+          :key="pledge.case_id"
+          class="pledge-item"
       >
         <div class="pledge-header" @click="togglePledgeDetails(pledge.case_id)">
           <div class="pledge-main-info">
@@ -71,18 +75,20 @@
 
           <div class="pledge-expand">
             <svg
-              :class="{ rotated: expandedPledges.includes(pledge.case_id) }"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 448 512"
+                :class="{ rotated: expandedPledges.includes(pledge.case_id) }"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
             >
-              <path d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/>
+              <path
+                  d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"
+              />
             </svg>
           </div>
         </div>
 
         <div
-          v-if="expandedPledges.includes(pledge.case_id)"
-          class="pledge-details"
+            v-if="expandedPledges.includes(pledge.case_id)"
+            class="pledge-details"
         >
           <div v-if="loadingDetails[pledge.case_id]" class="details-loading">
             <div class="small-spinner"></div>
@@ -104,7 +110,9 @@
 
                 <div class="detail-item">
                   <span class="detail-label">Номер в реестре:</span>
-                  <span class="detail-value">{{ pledgeDetails[pledge.case_id].pledge_reestr_number || 'Не указан' }}</span>
+                  <span class="detail-value">{{
+                      pledgeDetails[pledge.case_id].pledge_reestr_number || 'Не указан'
+                    }}</span>
                 </div>
 
                 <div class="detail-item">
@@ -114,7 +122,9 @@
 
                 <div class="detail-item">
                   <span class="detail-label">Дата регистрации:</span>
-                  <span class="detail-value">{{ formatDate(pledgeDetails[pledge.case_id].reg_date) || 'Не указана' }}</span>
+                  <span class="detail-value">{{
+                      formatDate(pledgeDetails[pledge.case_id].reg_date) || 'Не указана'
+                    }}</span>
                 </div>
               </div>
 
@@ -127,9 +137,9 @@
 
                 <div v-else class="parties-list">
                   <div
-                    v-for="(pledger, index) in pledgeDetails[pledge.case_id].pledgers"
-                    :key="index"
-                    class="party-item pledger"
+                      v-for="(pledger, index) in pledgeDetails[pledge.case_id].pledgers"
+                      :key="index"
+                      class="party-item pledger"
                   >
                     <div class="party-name">{{ pledger.name }}</div>
                     <div class="party-details">
@@ -159,9 +169,9 @@
 
                 <div v-else class="parties-list">
                   <div
-                    v-for="(pledgee, index) in pledgeDetails[pledge.case_id].pledgees"
-                    :key="index"
-                    class="party-item pledgee"
+                      v-for="(pledgee, index) in pledgeDetails[pledge.case_id].pledgees"
+                      :key="index"
+                      class="party-item pledgee"
                   >
                     <div class="party-name">{{ pledgee.name }}</div>
                     <div class="party-details">
@@ -191,9 +201,9 @@
 
                 <div v-else class="pledges-objects-grid">
                   <div
-                    v-for="(pledgeObj, index) in pledgeDetails[pledge.case_id].pledges"
-                    :key="index"
-                    class="pledge-object"
+                      v-for="(pledgeObj, index) in pledgeDetails[pledge.case_id].pledges"
+                      :key="index"
+                      class="pledge-object"
                   >
                     <div class="object-header">
                       <span class="object-number">{{ pledgeObj.pledge_num || `№${index + 1}` }}</span>
@@ -218,17 +228,17 @@
       </div>
       <div class="pagination-controls">
         <button
-          @click="changePage(currentPage - 1)"
-          :disabled="currentPage <= 1 || loading"
-          class="page-button"
+            @click="changePage(currentPage - 1)"
+            :disabled="currentPage <= 1 || loading"
+            class="page-button"
         >
           ← Предыдущая
         </button>
         <span class="page-display">{{ currentPage }}</span>
         <button
-          @click="changePage(currentPage + 1)"
-          :disabled="currentPage >= Math.ceil(totalItems / pageSize) || loading"
-          class="page-button"
+            @click="changePage(currentPage + 1)"
+            :disabled="currentPage >= Math.ceil(totalItems / pageSize) || loading"
+            class="page-button"
         >
           Следующая →
         </button>
@@ -249,51 +259,51 @@ const props = defineProps({
     type: Boolean,
     default: false
   }
-})
+});
 
-const emit = defineEmits(['update-count'])
+const emit = defineEmits(['update-count']);
 
-const loading = ref(false)
-const error = ref(null)
-const pledges = ref([])
-const totalItems = ref(0)
-const currentPage = ref(1)
-const pageSize = ref(20)
-const cumulativeCount = ref(0)
+const loading = ref(false);
+const error = ref(null);
+const pledges = ref([]);
+const totalItems = ref(0);
+const currentPage = ref(1);
+const pageSize = ref(20);
+const cumulativeCount = ref(0);
 
-const expandedPledges = ref([])
-const pledgeDetails = ref({})
-const loadingDetails = ref({})
-const detailsErrors = ref({})
+const expandedPledges = ref([]);
+const pledgeDetails = ref({});
+const loadingDetails = ref({});
+const detailsErrors = ref({});
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'Неизвестно'
+  if (!dateString) return 'Неизвестно';
   try {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-      return 'Неизвестно'
+      return 'Неизвестно';
     }
-    return date.toLocaleDateString('ru-RU')
+    return date.toLocaleDateString('ru-RU');
   } catch {
-    return 'Неизвестно'
+    return 'Неизвестно';
   }
-}
+};
 
 const fetchPledges = async () => {
   if (!props.queryId) {
-    error.value = 'Query ID не предоставлен'
-    return
+    error.value = 'Query ID не предоставлен';
+    return;
   }
 
-  loading.value = true
-  error.value = null
+  loading.value = true;
+  error.value = null;
 
   try {
     const requestBody = {
       query_id: props.queryId,
       page: currentPage.value,
       size: pageSize.value
-    }
+    };
 
     const response = await fetch('/api/irbis/pledgess/data', {
       method: 'POST',
@@ -301,86 +311,86 @@ const fetchPledges = async () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(requestBody)
-    })
+    });
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json()
-    pledges.value = data
-    totalItems.value = data.length === pageSize.value ? currentPage.value * pageSize.value + 1 : (currentPage.value - 1) * pageSize.value + data.length
+    const data = await response.json();
+    pledges.value = data;
+    totalItems.value = data.length === pageSize.value ? currentPage.value * pageSize.value + 1 : (currentPage.value - 1) * pageSize.value + data.length;
 
     if (currentPage.value === 1) {
-      cumulativeCount.value = data.length
+      cumulativeCount.value = data.length;
     } else {
-      cumulativeCount.value = (currentPage.value - 1) * pageSize.value + data.length
+      cumulativeCount.value = (currentPage.value - 1) * pageSize.value + data.length;
     }
 
-    emit('update-count', cumulativeCount.value)
+    emit('update-count', cumulativeCount.value);
   } catch (err) {
-    error.value = err.message || 'Произошла ошибка при загрузке данных'
-    console.error('Error fetching pledges:', err)
+    error.value = err.message || 'Произошла ошибка при загрузке данных';
+    console.error('Error fetching pledges:', err);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
 const fetchPledgeDetails = async (caseId) => {
-  if (pledgeDetails.value[caseId]) return
+  if (pledgeDetails.value[caseId]) return;
 
-  loadingDetails.value[caseId] = true
-  detailsErrors.value[caseId] = null
+  loadingDetails.value[caseId] = true;
+  detailsErrors.value[caseId] = null;
 
   try {
-    const response = await fetch(`/api/irbis/pledgess/case_full/${caseId}`)
+    const response = await fetch(`/api/irbis/pledgess/case_full/${caseId}`);
 
     if (!response.ok) {
-      throw new Error(`Ошибка сервера: ${response.status}`)
+      throw new Error(`Ошибка сервера: ${response.status}`);
     }
 
-    pledgeDetails.value[caseId] = await response.json()
+    pledgeDetails.value[caseId] = await response.json();
   } catch (err) {
-    console.error('Error fetching pledge details:', err)
-    detailsErrors.value[caseId] = err.message || 'Произошла ошибка при загрузке деталей'
+    console.error('Error fetching pledge details:', err);
+    detailsErrors.value[caseId] = err.message || 'Произошла ошибка при загрузке деталей';
   } finally {
-    loadingDetails.value[caseId] = false
+    loadingDetails.value[caseId] = false;
   }
-}
+};
 
 const retryFetchDetails = (caseId) => {
-  delete pledgeDetails.value[caseId]
-  delete detailsErrors.value[caseId]
-  fetchPledgeDetails(caseId)
-}
+  delete pledgeDetails.value[caseId];
+  delete detailsErrors.value[caseId];
+  fetchPledgeDetails(caseId);
+};
 
 const togglePledgeDetails = (caseId) => {
-  const index = expandedPledges.value.indexOf(caseId)
+  const index = expandedPledges.value.indexOf(caseId);
   if (index > -1) {
-    expandedPledges.value.splice(index, 1)
+    expandedPledges.value.splice(index, 1);
   } else {
-    expandedPledges.value.push(caseId)
-    fetchPledgeDetails(caseId)
+    expandedPledges.value.push(caseId);
+    fetchPledgeDetails(caseId);
   }
-}
+};
 
 const changePage = (page) => {
-  if (page < 1) return
-  currentPage.value = page
-  fetchPledges()
-}
+  if (page < 1) return;
+  currentPage.value = page;
+  fetchPledges();
+};
 
 watch(() => props.isActive, (isActive) => {
   if (isActive && pledges.value.length === 0 && props.queryId) {
-    fetchPledges()
+    fetchPledges();
   }
-})
+});
 
 onMounted(() => {
   if (props.isActive && props.queryId) {
-    fetchPledges()
+    fetchPledges();
   }
-})
+});
 </script>
 
 <style scoped>
@@ -416,8 +426,12 @@ onMounted(() => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .error-container svg {

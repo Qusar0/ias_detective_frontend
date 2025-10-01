@@ -74,7 +74,7 @@ export default {
         const half = Math.floor(maxVisible / 2);
         start = Math.max(1, this.selected_page - half);
         end = Math.min(totalPages, start + maxVisible - 1);
-        
+
         if (end - start + 1 < maxVisible) {
           start = Math.max(1, end - maxVisible + 1);
         }

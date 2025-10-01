@@ -4,8 +4,13 @@
       <div class="head-info" :style="{ height: headInfoExpanded ? '105px' : '28px' }">
         <h2 class="object-full_name" @click="toggleHeadInfo">
           Объект: <span>{{ objectName }}</span>
-          <svg xmlns="http://www.w3.org/2000/svg" :style="{ transform: headInfoExpanded ? 'rotateX(180deg)' : 'rotateX(0deg)' }" viewBox="0 0 448 512">
-            <path d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/>
+          <svg
+              xmlns="http://www.w3.org/2000/svg"
+              :style="{ transform: headInfoExpanded ? 'rotateX(180deg)' : 'rotateX(0deg)' }" viewBox="0 0 448 512"
+          >
+            <path
+                d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"
+            />
           </svg>
         </h2>
         <div class="info-details">
@@ -29,57 +34,57 @@
 
       <div class="tabs flex flex-wrap items-center">
         <div
-          :class="['tab-1', { selected: selectedTabIndex === 1 }]"
-          @click="selectTab(1)"
+            :class="['tab-1', { selected: selectedTabIndex === 1 }]"
+            @click="selectTab(1)"
         >
           Главное
           <span class="tab-count">{{ keywordStats?.main || 0 }}</span>
         </div>
         <div
-          :class="['tab-2', { selected: selectedTabIndex === 2 }]"
-          @click="selectTab(2)"
+            :class="['tab-2', { selected: selectedTabIndex === 2 }]"
+            @click="selectTab(2)"
         >
           Произвольные
           <span class="tab-count">{{ keywordStats?.['free word'] || 0 }}</span>
         </div>
         <div
-          :class="['tab-3', { selected: selectedTabIndex === 3 }]"
-          @click="selectTab(3)"
+            :class="['tab-3', { selected: selectedTabIndex === 3 }]"
+            @click="selectTab(3)"
         >
           Негатив
           <span class="tab-count">{{ keywordStats?.negativ || 0 }}</span>
         </div>
         <div
-          :class="['tab-4', { selected: selectedTabIndex === 4 }]"
-          @click="selectTab(4)"
+            :class="['tab-4', { selected: selectedTabIndex === 4 }]"
+            @click="selectTab(4)"
         >
           Репутация
           <span class="tab-count">{{ keywordStats?.reputation || 0 }}</span>
         </div>
         <div
-          :class="['tab-5', { selected: selectedTabIndex === 5 }]"
-          @click="selectTab(5)"
+            :class="['tab-5', { selected: selectedTabIndex === 5 }]"
+            @click="selectTab(5)"
         >
           Связи
           <span class="tab-count">{{ keywordStats?.relations || 0 }}</span>
         </div>
         <div
-          :class="['tab-6', { selected: selectedTabIndex === 6 }]"
-          @click="selectTab(6)"
+            :class="['tab-6', { selected: selectedTabIndex === 6 }]"
+            @click="selectTab(6)"
         >
           Соц.сети
           <span class="tab-count">{{ items.socials?.length || 0 }}</span>
         </div>
         <div
-          :class="['tab-7', { selected: selectedTabIndex === 7 }]"
-          @click="selectTab(7)"
+            :class="['tab-7', { selected: selectedTabIndex === 7 }]"
+            @click="selectTab(7)"
         >
           Документы
           <span class="tab-count">{{ items.documents?.length || 0 }}</span>
         </div>
         <div
-          :class="['tab-8', { selected: selectedTabIndex === 8 }]"
-          @click="selectTab(8)"
+            :class="['tab-8', { selected: selectedTabIndex === 8 }]"
+            @click="selectTab(8)"
         >
           Все материалы
           <span class="tab-count">{{ totalAllMaterials }}</span>
@@ -89,15 +94,25 @@
 
     <div v-if="hasItemsForCurrentTab && !loadingTab" class="toggle-buttons-container">
       <button @click="filtersExpanded = !filtersExpanded" class="toggle-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" :style="{ transform: filtersExpanded ? 'rotate(0deg)' : 'rotate(-90deg)' }">
-          <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/>
+        <svg
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+            :style="{ transform: filtersExpanded ? 'rotate(0deg)' : 'rotate(-90deg)' }"
+        >
+          <path
+              d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+          />
         </svg>
         <span>{{ filtersExpanded ? 'Скрыть фильтры' : 'Показать фильтры' }}</span>
       </button>
 
       <button v-if="selectedTabIndex === 1" @click="chartExpanded = !chartExpanded" class="toggle-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" :style="{ transform: chartExpanded ? 'rotate(0deg)' : 'rotate(-90deg)' }">
-          <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/>
+        <svg
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+            :style="{ transform: chartExpanded ? 'rotate(0deg)' : 'rotate(-90deg)' }"
+        >
+          <path
+              d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+          />
         </svg>
         <span>{{ chartExpanded ? 'Скрыть диаграмму' : 'Показать диаграмму' }}</span>
       </button>
@@ -131,12 +146,14 @@
         <div class="filter-title">Фильтр по ключевым словам:</div>
         <div class="keyword-search-input">
           <input
-            v-model="keywordSearchQuery"
-            placeholder="Поиск ключевых слов..."
-            @input="filterKeywords"
+              v-model="keywordSearchQuery"
+              placeholder="Поиск ключевых слов..."
+              @input="filterKeywords"
           >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-            <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>
+            <path
+                d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
+            />
           </svg>
         </div>
         <div class="keyword-actions">
@@ -145,14 +162,14 @@
         </div>
         <div class="keyword-list">
           <label
-            v-for="keyword in filteredKeywordList"
-            :key="keyword.word"
-            class="keyword-item"
+              v-for="keyword in filteredKeywordList"
+              :key="keyword.word"
+              class="keyword-item"
           >
             <input
-              type="checkbox"
-              :checked="selectedKeywords[keyword.word]"
-              @change="toggleKeyword(keyword.word)"
+                type="checkbox"
+                :checked="selectedKeywords[keyword.word]"
+                @change="toggleKeyword(keyword.word)"
             >
             <span class="keyword-text">{{ keyword.word }}</span>
             <span class="keyword-count">{{ keyword.count }}</span>
@@ -165,22 +182,24 @@
           <div class="filter-label">Стоп-фильтр:</div>
           <div class="minus-keywords-input">
             <input
-              id="minus-keyword"
-              v-model="newMinusKeyword"
-              @keydown.enter="addMinusKeyword"
-              placeholder="Введите стоп-слово"
+                id="minus-keyword"
+                v-model="newMinusKeyword"
+                @keydown.enter="addMinusKeyword"
+                placeholder="Введите стоп-слово"
             >
             <button @click="addMinusKeyword">Добавить</button>
           </div>
           <div class="minus-keywords-list" v-if="minusKeywords.length > 0">
             <div
-              v-for="(keyword, index) in minusKeywords"
-              :key="index"
-              class="minus-keyword"
+                v-for="(keyword, index) in minusKeywords"
+                :key="index"
+                class="minus-keyword"
             >
               <span>{{ keyword }}</span>
               <svg @click="removeMinusKeyword(index)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
-                <path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/>
+                <path
+                    d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+                />
               </svg>
             </div>
           </div>
@@ -198,16 +217,16 @@
           </div>
           <div class="chart-bars">
             <div
-              v-for="(item, index) in chartData"
-              :key="index"
-              class="chart-bar-item"
-              @click="selectTab(item.tabIndex)"
+                v-for="(item, index) in chartData"
+                :key="index"
+                class="chart-bar-item"
+                @click="selectTab(item.tabIndex)"
             >
               <div class="bar-label">{{ item.label }}</div>
               <div class="bar-container">
                 <div
-                  class="bar-fill"
-                  :style="{
+                    class="bar-fill"
+                    :style="{
                     width: item.percentage + '%',
                     background: item.color
                   }"
@@ -225,60 +244,60 @@
     <div v-if="hasItemsForCurrentTab && !loadingTab" class="controls-section">
       <div class="sort-controls">
         <button
-          @click="setSortOrder('asc')"
-          :class="['sort-btn', { active: sortOrder === 'asc' }]"
-          :title="isGroupingEnabled ? 'Сортировать домены по возрастанию' : 'Сортировать ссылки по возрастанию'"
+            @click="setSortOrder('asc')"
+            :class="['sort-btn', { active: sortOrder === 'asc' }]"
+            :title="isGroupingEnabled ? 'Сортировать домены по возрастанию' : 'Сортировать ссылки по возрастанию'"
         >
           ↑ {{ isGroupingEnabled ? 'Домены А-Я' : 'Ссылки А-Я' }}
         </button>
         <button
-          @click="setSortOrder('desc')"
-          :class="['sort-btn', { active: sortOrder === 'desc' }]"
-          :title="isGroupingEnabled ? 'Сортировать домены по убыванию' : 'Сортировать ссылки по убыванию'"
+            @click="setSortOrder('desc')"
+            :class="['sort-btn', { active: sortOrder === 'desc' }]"
+            :title="isGroupingEnabled ? 'Сортировать домены по убыванию' : 'Сортировать ссылки по убыванию'"
         >
           ↓ {{ isGroupingEnabled ? 'Домены Я-А' : 'Ссылки Я-А' }}
         </button>
         <button
-          v-if="isGroupingEnabled"
-          @click="setCountSortOrder('count-asc')"
-          :class="['sort-btn', { active: sortOrder === 'count-asc' }]"
-          title="Сортировать по количеству результатов по возрастанию"
+            v-if="isGroupingEnabled"
+            @click="setCountSortOrder('count-asc')"
+            :class="['sort-btn', { active: sortOrder === 'count-asc' }]"
+            title="Сортировать по количеству результатов по возрастанию"
         >
           ↑ Кол-во (мало)
         </button>
         <button
-          v-if="isGroupingEnabled"
-          @click="setCountSortOrder('count-desc')"
-          :class="['sort-btn', { active: sortOrder === 'count-desc' }]"
-          title="Сортировать по количеству результатов по убыванию"
+            v-if="isGroupingEnabled"
+            @click="setCountSortOrder('count-desc')"
+            :class="['sort-btn', { active: sortOrder === 'count-desc' }]"
+            title="Сортировать по количеству результатов по убыванию"
         >
           ↓ Кол-во (много)
         </button>
         <button
-          @click="setDateSortOrder('date-asc')"
-          :class="['sort-btn', { active: sortOrder === 'date-asc' }]"
-          title="Сортировать по дате по возрастанию"
+            @click="setDateSortOrder('date-asc')"
+            :class="['sort-btn', { active: sortOrder === 'date-asc' }]"
+            title="Сортировать по дате по возрастанию"
         >
           ↑ Дата (старые)
         </button>
         <button
-          @click="setDateSortOrder('date-desc')"
-          :class="['sort-btn', { active: sortOrder === 'date-desc' }]"
-          title="Сортировать по дате по убыванию"
+            @click="setDateSortOrder('date-desc')"
+            :class="['sort-btn', { active: sortOrder === 'date-desc' }]"
+            title="Сортировать по дате по убыванию"
         >
           ↓ Дата (новые)
         </button>
         <button
-          @click="toggleGrouping"
-          :class="['group-btn', { active: isGroupingEnabled }]"
-          title="Группировать по доменам"
+            @click="toggleGrouping"
+            :class="['group-btn', { active: isGroupingEnabled }]"
+            title="Группировать по доменам"
         >
           📁 Группировка
         </button>
         <button
-          @click="resetSortAndGrouping"
-          class="reset-btn"
-          title="Сбросить сортировку и группировку"
+            @click="resetSortAndGrouping"
+            class="reset-btn"
+            title="Сбросить сортировку и группировку"
         >
           ↺ Сброс
         </button>
@@ -287,18 +306,18 @@
 
     <div v-if="hasItemsForCurrentTab && !loadingTab" class="pagination-container pagination-top">
       <VPagination
-        :selected_page="currentPage"
-        :general_count="isGroupingEnabled ? Object.keys(allGroupedItems).length : filteredItems.length"
-        :set_selected_page="setPage"
-        :updateList="updateList"
+          :selected_page="currentPage"
+          :general_count="isGroupingEnabled ? Object.keys(allGroupedItems).length : filteredItems.length"
+          :set_selected_page="setPage"
+          :updateList="updateList"
       />
     </div>
 
     <div class="content">
       <div
-        v-for="tabIndex in [1, 2, 3, 4, 5, 6, 7, 8]"
-        :key="tabIndex"
-        :class="[`tab-content-${tabIndex}`, { selected: selectedTabIndex === tabIndex }]"
+          v-for="tabIndex in [1, 2, 3, 4, 5, 6, 7, 8]"
+          :key="tabIndex"
+          :class="[`tab-content-${tabIndex}`, { selected: selectedTabIndex === tabIndex }]"
       >
         <div v-if="loadingTab && selectedTabIndex === tabIndex" class="loading-message">
           <div class="spinner"></div>
@@ -307,20 +326,22 @@
 
         <div v-else-if="!filteredItems.length && selectedTabIndex === tabIndex" class="empty-list">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-            <path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"/>
+            <path
+                d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
+            />
           </svg>
           Нет найденных результатов!
         </div>
 
         <template v-if="isGroupingEnabled && selectedTabIndex === tabIndex">
           <div
-            v-for="(group, domain) in groupedItems"
-            :key="domain"
-            class="domain-group"
+              v-for="(group, domain) in groupedItems"
+              :key="domain"
+              class="domain-group"
           >
             <div
-              class="domain-header"
-              @click="toggleDomainExpansion(domain)"
+                class="domain-header"
+                @click="toggleDomainExpansion(domain)"
             >
               <span class="domain-toggle">{{ expandedDomains[domain] ? '▼' : '▶' }}</span>
               <span class="domain-name">{{ domain }}</span>
@@ -328,26 +349,26 @@
             </div>
             <div v-if="expandedDomains[domain]" class="domain-items">
               <div
-                v-for="item in group"
-                :key="item.link"
-                :class="['item-container', { seen_link: seenLinks[item.link] }]"
-                :id="makeSafeForCSS(item.link)"
+                  v-for="item in group"
+                  :key="item.link"
+                  :class="['item-container', { seen_link: seenLinks[item.link] }]"
+                  :id="makeSafeForCSS(item.link)"
               >
                 <div class="item">
                   <svg
-                    v-if="seenLinks[item.link]"
-                    class="checkmark"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 52 52"
+                      v-if="seenLinks[item.link]"
+                      class="checkmark"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 52 52"
                   >
                     <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
                     <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
                   </svg>
                   <svg
-                    v-else
-                    class="checkmark unseen"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 52 52"
+                      v-else
+                      class="checkmark unseen"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 52 52"
                   >
                     <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"></circle>
                   </svg>
@@ -365,7 +386,10 @@
                       {{ truncateText(getDomainName(item.link), 20) }}
                     </a>
 
-                    <span v-if="item.publication_date" class="publication-date" style="margin-left:9.6px;color:#666;font-size:11px;">
+                    <span
+                        v-if="item.publication_date" class="publication-date"
+                        style="margin-left:9.6px;color:#666;font-size:11px;"
+                    >
                       {{ item.publication_date }}
                     </span>
 
@@ -373,14 +397,16 @@
                       <div class="item-param">
                         <div class="query-content">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                            <path d="M336 352c97.2 0 176-78.8 176-176S433.2 0 336 0S160 78.8 160 176c0 18.7 2.9 36.8 8.3 53.7L7 391c-4.5 4.5-7 10.6-7 17v80c0 13.3 10.7 24 24 24h80c13.3 0 24-10.7 24-24V448h40c13.3 0 24-10.7 24-24V384h40c6.4 0 12.5-2.5 17-7l33.3-33.3c16.9 5.4 35 8.3 53.7 8.3zM376 96a40 40 0 1 1 0 80 40 40 0 1 1 0-80z"/>
+                            <path
+                                d="M336 352c97.2 0 176-78.8 176-176S433.2 0 336 0S160 78.8 160 176c0 18.7 2.9 36.8 8.3 53.7L7 391c-4.5 4.5-7 10.6-7 17v80c0 13.3 10.7 24 24 24h80c13.3 0 24-10.7 24-24V448h40c13.3 0 24-10.7 24-24V384h40c6.4 0 12.5-2.5 17-7l33.3-33.3c16.9 5.4 35 8.3 53.7 8.3zM376 96a40 40 0 1 1 0 80 40 40 0 1 1 0-80z"
+                            />
                           </svg>
                           <template v-for="(query, index) in item.keyword_list" :key="index">
                             <span v-if="index > 0">, </span>
                             <span
-                              class="query"
-                              @click="copyToClipboard(String(query))"
-                              :title="String(query)"
+                                class="query"
+                                @click="copyToClipboard(String(query))"
+                                :title="String(query)"
                             >
                               {{ String(query) }}
                             </span>
@@ -397,27 +423,27 @@
         </template>
 
         <div
-          v-else
-          v-for="item in selectedTabIndex === tabIndex ? renderedItems : []"
-          :key="item.link"
-          :class="['item-container', { seen_link: seenLinks[item.link] }]"
-          :id="makeSafeForCSS(item.link)"
+            v-else
+            v-for="item in selectedTabIndex === tabIndex ? renderedItems : []"
+            :key="item.link"
+            :class="['item-container', { seen_link: seenLinks[item.link] }]"
+            :id="makeSafeForCSS(item.link)"
         >
           <div class="item">
-            <svg 
-              v-if="seenLinks[item.link]" 
-              class="checkmark" 
-              xmlns="http://www.w3.org/2000/svg" 
-              viewBox="0 0 52 52"
+            <svg
+                v-if="seenLinks[item.link]"
+                class="checkmark"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 52 52"
             >
               <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
               <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
             </svg>
-            <svg 
-              v-else
-              class="checkmark unseen" 
-              xmlns="http://www.w3.org/2000/svg" 
-              viewBox="0 0 52 52"
+            <svg
+                v-else
+                class="checkmark unseen"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 52 52"
             >
               <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
             </svg>
@@ -427,7 +453,7 @@
                 {{ item.title }}
               </a>
             </div>
-            
+
             <div class="item-content">{{ item.content }}</div>
 
             <div class="item-info">
@@ -435,7 +461,10 @@
                 {{ truncateText(getDomainName(item.link), 20) }}
               </a>
 
-              <span v-if="item.publication_date" class="publication-date" style="margin-left:9.6px;color:#666;font-size:11px;">
+              <span
+                  v-if="item.publication_date" class="publication-date"
+                  style="margin-left:9.6px;color:#666;font-size:11px;"
+              >
                 {{ item.publication_date }}
               </span>
 
@@ -443,14 +472,16 @@
                 <div class="item-param">
                   <div class="query-content">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                      <path d="M336 352c97.2 0 176-78.8 176-176S433.2 0 336 0S160 78.8 160 176c0 18.7 2.9 36.8 8.3 53.7L7 391c-4.5 4.5-7 10.6-7 17v80c0 13.3 10.7 24 24 24h80c13.3 0 24-10.7 24-24V448h40c13.3 0 24-10.7 24-24V384h40c6.4 0 12.5-2.5 17-7l33.3-33.3c16.9 5.4 35 8.3 53.7 8.3zM376 96a40 40 0 1 1 0 80 40 40 0 1 1 0-80z"/>
+                      <path
+                          d="M336 352c97.2 0 176-78.8 176-176S433.2 0 336 0S160 78.8 160 176c0 18.7 2.9 36.8 8.3 53.7L7 391c-4.5 4.5-7 10.6-7 17v80c0 13.3 10.7 24 24 24h80c13.3 0 24-10.7 24-24V448h40c13.3 0 24-10.7 24-24V384h40c6.4 0 12.5-2.5 17-7l33.3-33.3c16.9 5.4 35 8.3 53.7 8.3zM376 96a40 40 0 1 1 0 80 40 40 0 1 1 0-80z"
+                      />
                     </svg>
                     <template v-for="(query, index) in item.keyword_list" :key="index">
                       <span v-if="index > 0">, </span>
-                      <span 
-                        class="query"
-                        @click="copyToClipboard(String(query))"
-                        :title="String(query)"
+                      <span
+                          class="query"
+                          @click="copyToClipboard(String(query))"
+                          :title="String(query)"
                       >
                         {{ String(query) }}
                       </span>
@@ -467,17 +498,17 @@
 
     <div v-if="hasItemsForCurrentTab && !loadingTab" class="pagination-container pagination-bottom">
       <VPagination
-        :selected_page="currentPage"
-        :general_count="isGroupingEnabled ? Object.keys(allGroupedItems).length : filteredItems.length"
-        :set_selected_page="setPage"
-        :updateList="updateList"
+          :selected_page="currentPage"
+          :general_count="isGroupingEnabled ? Object.keys(allGroupedItems).length : filteredItems.length"
+          :set_selected_page="setPage"
+          :updateList="updateList"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import {computed, nextTick, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import VPagination from '../UI/VPagination.vue'
 
 interface Item {
@@ -571,7 +602,7 @@ const expandedDomains = reactive<Record<string, boolean>>({})
 
 const keywordSearchQuery = ref('')
 const selectedKeywords = reactive<Record<string, boolean>>({})
-const filteredKeywordList = ref<Array<{word: string, count: number}>>([])
+const filteredKeywordList = ref<Array<{ word: string, count: number }>>([])
 
 const availableKeywords = computed(() => {
   const tabItems = getTabItems(selectedTabIndex.value)
@@ -586,13 +617,13 @@ const availableKeywords = computed(() => {
   })
 
   return Object.entries(keywordCounts)
-    .map(([word, count]) => ({ word, count }))
-    .sort((a, b) => b.count - a.count)
+      .map(([word, count]) => ({word, count}))
+      .sort((a, b) => b.count - a.count)
 })
 
 const totalAllMaterials = computed(() => {
   return Object.values(props.keywordStats || {})
-    .reduce((sum, count) => sum + (typeof count === 'number' ? count : 0), 0)
+      .reduce((sum, count) => sum + (typeof count === 'number' ? count : 0), 0)
 })
 
 const chartData = computed(() => {
@@ -670,8 +701,8 @@ const filteredItems = computed((): Item[] => {
   }
 
   const activeKeywords = Object.entries(selectedKeywords)
-    .filter(([_, isSelected]) => isSelected)
-    .map(([keyword]) => keyword)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([keyword]) => keyword)
 
   if (activeKeywords.length > 0 && activeKeywords.length < availableKeywords.value.length) {
     items = items.filter(item => {
@@ -694,7 +725,7 @@ const filteredItems = computed((): Item[] => {
       ].join(' ').toLowerCase()
 
       return !minusKeywords.value.some(keyword =>
-        searchableContent.includes(keyword.toLowerCase())
+          searchableContent.includes(keyword.toLowerCase())
       )
     })
   }
@@ -835,7 +866,7 @@ const decodePunycode = (input: string): string => {
     output.push(charCode)
   }
 
-  for (let index = basic > 0 ? basic + 1 : 0; index < punycode.length; ) {
+  for (let index = basic > 0 ? basic + 1 : 0; index < punycode.length;) {
     const oldi = i
     let w = 1
 
@@ -969,7 +1000,7 @@ const copyToClipboard = async (text: string): Promise<void> => {
       await navigator.clipboard.writeText(text)
       return
     }
-    
+
     const inp = document.createElement('input')
     document.body.appendChild(inp)
     inp.value = text
@@ -1106,7 +1137,7 @@ const initializeKeywordFilter = () => {
     delete selectedKeywords[key]
   })
 
-  availableKeywords.value.forEach(({ word }) => {
+  availableKeywords.value.forEach(({word}) => {
     selectedKeywords[word] = true
   })
 
@@ -1119,8 +1150,8 @@ const filterKeywords = () => {
   if (!query) {
     filteredKeywordList.value = [...availableKeywords.value]
   } else {
-    filteredKeywordList.value = availableKeywords.value.filter(({ word }) =>
-      word.toLowerCase().includes(query)
+    filteredKeywordList.value = availableKeywords.value.filter(({word}) =>
+        word.toLowerCase().includes(query)
     )
   }
 }
@@ -1131,14 +1162,14 @@ const toggleKeyword = (keyword: string) => {
 }
 
 const selectAllKeywords = () => {
-  filteredKeywordList.value.forEach(({ word }) => {
+  filteredKeywordList.value.forEach(({word}) => {
     selectedKeywords[word] = true
   })
   currentPage.value = 1
 }
 
 const deselectAllKeywords = () => {
-  filteredKeywordList.value.forEach(({ word }) => {
+  filteredKeywordList.value.forEach(({word}) => {
     selectedKeywords[word] = false
   })
   currentPage.value = 1
@@ -1227,36 +1258,36 @@ const setupIntersectionObserver = (): void => {
   }
 
   intersectionObserver = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const element = entry.target as HTMLElement
-          const itemId = element.id
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const element = entry.target as HTMLElement
+            const itemId = element.id
 
-          const item = renderedItems.value.find(item => makeSafeForCSS(item.link) === itemId)
+            const item = renderedItems.value.find(item => makeSafeForCSS(item.link) === itemId)
 
-          if (item && !seenLinks[item.link]) {
-            seenLinks[item.link] = true
-            emit('item-viewed', { link: item.link, timestamp: Date.now() })
+            if (item && !seenLinks[item.link]) {
+              seenLinks[item.link] = true
+              emit('item-viewed', {link: item.link, timestamp: Date.now()})
 
-            const checkmark = element.querySelector('.checkmark.unseen')
-            if (checkmark) {
-              checkmark.classList.add('seen_scale')
-              setTimeout(() => {
-                if (checkmark instanceof HTMLElement) {
-                  checkmark.style.display = 'none'
-                }
-              }, 1100)
+              const checkmark = element.querySelector('.checkmark.unseen')
+              if (checkmark) {
+                checkmark.classList.add('seen_scale')
+                setTimeout(() => {
+                  if (checkmark instanceof HTMLElement) {
+                    checkmark.style.display = 'none'
+                  }
+                }, 1100)
+              }
             }
           }
-        }
-      })
-    },
-    {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.5
-    }
+        })
+      },
+      {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.5
+      }
   )
 }
 
@@ -1278,7 +1309,7 @@ const checkAllItems = (): void => {
     const element = document.getElementById(makeSafeForCSS(item.link))
     if (element && isInViewport(element) && !seenLinks[item.link]) {
       seenLinks[item.link] = true
-      emit('item-viewed', { link: item.link, timestamp: Date.now() })
+      emit('item-viewed', {link: item.link, timestamp: Date.now()})
 
       const checkmark = element.querySelector('.checkmark.unseen')
       if (checkmark) {
@@ -1296,10 +1327,10 @@ const checkAllItems = (): void => {
 const isInViewport = (el: Element): boolean => {
   const rect = el.getBoundingClientRect()
   return (
-    rect.top >= 0 &&
-    rect.left >= 0 &&
-    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
   )
 }
 
@@ -1327,7 +1358,7 @@ onMounted(async () => {
     }
   }
 
-  window.addEventListener('scroll', handleScroll, { passive: true })
+  window.addEventListener('scroll', handleScroll, {passive: true})
 
   scrollCleanup = () => {
     window.removeEventListener('scroll', handleScroll)
@@ -1357,8 +1388,8 @@ watch(renderedItems, () => {
 
 watch(filteredItems, () => {
   const totalCount = isGroupingEnabled.value
-    ? Object.keys(allGroupedItems.value).length
-    : filteredItems.value.length
+      ? Object.keys(allGroupedItems.value).length
+      : filteredItems.value.length
   const totalPages = Math.ceil(totalCount / ITEMS_PER_PAGE) || 1
   if (currentPage.value > totalPages) {
     currentPage.value = totalPages
@@ -1378,7 +1409,7 @@ watch(expandedDomains, () => {
       }
     })
   }
-}, { deep: true })
+}, {deep: true})
 
 watch(availableKeywords, () => {
   initializeKeywordFilter()
@@ -1393,7 +1424,7 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
     await nextTick()
     initializeKeywordFilter()
   }
-}, { immediate: false, deep: true })
+}, {immediate: false, deep: true})
 </script>
 
 <style scoped>

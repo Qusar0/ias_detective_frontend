@@ -2,7 +2,7 @@
 import VSidebar from '../components/VSidebar.vue';
 import VHeader from '../components/VHeader.vue';
 import VUserSupport from '../components/VUserSupport.vue';
-import {menu, refresh} from '../use/index';
+import { menu, refresh } from '../use/index';
 
 export default {
   components: {

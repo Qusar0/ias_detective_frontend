@@ -38,26 +38,34 @@
     <div class="form">
       <div class="inputs">
         <label class="flex flex-col w-full parent-prompt top-input" style="margin-right: 20px;">
-          <input v-model="form.tg_username" type="tel" title="some title ..."
-                 style="margin-right: 0; margin-bottom: 0" placeholder="Введите имя telegram пользователя" :class="{
+          <input
+              v-model="form.tg_username" type="tel" title="some title ..."
+              style="margin-right: 0; margin-bottom: 0" placeholder="Введите имя telegram пользователя" :class="{
                             'border-color-red':
                                 surname_error,
-                        }"/>
-          <small class="prompt" :class="{
+                        }"
+          />
+          <small
+              class="prompt" :class="{
                         'bg-red':
                             surname_error,
-                    }">Введите имя telegram пользователя</small>
+                    }"
+          >Введите имя telegram пользователя</small>
         </label>
         <label class="flex flex-col w-full parent-prompt top-input" style="margin-right: 0;">
-          <input v-model="form.tg_id" type="tel" title="some title ..." style="margin-right: 0; margin-bottom: 0"
-                 placeholder="Введите Telegram ID пользователя" :class="{
+          <input
+              v-model="form.tg_id" type="tel" title="some title ..." style="margin-right: 0; margin-bottom: 0"
+              placeholder="Введите Telegram ID пользователя" :class="{
                             'border-color-red':
                                 surname_error,
-                        }"/>
-          <small class="prompt" :class="{
+                        }"
+          />
+          <small
+              class="prompt" :class="{
                         'bg-red':
                             surname_error,
-                    }">Введите Telegram ID пользователя</small>
+                    }"
+          >Введите Telegram ID пользователя</small>
         </label>
 
       </div>
@@ -104,8 +112,10 @@
                 </span>
         </label>
       </div>
-      <button class="btn" style="white-space: nowrap;margin-top: 10px;margin-left: auto !important;"
-              @click="getPrice()">
+      <button
+          class="btn" style="white-space: nowrap;margin-top: 10px;margin-left: auto !important;"
+          @click="getPrice()"
+      >
         Отправить запрос
       </button>
     </div>
@@ -136,15 +146,22 @@
             {{ query.balance }} руб.
           </div>
           <i class="fa-solid fa-spinner" v-if="query.query_status == 'pending'"></i>
-          <i class="fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'xmlriver on update'"
-             :title="'Сервис на обновлении!\n\nПопробуйте позже.'"
-             style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"></i>
-          <i class="fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'failed'"
-             :title="'Ошибка сервера!\n\nПопробуйте позже.'"
-             style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"></i>
-          <button v-else class="item-btn btn"
-                  @click="downloadQuery(query.query_title, query.query_id, query)">Скачать <i
-              class="fa-solid fa-spinner" v-show="query.downloading" style="margin-left: 5px;"></i></button>
+          <i
+              class="fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'xmlriver on update'"
+              :title="'Сервис на обновлении!\n\nПопробуйте позже.'"
+              style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"
+          ></i>
+          <i
+              class="fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'failed'"
+              :title="'Ошибка сервера!\n\nПопробуйте позже.'"
+              style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"
+          ></i>
+          <button
+              v-else class="item-btn btn"
+              @click="downloadQuery(query.query_title, query.query_id, query)"
+          >Скачать <i
+              class="fa-solid fa-spinner" v-show="query.downloading" style="margin-left: 5px;"
+          ></i></button>
           <i
               class="fa-solid fa-trash delete-icon"
               style="cursor: pointer"
@@ -152,8 +169,10 @@
           ></i>
         </div>
       </div>
-      <div class="item" v-show="query_list_loading"
-           style="background-color: transparent;justify-content: center;margin-top: 0;">
+      <div
+          class="item" v-show="query_list_loading"
+          style="background-color: transparent;justify-content: center;margin-top: 0;"
+      >
         <i class="fa-solid fa-spinner"></i>
       </div>
     </div>
@@ -172,17 +191,17 @@
 </template>
 
 <script setup>
-import {onMounted, reactive, ref, watch} from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import '../utils/index';
-import {isAuthorized, user_balance} from '../use/index';
+import { isAuthorized, user_balance } from '../use/index';
 import VPagination from './UI/VPagination.vue';
-import {events} from '../utils/notification';
+import { events } from '../utils/notification';
 import router from '../router/router.js';
-import {useQueryManagement} from '../composables/useQueryManagement.js';
-import {usePagination} from '../composables/usePagination.js';
-import {useTimestamp} from '../composables/useTimestamp.js';
-import {getItemDate} from '../utils/dateUtils.js';
-import {clearCheckboxes, clearKeysList} from '../utils/fieldUtils.js';
+import { useQueryManagement } from '../composables/useQueryManagement.js';
+import { usePagination } from '../composables/usePagination.js';
+import { useTimestamp } from '../composables/useTimestamp.js';
+import { getItemDate } from '../utils/dateUtils.js';
+import { clearCheckboxes, clearKeysList } from '../utils/fieldUtils.js';
 
 const confirm_model = ref(false);
 
@@ -237,7 +256,6 @@ const getPrice = () => {
 
   confirm_model.value = true;
 };
-
 
 const clearAllFields = () => {
   form.tg_username = '';

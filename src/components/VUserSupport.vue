@@ -16,20 +16,31 @@
       </div>
       <div class="inputs flex-col" style="flex-direction: column;gap: 10px;">
         <div class="flex flex-col w-full parent-prompt top-input" style="border: none !important;">
-          <input v-model="form.theme" type="text" title="some title ..." placeholder="Контакт для связи"
-                 style="margin-right: 0;margin-bottom: 0;border: none !important;font-size: 15px;"><small
-            class="prompt">Введите свой контакт для связи с тех под.</small>
+          <input
+              v-model="form.theme" type="text" title="some title ..." placeholder="Контакт для связи"
+              style="margin-right: 0;margin-bottom: 0;border: none !important;font-size: 15px;"
+          ><small
+            class="prompt"
+        >Введите свой контакт для связи с тех под.</small>
         </div>
-        <div class="flex flex-col w-full parent-prompt top-input"
-             style="margin-right: 20px; margin-bottom: 0; align-items: start;"><input v-model="form.description"
-                                                                                      type="text"
-                                                                                      placeholder="Тема сообщение"
-                                                                                      style="margin-right: 0;border: none !important;font-size: 15px;margin-bottom: 0px;"><small
-            class="prompt">Введите тему сообщение</small></div>
+        <div
+            class="flex flex-col w-full parent-prompt top-input"
+            style="margin-right: 20px; margin-bottom: 0; align-items: start;"
+        ><input
+            v-model="form.description"
+            type="text"
+            placeholder="Тема сообщение"
+            style="margin-right: 0;border: none !important;font-size: 15px;margin-bottom: 0px;"
+        ><small
+            class="prompt"
+        >Введите тему сообщение</small></div>
         <div class="flex flex-col w-full parent-prompt top-input" style="margin-bottom: 0; align-items: start;">
-                    <textarea v-model="form.contacts" type="text" placeholder="Текст сообщение"
-                              style="font-family: sans-serif;margin-right: 0px;margin-bottom: 0px;font-size: 15px;width: 700px;height: 150px;padding: 5px 7px;max-width: 100%;max-height: 300px;border: none !important;"></textarea><small
-            class="prompt">Введите текст сообщение</small>
+                    <textarea
+                        v-model="form.contacts" type="text" placeholder="Текст сообщение"
+                        style="font-family: sans-serif;margin-right: 0px;margin-bottom: 0px;font-size: 15px;width: 700px;height: 150px;padding: 5px 7px;max-width: 100%;max-height: 300px;border: none !important;"
+                    ></textarea><small
+            class="prompt"
+        >Введите текст сообщение</small>
         </div>
       </div>
       <button class="btn" @click="send_support()">Отправить</button>
@@ -39,8 +50,7 @@
 </template>
 
 <script>
-import {isAuthorized} from '../use/index';
-
+import { isAuthorized } from '../use/index';
 
 export default {
   setup() {

@@ -1,16 +1,22 @@
 <template>
   <div class="w-full" style="flex-direction: column;justify-content: center;">
-    <img src="../assets/logo-black.svg" width="260" alt="0" class="logo-img" height="145"
-         style="margin-top: auto;margin-left: -5px;margin-bottom: 25px;">
+    <img
+        src="../assets/logo-black.svg" width="260" alt="0" class="logo-img" height="145"
+        style="margin-top: auto;margin-left: -5px;margin-bottom: 25px;"
+    >
     <div class="modal">
       <div class="tabs w-full">
-        <div class="login-tab" :class="{
+        <div
+            class="login-tab" :class="{
                     'active-tab': bool
-                }" @click="bool = !bool">Вход
+                }" @click="bool = !bool"
+        >Вход
         </div>
-        <div class="login-tab" :class="{
+        <div
+            class="login-tab" :class="{
                     'active-tab': !bool
-                }" @click="bool = !bool">Регистрация
+                }" @click="bool = !bool"
+        >Регистрация
         </div>
       </div>
 
@@ -24,7 +30,7 @@
 <script>
 import VLogin from '../components/VLogin.vue';
 import VRegister from '../components/VRegister.vue';
-import {bool} from '../use/index';
+import { bool } from '../use/index';
 
 export default {
   components: {

@@ -9,10 +9,10 @@
 
       <div class="tabs flex flex-wrap items-center">
         <div
-          v-for="(tab, index) in tabs"
-          :key="index"
-          :class="[`tab-${index + 1}`, { selected: selectedTabIndex === index + 1 }]"
-          @click="selectTab(index + 1)"
+            v-for="(tab, index) in tabs"
+            :key="index"
+            :class="[`tab-${index + 1}`, { selected: selectedTabIndex === index + 1 }]"
+            @click="selectTab(index + 1)"
         >
           {{ tab }}
           <span class="tab-count">{{ getTabItemCount(index + 1) }}</span>
@@ -23,85 +23,85 @@
     <div @click="closeModal">
       <!-- Общее -->
       <div
-        :class="['tab-content-1', { selected: selectedTabIndex === 1 }]"
-        v-show="selectedTabIndex === 1"
+          :class="['tab-content-1', { selected: selectedTabIndex === 1 }]"
+          v-show="selectedTabIndex === 1"
       >
         <VIrbisGeneralTab
-          :queryId="queryId"
-          :isActive="selectedTabIndex === 1"
-          @update-count="(count) => updateTabCount(1, count)"
+            :queryId="queryId"
+            :isActive="selectedTabIndex === 1"
+            @update-count="(count) => updateTabCount(1, count)"
         />
       </div>
 
       <!-- Суды общей юрисдикции -->
       <div
-        :class="['tab-content-2', { selected: selectedTabIndex === 2 }]"
-        v-show="selectedTabIndex === 2"
+          :class="['tab-content-2', { selected: selectedTabIndex === 2 }]"
+          v-show="selectedTabIndex === 2"
       >
         <VIrbisCourtGeneralTab
-          :queryId="queryId"
-          :isActive="selectedTabIndex === 2"
-          @update-count="(count) => updateTabCount(2, count)"
+            :queryId="queryId"
+            :isActive="selectedTabIndex === 2"
+            @update-count="(count) => updateTabCount(2, count)"
         />
       </div>
 
       <!-- Арбитражные суды -->
       <div
-        :class="['tab-content-3', { selected: selectedTabIndex === 3 }]"
-        v-show="selectedTabIndex === 3"
+          :class="['tab-content-3', { selected: selectedTabIndex === 3 }]"
+          v-show="selectedTabIndex === 3"
       >
         <VIrbisArbitrationTab
-          :queryId="queryId"
-          :isActive="selectedTabIndex === 3"
-          @update-count="(count) => updateTabCount(3, count)"
+            :queryId="queryId"
+            :isActive="selectedTabIndex === 3"
+            @update-count="(count) => updateTabCount(3, count)"
         />
       </div>
 
       <!-- Банкротства -->
       <div
-        :class="['tab-content-4', { selected: selectedTabIndex === 4 }]"
-        v-show="selectedTabIndex === 4"
+          :class="['tab-content-4', { selected: selectedTabIndex === 4 }]"
+          v-show="selectedTabIndex === 4"
       >
         <VIrbisBankruptcyTab
-          :queryId="queryId"
-          :isActive="selectedTabIndex === 4"
-          @update-count="(count) => updateTabCount(4, count)"
+            :queryId="queryId"
+            :isActive="selectedTabIndex === 4"
+            @update-count="(count) => updateTabCount(4, count)"
         />
       </div>
 
       <!-- Дисквалифицированные лица -->
       <div
-        :class="['tab-content-5', { selected: selectedTabIndex === 5 }]"
-        v-show="selectedTabIndex === 5"
+          :class="['tab-content-5', { selected: selectedTabIndex === 5 }]"
+          v-show="selectedTabIndex === 5"
       >
         <VIrbisDisqualifiedTab
-          :queryId="queryId"
-          :isActive="selectedTabIndex === 5"
-          @update-count="(count) => updateTabCount(5, count)"
+            :queryId="queryId"
+            :isActive="selectedTabIndex === 5"
+            @update-count="(count) => updateTabCount(5, count)"
         />
       </div>
 
       <!-- Залоги -->
       <div
-        :class="['tab-content-6', { selected: selectedTabIndex === 6 }]"
-        v-show="selectedTabIndex === 6"
+          :class="['tab-content-6', { selected: selectedTabIndex === 6 }]"
+          v-show="selectedTabIndex === 6"
       >
         <VIrbisPledgesTab
-          :queryId="queryId"
-          :isActive="selectedTabIndex === 6"
-          @update-count="(count) => updateTabCount(6, count)"
+            :queryId="queryId"
+            :isActive="selectedTabIndex === 6"
+            @update-count="(count) => updateTabCount(6, count)"
         />
       </div>
 
       <!-- Коррупция -->
       <div
-        :class="['tab-content-7', { selected: selectedTabIndex === 7 }]"
-        v-show="selectedTabIndex === 7"
+          :class="['tab-content-7', { selected: selectedTabIndex === 7 }]"
+          v-show="selectedTabIndex === 7"
       >
         <VIrbisCorruptionTab
-          :queryId="queryId"
-          :isActive="selectedTabIndex === 7"
-          @update-count="(count) => updateTabCount(7, count)"
+            :queryId="queryId"
+            :isActive="selectedTabIndex === 7"
+            @update-count="(count) => updateTabCount(7, count)"
         />
       </div>
     </div>
@@ -109,7 +109,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import VIrbisGeneralTab from './tabs/VIrbisGeneralTab.vue';
 import VIrbisCourtGeneralTab from './tabs/VIrbisCourtGeneralTab.vue';
 import VIrbisArbitrationTab from './tabs/VIrbisArbitrationTab.vue';
@@ -126,7 +126,7 @@ const tabs = [
   'Дисквалифицированные лица',
   'Залоги',
   'Коррупция'
-]
+];
 
 const props = defineProps({
   items: {
@@ -137,9 +137,9 @@ const props = defineProps({
     type: [String, Number],
     required: false
   }
-})
+});
 
-const selectedTabIndex = ref(1)
+const selectedTabIndex = ref(1);
 
 const tabCounts = reactive({
   1: 0, // Общее
@@ -149,23 +149,23 @@ const tabCounts = reactive({
   5: '?', // Дисквалифицированные лица
   6: '?', // Залоги
   7: '?' // Коррупция
-})
+});
 
 const selectTab = (tabIndex) => {
-  selectedTabIndex.value = tabIndex
-}
+  selectedTabIndex.value = tabIndex;
+};
 
 const closeModal = (event) => {
-  event?.stopPropagation()
-}
+  event?.stopPropagation();
+};
 
 const updateTabCount = (tabIndex, count) => {
-  tabCounts[tabIndex] = count
-}
+  tabCounts[tabIndex] = count;
+};
 
 const getTabItemCount = (tabIndex) => {
-  return tabCounts[tabIndex]
-}
+  return tabCounts[tabIndex];
+};
 
 </script>
 
