@@ -92,7 +92,9 @@ const totalResults = computed(() => {
       (localStatistics.value.pledgess || 0) +
       (localStatistics.value.corruption || 0) +
       (localStatistics.value.terrorists || 0) +
-      (localStatistics.value.tax_arrears || 0)
+      (localStatistics.value.tax_arrears || 0) +
+      (localStatistics.value.fssp || 0) +
+      (localStatistics.value.part_in_org || 0)
   );
 });
 
@@ -110,7 +112,9 @@ const chartData = computed(() => {
     '#2196f3', // Залоги
     '#ff9800', // Коррупция
     '#7c3aed', // Террористы
-    '#a855f7'  // Налоговые задолженности
+    '#a855f7', // Налоговые задолженности
+    '#6366f1', // ФССП
+    '#8b5cf6'  // Участие в организациях
   ];
 
   const labels = [
@@ -121,10 +125,12 @@ const chartData = computed(() => {
     'Залоги',
     'Коррупция',
     'Террористы',
-    'Налоговые задолженности'
+    'Налоговые задолженности',
+    'ФССП',
+    'Участие в организациях'
   ];
 
-  const keys = ['court_general', 'arbitration_court', 'bankruptcy', 'disqualified_person', 'pledgess', 'corruption', 'terrorists', 'tax_arrears'];
+  const keys = ['court_general', 'arbitration_court', 'bankruptcy', 'disqualified_person', 'pledgess', 'corruption', 'terrorists', 'tax_arrears', 'fssp', 'part_in_org'];
 
   return keys.map((key, index) => {
     const count = stats[key] || 0;
@@ -154,8 +160,7 @@ const fetchStatistics = async () => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
-    localStatistics.value = data;
+    localStatistics.value = await response.json();
     emit('update-count', totalResults.value);
   } catch (err) {
     error.value = err.message || 'Произошла ошибка при загрузке данных';

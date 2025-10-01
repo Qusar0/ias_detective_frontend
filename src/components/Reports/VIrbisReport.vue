@@ -1,7 +1,7 @@
 <template>
   <div class="irbis-report" @click="closeModal">
     <div class="tab-head" @click="closeModal">
-      <div class="flex items-center" style="flex-wrap: wrap;">
+      <div class="title-container">
         <h2 class="object-full_name">
           <span style="white-space:nowrap">Судебные дела</span>
         </h2>
@@ -31,16 +31,38 @@
         </div>
       </div>
 
-      <div class="tabs flex flex-wrap items-center">
-        <div
-            v-for="(tab, index) in tabs"
-            :key="index"
-            :class="[`tab-${index + 1}`, { selected: selectedTabIndex === index + 1 }]"
-            @click="selectTab(index + 1)"
+      <div class="tabs-container">
+        <button
+            class="tab-scroll-button left"
+            @click="scrollTabs('left')"
+            :disabled="!canScrollLeft"
         >
-          {{ tab }}
-          <span v-if="index !== 0" class="tab-count">{{ getTabItemCount(index + 1) }}</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
+          </svg>
+        </button>
+        <div class="tabs-scroll" ref="tabsScrollRef">
+          <div class="tabs flex items-center">
+            <div
+                v-for="(tab, index) in tabs"
+                :key="index"
+                :class="[`tab-${index + 1}`, { selected: selectedTabIndex === index + 1 }]"
+                @click="selectTab(index + 1)"
+            >
+              {{ tab }}
+              <span v-if="index !== 0" class="tab-count">{{ getTabItemCount(index + 1) }}</span>
+            </div>
+          </div>
         </div>
+        <button
+            class="tab-scroll-button right"
+            @click="scrollTabs('right')"
+            :disabled="!canScrollRight"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/>
+          </svg>
+        </button>
       </div>
     </div>
 
@@ -153,12 +175,36 @@
             :totalCount="statistics?.tax_arrears || 0"
         />
       </div>
+
+      <!-- ФССП -->
+      <div
+          :class="['tab-content-10', { selected: selectedTabIndex === 10 }]"
+          v-show="selectedTabIndex === 10"
+      >
+        <VIrbisFsspTab
+            :queryId="queryId"
+            :isActive="selectedTabIndex === 10"
+            :totalCount="statistics?.fssp || 0"
+        />
+      </div>
+
+      <!-- Участие в организациях -->
+      <div
+          :class="['tab-content-11', { selected: selectedTabIndex === 11 }]"
+          v-show="selectedTabIndex === 11"
+      >
+        <VIrbisPartInOrgTab
+            :queryId="queryId"
+            :isActive="selectedTabIndex === 11"
+            :totalCount="statistics?.part_in_org || 0"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, nextTick } from 'vue';
 import VIrbisGeneralTab from './tabs/VIrbisGeneralTab.vue';
 import VIrbisCourtGeneralTab from './tabs/VIrbisCourtGeneralTab.vue';
 import VIrbisArbitrationTab from './tabs/VIrbisArbitrationTab.vue';
@@ -168,6 +214,8 @@ import VIrbisPledgesTab from './tabs/VIrbisPledgesTab.vue';
 import VIrbisCorruptionTab from './tabs/VIrbisCorruptionTab.vue';
 import VIrbisTerroristsTab from './tabs/VIrbisTerroristsTab.vue';
 import VIrbisTaxArrearsTab from './tabs/VIrbisTaxArrearsTab.vue';
+import VIrbisFsspTab from './tabs/VIrbisFsspTab.vue';
+import VIrbisPartInOrgTab from './tabs/VIrbisPartInOrgTab.vue';
 
 const tabs = [
   'Общее',
@@ -178,7 +226,9 @@ const tabs = [
   'Залоги',
   'Коррупция',
   'Террористы',
-  'Налоговые задолженности'
+  'Налоговые задолженности',
+  'ФССП',
+  'Участие в организациях'
 ];
 
 const props = defineProps({
@@ -195,6 +245,9 @@ const props = defineProps({
 const selectedTabIndex = ref(1);
 const generalInfo = ref(null);
 const statistics = ref(null);
+const tabsScrollRef = ref(null);
+const canScrollLeft = ref(false);
+const canScrollRight = ref(false);
 
 const tabCounts = reactive({
   1: 0, // Общее
@@ -205,11 +258,70 @@ const tabCounts = reactive({
   6: '?', // Залоги
   7: '?', // Коррупция
   8: '?', // Террористы
-  9: '?' // Налоговые задолженности
+  9: '?', // Налоговые задолженности
+  10: '?', // ФССП
+  11: '?' // Участие в организациях
 });
 
 const selectTab = (tabIndex) => {
   selectedTabIndex.value = tabIndex;
+  nextTick(() => {
+    scrollToActiveTab();
+  });
+};
+
+const scrollTabs = (direction) => {
+  if (!tabsScrollRef.value) return;
+  const scrollAmount = 200;
+  const currentScroll = tabsScrollRef.value.scrollLeft;
+
+  if (direction === 'left') {
+    tabsScrollRef.value.scrollTo({
+      left: currentScroll - scrollAmount,
+      behavior: 'smooth'
+    });
+  } else {
+    tabsScrollRef.value.scrollTo({
+      left: currentScroll + scrollAmount,
+      behavior: 'smooth'
+    });
+  }
+
+  updateScrollButtons();
+};
+
+const updateScrollButtons = () => {
+  if (!tabsScrollRef.value) return;
+
+  const { scrollLeft, scrollWidth, clientWidth } = tabsScrollRef.value;
+  canScrollLeft.value = scrollLeft > 0;
+  canScrollRight.value = scrollLeft < scrollWidth - clientWidth - 1;
+};
+
+const scrollToActiveTab = () => {
+  if (!tabsScrollRef.value) return;
+
+  const activeTab = tabsScrollRef.value.querySelector('.selected');
+  if (activeTab) {
+    const containerWidth = tabsScrollRef.value.clientWidth;
+    const tabLeft = activeTab.offsetLeft;
+    const tabWidth = activeTab.offsetWidth;
+    const currentScroll = tabsScrollRef.value.scrollLeft;
+
+    if (tabLeft < currentScroll) {
+      tabsScrollRef.value.scrollTo({
+        left: tabLeft - 20,
+        behavior: 'smooth'
+      });
+    } else if (tabLeft + tabWidth > currentScroll + containerWidth) {
+      tabsScrollRef.value.scrollTo({
+        left: tabLeft - containerWidth + tabWidth + 20,
+        behavior: 'smooth'
+      });
+    }
+  }
+
+  updateScrollButtons();
 };
 
 const closeModal = (event) => {
@@ -258,6 +370,8 @@ const fetchStatistics = async () => {
         tabCounts[7] = statistics.value.corruption || 0;
         tabCounts[8] = statistics.value.terrorists || 0;
         tabCounts[9] = statistics.value.tax_arrears || 0;
+        tabCounts[10] = statistics.value.fssp || 0;
+        tabCounts[11] = statistics.value.part_in_org || 0;
       }
     }
   } catch (err) {
@@ -268,6 +382,13 @@ const fetchStatistics = async () => {
 onMounted(() => {
   fetchGeneralInfo();
   fetchStatistics();
+
+  nextTick(() => {
+    updateScrollButtons();
+    if (tabsScrollRef.value) {
+      tabsScrollRef.value.addEventListener('scroll', updateScrollButtons);
+    }
+  });
 });
 
 </script>
@@ -308,7 +429,6 @@ onMounted(() => {
   padding: 7px 20px 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
 }
 
 @media (max-width: 640px) {
@@ -318,6 +438,102 @@ onMounted(() => {
   }
 
   .tab-head .tabs {
+    justify-content: center;
+  }
+}
+
+.tabs-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.tabs-scroll {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  min-width: 0;
+}
+
+.tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.tabs {
+  display: inline-flex;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.tab-scroll-button {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.tab-scroll-button:hover:not(:disabled) {
+  background: #f5f5f5;
+  border-color: #4400ed;
+}
+
+.tab-scroll-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.tab-scroll-button svg {
+  width: 12px;
+  height: 12px;
+  fill: #666;
+}
+
+.tab-scroll-button:hover:not(:disabled) svg {
+  fill: #4400ed;
+}
+
+@media (min-width: 1800px) {
+  .tab-head {
+    align-items: center;
+  }
+
+  .tab-head > * {
+    width: 100%;
+    max-width: 1200px;
+  }
+
+  .tab-scroll-button {
+    display: none;
+  }
+
+  .tabs-container {
+    justify-content: center;
+  }
+
+  .tabs-scroll {
+    overflow-x: visible;
+    overflow-y: visible;
+    flex: none;
+  }
+
+  .tabs {
+    justify-content: center;
+    width: auto;
+  }
+
+  .general-info-header,
+  .title-container {
     justify-content: center;
   }
 }
@@ -337,6 +553,8 @@ onMounted(() => {
   transition: color .15s;
   margin-top: 4px;
   border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .tab-head .flex > div[class*="tab-"]:hover,
@@ -359,18 +577,30 @@ onMounted(() => {
   color: white;
 }
 
+.title-container {
+  display: flex;
+  margin-bottom: 10px;
+}
+
 .object-full_name {
   font-size: 21px;
-  margin-top: 0;
-  text-align: center;
-  margin-right: 10px;
-  margin-bottom: 6px;
+  margin: 0;
 }
 
 @media (max-width: 710px) {
   .tab-head > .tabs:not(.pagination) {
     margin: 0 -5px;
     font-size: 15px;
+  }
+
+  .tab-scroll-button {
+    width: 28px;
+    height: 28px;
+  }
+
+  .tab-scroll-button svg {
+    width: 10px;
+    height: 10px;
   }
 }
 
@@ -404,5 +634,11 @@ onMounted(() => {
     flex-direction: column;
     gap: 8px;
   }
+}
+
+/* Override default checkbox and radio colors */
+:deep(input[type="checkbox"]),
+:deep(input[type="radio"]) {
+  accent-color: #4400ed;
 }
 </style>
