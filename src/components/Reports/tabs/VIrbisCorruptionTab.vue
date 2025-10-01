@@ -48,12 +48,6 @@
               <span class="date-label">Дата подачи:</span>
               <span class="date-value">{{ formatDate(corruptionCase.application_date) }}</span>
             </div>
-            <div class="case-id">
-              ID: {{ corruptionCase.id }}
-            </div>
-            <div class="corruption-badge">
-              ⚠️ Коррупция
-            </div>
           </div>
 
           <div class="corruption-expand">
@@ -142,7 +136,7 @@
 
                 <div class="exclusion-status">
                   <span class="status-badge excluded">
-                    ✅ Исключен из реестра
+                    Исключен из реестра
                   </span>
                 </div>
               </div>
@@ -152,7 +146,7 @@
 
                 <div class="active-status">
                   <span class="status-badge active">
-                    🔴 Активно в реестре
+                    Активно в реестре
                   </span>
                   <div class="status-description">
                     Лицо находится в реестре коррупционеров
@@ -188,8 +182,8 @@
 
     <div v-if="corruptionCases.length > 0" class="pagination-section">
       <div class="pagination-info">
-        Страница {{ currentPage }} из {{ Math.ceil(totalItems / pageSize) }}
-        (всего: {{ totalItems }})
+        Страница {{ currentPage }} из {{ Math.ceil(totalCount / pageSize) }}
+        (всего: {{ totalCount }})
       </div>
       <div class="pagination-controls">
         <button
@@ -202,7 +196,7 @@
         <span class="page-display">{{ currentPage }}</span>
         <button
             @click="changePage(currentPage + 1)"
-            :disabled="currentPage >= Math.ceil(totalItems / pageSize) || loading"
+            :disabled="currentPage >= Math.ceil(totalCount / pageSize) || loading"
             class="page-button"
         >
           Следующая →
@@ -223,18 +217,18 @@ const props = defineProps({
   isActive: {
     type: Boolean,
     default: false
+  },
+  totalCount: {
+    type: Number,
+    default: 0
   }
 });
-
-const emit = defineEmits(['update-count']);
 
 const loading = ref(false);
 const error = ref(null);
 const corruptionCases = ref([]);
-const totalItems = ref(0);
 const currentPage = ref(1);
 const pageSize = ref(20);
-const cumulativeCount = ref(0);
 
 const expandedCases = ref([]);
 const caseDetails = ref({});
@@ -242,15 +236,15 @@ const loadingDetails = ref({});
 const detailsErrors = ref({});
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'Неизвестно';
+  if (!dateString) return 'Дата не указана';
   try {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-      return 'Неизвестно';
+      return 'Дата не указана';
     }
     return date.toLocaleDateString('ru-RU');
   } catch {
-    return 'Неизвестно';
+    return 'Дата не указана';
   }
 };
 
@@ -288,15 +282,6 @@ const fetchCorruptionCases = async () => {
 
     const data = await response.json();
     corruptionCases.value = data;
-    totalItems.value = data.length === pageSize.value ? currentPage.value * pageSize.value + 1 : (currentPage.value - 1) * pageSize.value + data.length;
-
-    if (currentPage.value === 1) {
-      cumulativeCount.value = data.length;
-    } else {
-      cumulativeCount.value = (currentPage.value - 1) * pageSize.value + data.length;
-    }
-
-    emit('update-count', cumulativeCount.value);
   } catch (err) {
     error.value = err.message || 'Произошла ошибка при загрузке данных';
     console.error('Error fetching corruption cases:', err);
@@ -383,7 +368,7 @@ onMounted(() => {
   width: 40px;
   height: 40px;
   border: 4px solid #f3f3f3;
-  border-top: 4px solid #dc3545;
+  border-top: 4px solid #4400ed;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 16px;
@@ -417,7 +402,7 @@ onMounted(() => {
 }
 
 .retry-button {
-  background: #dc3545;
+  background: #4400ed;
   color: white;
   border: none;
   padding: 10px 20px;
@@ -427,7 +412,7 @@ onMounted(() => {
 }
 
 .retry-button:hover {
-  background: #c82333;
+  background: #3300cc;
 }
 
 .empty-list {
@@ -461,7 +446,7 @@ onMounted(() => {
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  border-left: 4px solid #dc3545;
+  border-left: 4px solid #4400ed;
 }
 
 .corruption-header {
@@ -490,7 +475,7 @@ onMounted(() => {
 
 .organization {
   font-size: 14px;
-  color: #dc3545;
+  color: #4400ed;
   font-weight: 500;
   margin-bottom: 4px;
 }
@@ -571,7 +556,7 @@ onMounted(() => {
   width: 20px;
   height: 20px;
   border: 2px solid #f3f3f3;
-  border-top: 2px solid #dc3545;
+  border-top: 2px solid #4400ed;
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -590,7 +575,7 @@ onMounted(() => {
   background: white;
   padding: 15px;
   border-radius: 6px;
-  border-left: 4px solid #dc3545;
+  border-left: 4px solid #4400ed;
 }
 
 .detail-section.full-width {
@@ -601,7 +586,7 @@ onMounted(() => {
   margin: 0 0 12px 0;
   font-size: 14px;
   font-weight: 600;
-  color: #dc3545;
+  color: #4400ed;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -659,12 +644,12 @@ onMounted(() => {
 }
 
 .status-badge.active {
-  background: #dc3545;
+  background: #ef5350;
   color: white;
 }
 
 .status-badge.excluded {
-  background: #28a745;
+  background: #4caf50;
   color: white;
 }
 
@@ -688,11 +673,11 @@ onMounted(() => {
   padding: 12px;
   background: white;
   border-radius: 4px;
-  border-left: 3px solid #dc3545;
+  border-left: 3px solid #4400ed;
 }
 
 .timeline-item .timeline-event.excluded {
-  color: #28a745;
+  color: #4caf50;
 }
 
 .timeline-date {
@@ -732,7 +717,7 @@ onMounted(() => {
 }
 
 .page-button {
-  background: #dc3545;
+  background: #4400ed;
   color: white;
   border: none;
   padding: 8px 12px;
@@ -742,7 +727,7 @@ onMounted(() => {
 }
 
 .page-button:hover:not(:disabled) {
-  background: #c82333;
+  background: #3300cc;
 }
 
 .page-button:disabled {

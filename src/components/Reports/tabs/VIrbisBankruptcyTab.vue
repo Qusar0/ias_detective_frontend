@@ -219,8 +219,8 @@
 
     <div v-if="cases.length > 0" class="pagination-section">
       <div class="pagination-info">
-        Страница {{ currentPage }} из {{ Math.ceil(totalItems / pageSize) }}
-        (всего: {{ totalItems }})
+        Страница {{ currentPage }} из {{ Math.ceil(totalCount / pageSize) }}
+        (всего: {{ totalCount }})
       </div>
       <div class="pagination-controls">
         <button
@@ -233,7 +233,7 @@
         <span class="page-display">{{ currentPage }}</span>
         <button
             @click="changePage(currentPage + 1)"
-            :disabled="currentPage >= Math.ceil(totalItems / pageSize) || loading"
+            :disabled="currentPage >= Math.ceil(totalCount / pageSize) || loading"
             class="page-button"
         >
           Следующая →
@@ -254,18 +254,18 @@ const props = defineProps({
   isActive: {
     type: Boolean,
     default: false
+  },
+  totalCount: {
+    type: Number,
+    default: 0
   }
 });
-
-const emit = defineEmits(['update-count']);
 
 const loading = ref(false);
 const error = ref(null);
 const cases = ref([]);
-const totalItems = ref(0);
 const currentPage = ref(1);
 const pageSize = ref(20);
-const cumulativeCount = ref(0);
 
 const filters = reactive({
   search_type: 'name'
@@ -277,15 +277,15 @@ const loadingDetails = ref({});
 const detailsErrors = ref({});
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'Неизвестно';
+  if (!dateString) return 'Дата не указана';
   try {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-      return 'Неизвестно';
+      return 'Дата не указана';
     }
     return date.toLocaleDateString('ru-RU');
   } catch {
-    return 'Неизвестно';
+    return 'Дата не указана';
   }
 };
 
@@ -337,15 +337,6 @@ const fetchCases = async () => {
 
     const data = await response.json();
     cases.value = data;
-    totalItems.value = data.length === pageSize.value ? currentPage.value * pageSize.value + 1 : (currentPage.value - 1) * pageSize.value + data.length;
-
-    if (currentPage.value === 1) {
-      cumulativeCount.value = data.length;
-    } else {
-      cumulativeCount.value = (currentPage.value - 1) * pageSize.value + data.length;
-    }
-
-    emit('update-count', cumulativeCount.value);
   } catch (err) {
     error.value = err.message || 'Произошла ошибка при загрузке данных';
     console.error('Error fetching bankruptcy cases:', err);

@@ -36,7 +36,7 @@
               {{ person.fio }}
             </div>
             <div class="legal-name" v-if="person.legal_name && person.legal_name !== person.fio">
-              Настоящее имя: {{ person.legal_name }}
+              Название организации: {{ person.legal_name }}
             </div>
             <div class="office" v-if="person.office">
               {{ person.office }}
@@ -106,7 +106,7 @@
                     class="detail-item"
                     v-if="personDetails[person.id].legal_name && personDetails[person.id].legal_name !== personDetails[person.id].fio"
                 >
-                  <span class="detail-label">Настоящее имя:</span>
+                  <span class="detail-label">Название организации:</span>
                   <span class="detail-value">{{ personDetails[person.id].legal_name }}</span>
                 </div>
 
@@ -180,8 +180,8 @@
 
     <div v-if="persons.length > 0" class="pagination-section">
       <div class="pagination-info">
-        Страница {{ currentPage }} из {{ Math.ceil(totalItems / pageSize) }}
-        (всего: {{ totalItems }})
+        Страница {{ currentPage }} из {{ Math.ceil(totalCount / pageSize) }}
+        (всего: {{ totalCount }})
       </div>
       <div class="pagination-controls">
         <button
@@ -194,7 +194,7 @@
         <span class="page-display">{{ currentPage }}</span>
         <button
             @click="changePage(currentPage + 1)"
-            :disabled="currentPage >= Math.ceil(totalItems / pageSize) || loading"
+            :disabled="currentPage >= Math.ceil(totalCount / pageSize) || loading"
             class="page-button"
         >
           Следующая →
@@ -215,18 +215,18 @@ const props = defineProps({
   isActive: {
     type: Boolean,
     default: false
+  },
+  totalCount: {
+    type: Number,
+    default: 0
   }
 });
-
-const emit = defineEmits(['update-count']);
 
 const loading = ref(false);
 const error = ref(null);
 const persons = ref([]);
-const totalItems = ref(0);
 const currentPage = ref(1);
 const pageSize = ref(20);
-const cumulativeCount = ref(0);
 
 const expandedPersons = ref([]);
 const personDetails = ref({});
@@ -234,15 +234,15 @@ const loadingDetails = ref({});
 const detailsErrors = ref({});
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'Неизвестно';
+  if (!dateString) return 'Дата не указана';
   try {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-      return 'Неизвестно';
+      return 'Дата не указана';
     }
     return date.toLocaleDateString('ru-RU');
   } catch {
-    return 'Неизвестно';
+    return 'Дата не указана';
   }
 };
 
@@ -305,15 +305,6 @@ const fetchPersons = async () => {
 
     const data = await response.json();
     persons.value = data;
-    totalItems.value = data.length === pageSize.value ? currentPage.value * pageSize.value + 1 : (currentPage.value - 1) * pageSize.value + data.length;
-
-    if (currentPage.value === 1) {
-      cumulativeCount.value = data.length;
-    } else {
-      cumulativeCount.value = (currentPage.value - 1) * pageSize.value + data.length;
-    }
-
-    emit('update-count', cumulativeCount.value);
   } catch (err) {
     error.value = err.message || 'Произошла ошибка при загрузке данных';
     console.error('Error fetching disqualified persons:', err);

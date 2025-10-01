@@ -13,7 +13,7 @@
                 <span class="slider"></span>
               </label>
               <span class="switch-label">
-                {{ filters.all_regions ? 'Все регионы' : 'Только доступные регионы' }}
+                {{ filters.all_regions ? 'Все регионы' : 'Выбранные регионы' }}
               </span>
             </div>
           </div>
@@ -157,7 +157,7 @@
 
               <div class="detail-item">
                 <span class="detail-label">Тип совпадения:</span>
-                <span class="detail-value">{{ caseDetails[courtCase.case_id].match_type?.name || 'Не указан' }}</span>
+                <span class="detail-value">{{ translateMatchType(caseDetails[courtCase.case_id].match_type?.name) || 'Не указан' }}</span>
               </div>
 
               <div v-if="caseDetails[courtCase.case_id].articles?.length" class="detail-item full-width">
@@ -216,7 +216,7 @@
                         v-if="links.length > 0"
                         class="links-category-name"
                     >
-                      {{ category }}:
+                      {{ translateLinkCategory(category) }}:
                     </div>
                     <div
                         v-if="links.length > 0"
@@ -243,8 +243,8 @@
 
     <div v-if="cases.length > 0" class="pagination-section">
       <div class="pagination-info">
-        Страница {{ currentPage }} из {{ Math.ceil(totalItems / pageSize) }}
-        (всего: {{ totalItems }})
+        Страница {{ currentPage }} из {{ Math.ceil(totalCount / pageSize) }}
+        (всего: {{ totalCount }})
       </div>
       <div class="pagination-controls">
         <button
@@ -257,7 +257,7 @@
         <span class="page-display">{{ currentPage }}</span>
         <button
             @click="changePage(currentPage + 1)"
-            :disabled="currentPage >= Math.ceil(totalItems / pageSize) || loading"
+            :disabled="currentPage >= Math.ceil(totalCount / pageSize) || loading"
             class="page-button"
         >
           Следующая →
@@ -278,10 +278,12 @@ const props = defineProps({
   isActive: {
     type: Boolean,
     default: false
+  },
+  totalCount: {
+    type: Number,
+    default: 0
   }
 });
-
-const emit = defineEmits(['update-count']);
 
 const categoryOptions = [
   {code: 'A', name: 'Административные'},
@@ -294,10 +296,8 @@ const categoryOptions = [
 const loading = ref(false);
 const error = ref(null);
 const cases = ref([]);
-const totalItems = ref(0);
 const currentPage = ref(1);
 const pageSize = ref(20);
-const cumulativeCount = ref(0);
 
 const filters = reactive({
   all_regions: true,
@@ -310,16 +310,37 @@ const loadingDetails = ref({});
 const detailsErrors = ref({});
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'Неизвестно';
+  if (!dateString) return 'Дата не указана';
   try {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-      return 'Неизвестно';
+      return 'Дата не указана';
     }
     return date.toLocaleDateString('ru-RU');
   } catch {
-    return 'Неизвестно';
+    return 'Дата не указана';
   }
+};
+
+const translateLinkCategory = (category) => {
+  const translations = {
+    'card': 'Ссылка на сайт суда с делом',
+    'root': 'Ссылка на сайт суда',
+    'resolution text': 'Текст решения суда'
+  };
+  return translations[category] || category;
+};
+
+const translateMatchType = (matchType) => {
+  if (!matchType) return null;
+  const translations = {
+    'partly': 'Частичное совпадение',
+    'full': 'Полное совпадение',
+    'inn': 'Совпадение по ИНН',
+    'name': 'Совпадение по ФИО'
+  };
+  const lowerMatch = matchType.toLowerCase();
+  return translations[lowerMatch] || matchType;
 };
 
 const fetchCases = async () => {
@@ -352,15 +373,6 @@ const fetchCases = async () => {
 
     const data = await response.json();
     cases.value = data;
-
-    if (currentPage.value === 1) {
-      cumulativeCount.value = data.length;
-    } else {
-      cumulativeCount.value = (currentPage.value - 1) * pageSize.value + data.length;
-    }
-
-    totalItems.value = data.length === pageSize.value ? currentPage.value * pageSize.value + 1 : cumulativeCount.value;
-    emit('update-count', cumulativeCount.value);
   } catch (err) {
     error.value = err.message || 'Произошла ошибка при загрузке данных';
     console.error('Error fetching cases:', err);
@@ -851,16 +863,19 @@ input:checked + .slider:before {
 .face-item {
   display: flex;
   gap: 8px;
+  font-size: 14px;
 }
 
 .face-role {
-  font-weight: 600;
+  font-weight: 400;
   color: #666;
   min-width: 100px;
+  font-size: 14px;
 }
 
 .face-name {
   color: #333;
+  font-size: 14px;
 }
 
 .progress-list {
@@ -901,9 +916,10 @@ input:checked + .slider:before {
 }
 
 .links-category-name {
-  font-weight: 600;
+  font-weight: 400;
   color: #666;
   margin-bottom: 4px;
+  font-size: 13px;
 }
 
 .links-items {
@@ -915,7 +931,8 @@ input:checked + .slider:before {
 .link-item {
   color: #4400ed;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: 400;
 }
 
 .link-item:hover {

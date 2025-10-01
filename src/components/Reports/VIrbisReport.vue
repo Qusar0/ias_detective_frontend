@@ -3,8 +3,32 @@
     <div class="tab-head" @click="closeModal">
       <div class="flex items-center" style="flex-wrap: wrap;">
         <h2 class="object-full_name">
-          Ирбис: <span style="white-space:nowrap">Судебные дела</span>
+          <span style="white-space:nowrap">Судебные дела</span>
         </h2>
+      </div>
+
+      <!-- Общая информация вверху страницы -->
+      <div v-if="generalInfo" class="general-info-header">
+        <div class="info-item">
+          <span class="info-label">ФИО:</span>
+          <span class="info-value">{{ generalInfo.fullname || 'Не указано' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Дата рождения:</span>
+          <span class="info-value">{{ generalInfo.birth_date || 'Не указано' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">ИНН:</span>
+          <span class="info-value">{{ generalInfo.inn || 'Не указано' }}</span>
+        </div>
+        <div class="info-item" v-if="generalInfo.passport_series || generalInfo.passport_number">
+          <span class="info-label">Паспорт:</span>
+          <span class="info-value">{{ generalInfo.passport_series || '' }} {{ generalInfo.passport_number || '' }}</span>
+        </div>
+        <div class="info-item" v-if="generalInfo.regions && generalInfo.regions.length > 0">
+          <span class="info-label">Регионы:</span>
+          <span class="info-value">{{ formatRegions(generalInfo.regions) }}</span>
+        </div>
       </div>
 
       <div class="tabs flex flex-wrap items-center">
@@ -15,7 +39,7 @@
             @click="selectTab(index + 1)"
         >
           {{ tab }}
-          <span class="tab-count">{{ getTabItemCount(index + 1) }}</span>
+          <span v-if="index !== 0" class="tab-count">{{ getTabItemCount(index + 1) }}</span>
         </div>
       </div>
     </div>
@@ -29,6 +53,7 @@
         <VIrbisGeneralTab
             :queryId="queryId"
             :isActive="selectedTabIndex === 1"
+            :statistics="statistics"
             @update-count="(count) => updateTabCount(1, count)"
         />
       </div>
@@ -41,7 +66,7 @@
         <VIrbisCourtGeneralTab
             :queryId="queryId"
             :isActive="selectedTabIndex === 2"
-            @update-count="(count) => updateTabCount(2, count)"
+            :totalCount="statistics?.court_general || 0"
         />
       </div>
 
@@ -53,7 +78,7 @@
         <VIrbisArbitrationTab
             :queryId="queryId"
             :isActive="selectedTabIndex === 3"
-            @update-count="(count) => updateTabCount(3, count)"
+            :totalCount="statistics?.arbitration_court || 0"
         />
       </div>
 
@@ -65,7 +90,7 @@
         <VIrbisBankruptcyTab
             :queryId="queryId"
             :isActive="selectedTabIndex === 4"
-            @update-count="(count) => updateTabCount(4, count)"
+            :totalCount="statistics?.bankruptcy || 0"
         />
       </div>
 
@@ -77,7 +102,7 @@
         <VIrbisDisqualifiedTab
             :queryId="queryId"
             :isActive="selectedTabIndex === 5"
-            @update-count="(count) => updateTabCount(5, count)"
+            :totalCount="statistics?.disqualified_person || 0"
         />
       </div>
 
@@ -89,7 +114,7 @@
         <VIrbisPledgesTab
             :queryId="queryId"
             :isActive="selectedTabIndex === 6"
-            @update-count="(count) => updateTabCount(6, count)"
+            :totalCount="statistics?.pledgess || 0"
         />
       </div>
 
@@ -101,7 +126,7 @@
         <VIrbisCorruptionTab
             :queryId="queryId"
             :isActive="selectedTabIndex === 7"
-            @update-count="(count) => updateTabCount(7, count)"
+            :totalCount="statistics?.corruption || 0"
         />
       </div>
     </div>
@@ -109,7 +134,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import VIrbisGeneralTab from './tabs/VIrbisGeneralTab.vue';
 import VIrbisCourtGeneralTab from './tabs/VIrbisCourtGeneralTab.vue';
 import VIrbisArbitrationTab from './tabs/VIrbisArbitrationTab.vue';
@@ -140,6 +165,8 @@ const props = defineProps({
 });
 
 const selectedTabIndex = ref(1);
+const generalInfo = ref(null);
+const statistics = ref(null);
 
 const tabCounts = reactive({
   1: 0, // Общее
@@ -166,6 +193,50 @@ const updateTabCount = (tabIndex, count) => {
 const getTabItemCount = (tabIndex) => {
   return tabCounts[tabIndex];
 };
+
+const formatRegions = (regions) => {
+  if (!regions || regions.length === 0) return 'Не указаны';
+  return regions.map(r => typeof r === 'object' && r.name ? r.name : r).join(', ');
+};
+
+const fetchGeneralInfo = async () => {
+  if (!props.queryId) return;
+
+  try {
+    const response = await fetch(`/api/irbis/person_info/${props.queryId}`);
+    if (response.ok) {
+      generalInfo.value = await response.json();
+    }
+  } catch (err) {
+    console.error('Error fetching general info:', err);
+  }
+};
+
+const fetchStatistics = async () => {
+  if (!props.queryId) return;
+
+  try {
+    const response = await fetch(`/api/irbis/statistic/${props.queryId}`);
+    if (response.ok) {
+      statistics.value = await response.json();
+      if (statistics.value) {
+        tabCounts[2] = statistics.value.court_general || 0;
+        tabCounts[3] = statistics.value.arbitration_court || 0;
+        tabCounts[4] = statistics.value.bankruptcy || 0;
+        tabCounts[5] = statistics.value.disqualified_person || 0;
+        tabCounts[6] = statistics.value.pledgess || 0;
+        tabCounts[7] = statistics.value.corruption || 0;
+      }
+    }
+  } catch (err) {
+    console.error('Error fetching statistics:', err);
+  }
+};
+
+onMounted(() => {
+  fetchGeneralInfo();
+  fetchStatistics();
+});
 
 </script>
 
@@ -268,6 +339,38 @@ const getTabItemCount = (tabIndex) => {
   .tab-head > .tabs:not(.pagination) {
     margin: 0 -5px;
     font-size: 15px;
+  }
+}
+
+/* General Info Header */
+.general-info-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 10px 0;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.general-info-header .info-item {
+  display: flex;
+  gap: 5px;
+  font-size: 13px;
+}
+
+.general-info-header .info-label {
+  font-weight: 600;
+  color: #666;
+}
+
+.general-info-header .info-value {
+  color: #333;
+}
+
+@media (max-width: 640px) {
+  .general-info-header {
+    flex-direction: column;
+    gap: 8px;
   }
 }
 </style>
