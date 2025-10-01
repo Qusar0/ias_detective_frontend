@@ -83,6 +83,7 @@
     </div>
     <div
         style="margin: 15px auto;max-width: 900px;"
+        :style="regions_error ? 'border: 1px solid red; border-radius: 5px; margin-bottom: 8px' : ''"
     >
       <multiselect
           v-model="selectedRegions"
@@ -102,11 +103,10 @@
           :class="{ 'multiselect-error': regions_error }"
           style="margin: 0;"
       ></multiselect>
-      <small
-          class="prompt"
-          :class="{ 'bg-red': regions_error }"
-      >
-        Выберите 1-2 региона для поиска
+    </div>
+    <div style="margin: 0 auto 10px;max-width: 900px;">
+      <small v-if="regions_error" style="color: #ec5e5e;">
+        Необходимо выбрать хотя бы один регион для поиска (максимум 2 региона).
       </small>
     </div>
     <div class="form">
@@ -372,7 +372,8 @@ import {usePagination} from '../composables/usePagination.js';
 import {useTimestamp} from '../composables/useTimestamp.js';
 import {getItemDate} from '../utils/dateUtils.js';
 
-const checkedLanguages = ref([JSON.parse(localStorage.getItem('defaultLanguage')) || {name: 'Русский', code: 'ru'}]);
+const defaultLanguage = localStorage.getItem('defaultLanguage');
+const checkedLanguages = ref(defaultLanguage && defaultLanguage !== 'null' ? [JSON.parse(defaultLanguage)] : [{name: 'Русский', code: 'ru'}]);
 const temp_price = ref(0);
 const confirm_model = ref(false);
 
@@ -492,7 +493,8 @@ const multiInput = (event) => {
 
 const clearAllFields = () => {
   form.search_surname = '';
-  checkedLanguages.value = [JSON.parse(localStorage.getItem('defaultLanguage')) || {name: 'Русский', code: 'ru'}];
+  const defaultLang = localStorage.getItem('defaultLanguage');
+  checkedLanguages.value = defaultLang && defaultLang !== 'null' ? [JSON.parse(defaultLang)] : [{name: 'Русский', code: 'ru'}];
   form.search_name = '';
   languageError.value = false;
   form.search_patronymic = '';

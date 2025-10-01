@@ -1,6 +1,5 @@
 <template>
   <div class="person-report" @click="closeModal">
-    <!-- Tab Header -->
     <div class="tab-head" @click="closeModal">
       <div class="head-info" :style="{ height: headInfoExpanded ? '105px' : '28px' }">
         <h2 class="object-full_name" @click="toggleHeadInfo">
@@ -88,7 +87,6 @@
       </div>
     </div>
 
-    <!-- Filters and Chart Toggle Buttons -->
     <div v-if="hasItemsForCurrentTab && !loadingTab" class="toggle-buttons-container">
       <button @click="filtersExpanded = !filtersExpanded" class="toggle-btn">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" :style="{ transform: filtersExpanded ? 'rotate(0deg)' : 'rotate(-90deg)' }">
@@ -105,9 +103,7 @@
       </button>
     </div>
 
-    <!-- Filters Section (Collapsible) -->
     <div v-if="hasItemsForCurrentTab && !loadingTab && filtersExpanded" class="filters-container">
-      <!-- Fullname Filter for All Tabs -->
       <div class="fullname-filter-all-tabs">
         <div class="filter-title">Совпадения:</div>
         <label>
@@ -124,7 +120,6 @@
         </label>
       </div>
 
-      <!-- Social Archives Filter -->
       <div v-if="selectedTabIndex === 1" class="social-archives-filter-container">
         <label class="social-archives-filter">
           <input type="checkbox" v-model="hideSocialArchives" @change="updateFilters">
@@ -132,7 +127,6 @@
         </label>
       </div>
 
-      <!-- Keyword Filter for All Tabs -->
       <div v-if="availableKeywords.length > 0" class="keyword-filter-section">
         <div class="filter-title">Фильтр по ключевым словам:</div>
         <div class="keyword-search-input">
@@ -166,7 +160,6 @@
         </div>
       </div>
 
-      <!-- Minus Keywords Filter (Stop-filter) -->
       <div class="minus-keywords-section-all-tabs">
         <div class="minus-keywords-section">
           <div class="filter-label">Стоп-фильтр:</div>
@@ -195,9 +188,7 @@
       </div>
     </div>
 
-    <!-- Charts and Statistics -->
     <div v-if="selectedTabIndex === 1 && !loadingTab && chartExpanded" class="charts-section">
-      <!-- Results Distribution Chart -->
       <div class="results-chart-container">
         <h3 class="chart-title">Распределение результатов по вкладкам</h3>
         <div class="chart-stats">
@@ -231,7 +222,6 @@
       </div>
     </div>
 
-    <!-- Sort and Filter Controls -->
     <div v-if="hasItemsForCurrentTab && !loadingTab" class="controls-section">
       <div class="sort-controls">
         <button
@@ -295,7 +285,6 @@
       </div>
     </div>
 
-    <!-- Top Pagination -->
     <div v-if="hasItemsForCurrentTab && !loadingTab" class="pagination-container pagination-top">
       <VPagination
         :selected_page="currentPage"
@@ -305,21 +294,17 @@
       />
     </div>
 
-    <!-- Content Section -->
     <div class="content">
-      <!-- Tab Content -->
       <div
         v-for="tabIndex in [1, 2, 3, 4, 5, 6, 7, 8]"
         :key="tabIndex"
         :class="[`tab-content-${tabIndex}`, { selected: selectedTabIndex === tabIndex }]"
       >
-        <!-- Loading State -->
         <div v-if="loadingTab && selectedTabIndex === tabIndex" class="loading-message">
           <div class="spinner"></div>
           <span>Загрузка данных...</span>
         </div>
 
-        <!-- Empty State -->
         <div v-else-if="!filteredItems.length && selectedTabIndex === tabIndex" class="empty-list">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
             <path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"/>
@@ -327,7 +312,6 @@
           Нет найденных результатов!
         </div>
 
-        <!-- Grouped View -->
         <template v-if="isGroupingEnabled && selectedTabIndex === tabIndex">
           <div
             v-for="(group, domain) in groupedItems"
@@ -350,7 +334,6 @@
                 :id="makeSafeForCSS(item.link)"
               >
                 <div class="item">
-                  <!-- Viewed indicator -->
                   <svg
                     v-if="seenLinks[item.link]"
                     class="checkmark"
@@ -413,7 +396,6 @@
           </div>
         </template>
 
-        <!-- Regular View -->
         <div
           v-else
           v-for="item in selectedTabIndex === tabIndex ? renderedItems : []"
@@ -422,7 +404,6 @@
           :id="makeSafeForCSS(item.link)"
         >
           <div class="item">
-            <!-- Viewed indicator -->
             <svg 
               v-if="seenLinks[item.link]" 
               class="checkmark" 
@@ -484,7 +465,6 @@
       </div>
     </div>
 
-    <!-- Bottom Pagination -->
     <div v-if="hasItemsForCurrentTab && !loadingTab" class="pagination-container pagination-bottom">
       <VPagination
         :selected_page="currentPage"
@@ -500,7 +480,6 @@
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import VPagination from '../UI/VPagination.vue'
 
-// Types
 interface Item {
   link: string
   title: string
@@ -529,7 +508,6 @@ interface FullnameCounters {
   partial: number
 }
 
-// Props
 const props = defineProps<{
   objectName: string
   searchCategories: string
@@ -545,13 +523,11 @@ const props = defineProps<{
   queryId?: number | string
 }>()
 
-// Emits
 const emit = defineEmits<{
   'item-viewed': [payload: { link: string; timestamp: number }]
   'filter-changed': [payload: { tab: number; filters: any }]
 }>()
 
-// Constants
 const ITEMS_PER_PAGE = 20
 const TAB_NAMES = {
   1: 'main',
@@ -575,7 +551,6 @@ const KEYWORD_TYPE_MAPPING: Record<number, string> = {
   8: 'all_materials'
 }
 
-// State management
 const selectedTabIndex = ref(1)
 const headInfoExpanded = ref(false)
 const seenLinks = reactive<Record<string, boolean>>({})
@@ -583,25 +558,21 @@ const currentPage = ref(1)
 const loadingTab = ref(false)
 const loadedTabs = reactive<Record<number, boolean>>({})
 const filtersExpanded = ref(false)
-const chartExpanded = ref(true) // По умолчанию диаграмма открыта
+const chartExpanded = ref(true)
 
-// Filter states
 const fullnameFilter = ref<'all' | 'full' | 'partial'>('all')
 const hideSocialArchives = ref(false)
 const minusKeywords = ref<string[]>([])
 const newMinusKeyword = ref('')
 
-// Sort and grouping states
 const sortOrder = ref<'none' | 'asc' | 'desc' | 'date-asc' | 'date-desc' | 'count-asc' | 'count-desc'>('none')
 const isGroupingEnabled = ref(false)
 const expandedDomains = reactive<Record<string, boolean>>({})
 
-// Keyword filter states
 const keywordSearchQuery = ref('')
 const selectedKeywords = reactive<Record<string, boolean>>({})
 const filteredKeywordList = ref<Array<{word: string, count: number}>>([])
 
-// Available keywords with counts
 const availableKeywords = computed(() => {
   const tabItems = getTabItems(selectedTabIndex.value)
   const keywordCounts: Record<string, number> = {}
@@ -619,16 +590,14 @@ const availableKeywords = computed(() => {
     .sort((a, b) => b.count - a.count)
 })
 
-// Computed для общего количества материалов
 const totalAllMaterials = computed(() => {
   return Object.values(props.keywordStats || {})
     .reduce((sum, count) => sum + (typeof count === 'number' ? count : 0), 0)
 })
 
-// Chart data for main tab
 const chartData = computed(() => {
   const stats = props.keywordStats || {}
-  const total = totalAllMaterials.value || 1 // Избегаем деления на 0
+  const total = totalAllMaterials.value || 1
 
   const colors = [
     '#4400ed', // Главное
@@ -666,7 +635,6 @@ const chartData = computed(() => {
   }).filter(item => item.count > 0)
 })
 
-// Computed для подсчета совпадений
 const fullnameCounters = computed(() => {
   const tabItems = getTabItems(selectedTabIndex.value)
 
@@ -677,23 +645,19 @@ const fullnameCounters = computed(() => {
   }
 })
 
-// Check if current tab has items to show controls
 const hasItemsForCurrentTab = computed(() => {
   const tabItems = getTabItems(selectedTabIndex.value)
   return tabItems.length > 0
 })
 
-// Get items for specific tab
 const getTabItems = (tabIndex: number): Item[] => {
   const tabName = TAB_NAMES[tabIndex as keyof typeof TAB_NAMES] || 'main'
   return props.items[tabName as keyof PersonItems] || []
 }
 
-// Filtered items based on current filters
 const filteredItems = computed((): Item[] => {
   let items = getTabItems(selectedTabIndex.value)
 
-  // Apply fullname filter (работает для всех вкладок)
   if (fullnameFilter.value !== 'all') {
     items = items.filter((item: any) => {
       if (fullnameFilter.value === 'full') {
@@ -705,7 +669,6 @@ const filteredItems = computed((): Item[] => {
     })
   }
 
-  // Apply keyword filter
   const activeKeywords = Object.entries(selectedKeywords)
     .filter(([_, isSelected]) => isSelected)
     .map(([keyword]) => keyword)
@@ -717,15 +680,12 @@ const filteredItems = computed((): Item[] => {
     })
   }
 
-  // Apply social archives filter
   if (hideSocialArchives.value) {
     items = items.filter(item => !item.resource_type)
   }
 
-  // Apply minus keywords filter (работает для всех вкладок, проверяет все поля)
   if (minusKeywords.value.length > 0) {
     items = items.filter(item => {
-      // Собираем все текстовые поля для проверки
       const searchableContent = [
         item.title,
         item.content,
@@ -733,14 +693,12 @@ const filteredItems = computed((): Item[] => {
         ...(item.keyword_list || [])
       ].join(' ').toLowerCase()
 
-      // Проверяем, что ни одно стоп-слово не содержится в контенте
       return !minusKeywords.value.some(keyword =>
         searchableContent.includes(keyword.toLowerCase())
       )
     })
   }
 
-  // Apply sorting if not grouping
   if (!isGroupingEnabled.value) {
     if (sortOrder.value === 'asc') {
       items = [...items].sort((a, b) => a.link.localeCompare(b.link))
@@ -751,7 +709,6 @@ const filteredItems = computed((): Item[] => {
         const dateA = a.publication_date ? parseDate(a.publication_date) : null
         const dateB = b.publication_date ? parseDate(b.publication_date) : null
 
-        // Элементы без даты идут в конец
         if (!dateA && !dateB) return 0
         if (!dateA) return 1
         if (!dateB) return -1
@@ -765,7 +722,6 @@ const filteredItems = computed((): Item[] => {
   return items
 })
 
-// Группировка по доменам
 const allGroupedItems = computed(() => {
   if (!isGroupingEnabled.value) return {}
 
@@ -782,16 +738,13 @@ const allGroupedItems = computed(() => {
   const sortedGroups: Record<string, Item[]> = {}
   let domainKeys = Object.keys(groups)
 
-  // Сортировка доменов
   if (sortOrder.value === 'asc') {
     domainKeys = domainKeys.sort((a, b) => a.localeCompare(b))
   } else if (sortOrder.value === 'desc') {
     domainKeys = domainKeys.sort((a, b) => b.localeCompare(a))
   } else if (sortOrder.value === 'count-asc') {
-    // Сортировка по количеству результатов (по возрастанию)
     domainKeys = domainKeys.sort((a, b) => groups[a].length - groups[b].length)
   } else if (sortOrder.value === 'count-desc') {
-    // Сортировка по количеству результатов (по убыванию)
     domainKeys = domainKeys.sort((a, b) => groups[b].length - groups[a].length)
   } else {
     domainKeys = domainKeys.sort((a, b) => a.localeCompare(b))
@@ -828,7 +781,6 @@ const groupedItems = computed(() => {
   return pageGroups
 })
 
-// Paginated items for display
 const renderedItems = computed((): Item[] => {
   if (isGroupingEnabled.value) {
     const allPageItems: Item[] = []
@@ -847,7 +799,6 @@ const renderedItems = computed((): Item[] => {
   return filteredItems.value.slice(start, end)
 })
 
-// Helper functions
 const makeSafeForCSS = (name: string): string => {
   return name.replace(/[^a-z0-9]/g, (s) => {
     const c = s.charCodeAt(0)
@@ -987,7 +938,6 @@ const getDomainName = (url: string): string => {
   }
 }
 
-// Функция для парсинга даты формата "24 июн. 2019г."
 const parseDate = (dateStr: string): Date | null => {
   if (!dateStr) return null
 
@@ -996,7 +946,6 @@ const parseDate = (dateStr: string): Date | null => {
     'июл': 6, 'авг': 7, 'сен': 8, 'окт': 9, 'нояб': 10, 'дек': 11
   }
 
-  // Парсим строку вида "24 июн. 2019г."
   const match = dateStr.match(/(\d+)\s+([а-я]+)\.?\s*(\d+)г?\.?/)
   if (!match) return null
 
@@ -1032,17 +981,14 @@ const copyToClipboard = async (text: string): Promise<void> => {
   }
 }
 
-// Event handlers
 const toggleHeadInfo = (event: Event) => {
   event.stopPropagation()
   headInfoExpanded.value = !headInfoExpanded.value
 }
 
-// Функция загрузки данных для вкладки
 const loadTabData = async (tabIndex: number) => {
   console.log(`[loadTabData] Starting for tab ${tabIndex}`)
 
-  // Пропускаем вкладку "Все материалы" (8) и вкладки без данных в keywordStats
   if (tabIndex === 8) {
     console.log('[loadTabData] Skipping tab 8 (all materials)')
     return
@@ -1058,7 +1004,6 @@ const loadTabData = async (tabIndex: number) => {
     return
   }
 
-  // Если вкладка уже загружена, не загружаем повторно
   if (loadedTabs[tabIndex]) {
     console.log(`[loadTabData] Tab ${tabIndex} already loaded`)
     return
@@ -1069,7 +1014,6 @@ const loadTabData = async (tabIndex: number) => {
 
   if (!statsCount || statsCount === 0) {
     console.log('[loadTabData] No data in keywordStats, marking as loaded')
-    // Помечаем как загруженную, даже если нет данных
     loadedTabs[tabIndex] = true
     return
   }
@@ -1078,7 +1022,6 @@ const loadTabData = async (tabIndex: number) => {
     console.log('[loadTabData] Starting data fetch...')
     loadingTab.value = true
 
-    // Получаем информацию о пагинации
     const categoryRes = await fetch('/api/queries/category_query_data', {
       method: 'POST',
       headers: {
@@ -1093,11 +1036,9 @@ const loadTabData = async (tabIndex: number) => {
     })
     const categoryData = await categoryRes.json()
 
-    // Вычисляем общее количество результатов
     const totalResults = categoryData.total || (categoryData.size * categoryData.total_pages) || 0
 
     if (totalResults > 0) {
-      // Получаем все результаты
       const dataRes = await fetch('/api/queries/query_data', {
         method: 'POST',
         headers: {
@@ -1113,7 +1054,6 @@ const loadTabData = async (tabIndex: number) => {
       })
       const data = await dataRes.json()
 
-      // Маппим данные
       const items = data.map(({title, info, url, publication_date, keywords, is_fullname, resource_type}: any) => ({
         title: title,
         link: url,
@@ -1124,7 +1064,6 @@ const loadTabData = async (tabIndex: number) => {
         resource_type: resource_type
       }))
 
-      // Обновляем items
       const tabName = TAB_NAMES[tabIndex as keyof typeof TAB_NAMES]
       if (props.items[tabName]) {
         props.items[tabName] = items
@@ -1132,7 +1071,6 @@ const loadTabData = async (tabIndex: number) => {
 
       loadedTabs[tabIndex] = true
 
-      // Запускаем наблюдение за элементами после загрузки данных
       nextTick(() => {
         if (intersectionObserver) {
           observeItems()
@@ -1152,10 +1090,8 @@ const selectTab = async (newTabIndex: number): Promise<void> => {
   selectedTabIndex.value = newTabIndex
   currentPage.value = 1
 
-  // Загружаем данные для вкладки, если еще не загружены
   await loadTabData(newTabIndex)
 
-  // Инициализируем фильтр ключевых слов для новой вкладки
   await nextTick()
   initializeKeywordFilter()
 
@@ -1165,24 +1101,19 @@ const selectTab = async (newTabIndex: number): Promise<void> => {
   })
 }
 
-// Initialize keyword filter when tab changes
 const initializeKeywordFilter = () => {
-  // Очищаем предыдущие выбранные ключевые слова
   Object.keys(selectedKeywords).forEach(key => {
     delete selectedKeywords[key]
   })
 
-  // Выбираем все ключевые слова по умолчанию
   availableKeywords.value.forEach(({ word }) => {
     selectedKeywords[word] = true
   })
 
-  // Обновляем отфильтрованный список
   filteredKeywordList.value = [...availableKeywords.value]
   keywordSearchQuery.value = ''
 }
 
-// Filter keywords based on search query
 const filterKeywords = () => {
   const query = keywordSearchQuery.value.toLowerCase()
   if (!query) {
@@ -1194,13 +1125,11 @@ const filterKeywords = () => {
   }
 }
 
-// Toggle individual keyword
 const toggleKeyword = (keyword: string) => {
   selectedKeywords[keyword] = !selectedKeywords[keyword]
   currentPage.value = 1
 }
 
-// Select all keywords
 const selectAllKeywords = () => {
   filteredKeywordList.value.forEach(({ word }) => {
     selectedKeywords[word] = true
@@ -1208,7 +1137,6 @@ const selectAllKeywords = () => {
   currentPage.value = 1
 }
 
-// Deselect all keywords
 const deselectAllKeywords = () => {
   filteredKeywordList.value.forEach(({ word }) => {
     selectedKeywords[word] = false
@@ -1247,10 +1175,9 @@ const setPage = (page: number): void => {
 }
 
 const updateList = (): void => {
-  // Reactive computation handles filtering automatically
+
 }
 
-// Sorting and grouping functions
 const setSortOrder = (order: 'asc' | 'desc') => {
   sortOrder.value = order
   currentPage.value = 1
@@ -1292,7 +1219,6 @@ const resetSortAndGrouping = () => {
   })
 }
 
-// Intersection Observer для отслеживания видимости элементов
 let intersectionObserver: IntersectionObserver | null = null
 
 const setupIntersectionObserver = (): void => {
@@ -1307,7 +1233,6 @@ const setupIntersectionObserver = (): void => {
           const element = entry.target as HTMLElement
           const itemId = element.id
 
-          // Находим соответствующий item по ID
           const item = renderedItems.value.find(item => makeSafeForCSS(item.link) === itemId)
 
           if (item && !seenLinks[item.link]) {
@@ -1330,7 +1255,7 @@ const setupIntersectionObserver = (): void => {
     {
       root: null,
       rootMargin: '0px',
-      threshold: 0.5 // Элемент считается видимым, когда видно 50% его высоты
+      threshold: 0.5
     }
   )
 }
@@ -1348,7 +1273,6 @@ const observeItems = (): void => {
   })
 }
 
-// Fallback для старых браузеров
 const checkAllItems = (): void => {
   renderedItems.value.forEach(item => {
     const element = document.getElementById(makeSafeForCSS(item.link))
@@ -1379,16 +1303,13 @@ const isInViewport = (el: Element): boolean => {
   )
 }
 
-// Lifecycle hooks
 let scrollCleanup: (() => void) | null = null
 
 onMounted(async () => {
   console.log('[onMounted] Component mounted, keywordStats:', props.keywordStats)
 
-  // Даём время на инициализацию компонента
   await nextTick()
 
-  // Если keywordStats уже есть (компонент переиспользуется), загружаем данные
   if (props.keywordStats && Object.keys(props.keywordStats).length > 0) {
     console.log('[onMounted] keywordStats available, loading tab 1')
     await loadTabData(1)
@@ -1398,10 +1319,8 @@ onMounted(async () => {
     console.log('[onMounted] keywordStats not ready yet, will wait for watcher')
   }
 
-  // Настраиваем Intersection Observer
   setupIntersectionObserver()
 
-  // Fallback: обработчик скролла для старых браузеров
   const handleScroll = (): void => {
     if (!intersectionObserver) {
       checkAllItems()
@@ -1425,14 +1344,11 @@ onUnmounted(() => {
   }
 })
 
-// Watchers
 watch(renderedItems, () => {
   if (intersectionObserver) {
-    // Переподключаем наблюдение за новыми элементами
     intersectionObserver.disconnect()
     observeItems()
   } else {
-    // Fallback для старых браузеров
     nextTick(() => {
       checkAllItems()
     })
@@ -1465,15 +1381,12 @@ watch(expandedDomains, () => {
 }, { deep: true })
 
 watch(availableKeywords, () => {
-  // Обновляем фильтр ключевых слов при изменении доступных ключевых слов
   initializeKeywordFilter()
 })
 
-// Следим за изменением keywordStats - когда они приходят, загружаем данные
 watch(() => props.keywordStats, async (newStats, oldStats) => {
   console.log('[watch keywordStats] Stats changed:', newStats)
 
-  // Если stats пришли и вкладка 1 еще не загружена
   if (newStats && Object.keys(newStats).length > 0 && !loadedTabs[1]) {
     console.log('[watch keywordStats] Loading tab 1 data')
     await loadTabData(1)

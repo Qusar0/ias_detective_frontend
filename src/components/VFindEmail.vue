@@ -118,7 +118,7 @@
           aria-hidden="true"
           style="margin-right: 4px; padding-top: 2px;"
       ></i>
-      Важно! Все запросы автоматически удаляются спустя 2 часа после скачивания.
+      Важно! Все запросы автоматически удаляются спустя 2 часа после скачивания/просмотра.
     </div>
     <div
         v-if="query_list.length"
@@ -128,7 +128,7 @@
         <div class="item__header item-title">Почта</div>
         <div class="item__header item-date" style="">Дата</div>
         <div class="item__header item-price" style="">Стоимость</div>
-        <div class="item__header item__control"></div>
+        <div class="item__header item__control" style="width: 260px;"></div>
         <div class="item__header delete-icon"></div>
       </div>
     </div>
@@ -136,8 +136,6 @@
       <div class="item" v-for="query in query_list" :key="query.query_id">
         <div
             class="item__content item__content-title item-title"
-            :style="query?.query_status !== 'pending' ? 'cursor: pointer' : ''"
-            @click="goToQueryPage(query)"
         >
           {{ query.query_title }}
         </div>
@@ -150,7 +148,7 @@
         <div
             v-if="query.query_status == 'pending'"
             class="item__content"
-            style="height: 30px;position: relative; pointer-events: none;"
+            style="height: 30px;position: relative; pointer-events: none; width: 260px;"
         >
           <button
               class="item-btn btn"
@@ -161,15 +159,35 @@
         </div>
         <i class="item__content fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'xmlriver on update'"
            :title="'Сервис на обновлении!\n\nПопробуйте позже.'"
-           style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"></i>
+           style="font-size: 17px;color: #ec5e5e; width: 260px;"></i>
         <i class="item__content fa-solid fa-circle-exclamation" v-else-if="query.query_status == 'failed'"
            :title="'Ошибка сервера!\n\nПопробуйте позже.'"
-           style="font-size: 17px;color: #ec5e5e;margin-left: 57.36px;"></i>
-        <button v-else class="download item__control item-btn btn"
-                @click="downloadQuery(query.query_title, query.query_id, query)">Скачать <i class="fa-solid fa-spinner"
-                                                                                            v-show="query.downloading"
-                                                                                            style="margin-left: 5px;"></i>
-        </button>
+           style="font-size: 17px;color: #ec5e5e; width: 260px;"></i>
+        <div
+            v-else
+            class="item__content"
+            style="width: 260px; display: flex; gap: 5px; justify-content: center;"
+        >
+          <button
+              class="item-btn btn"
+              style="width: 125px;"
+              @click="goToQueryPage(query)"
+          >
+            Посмотреть
+          </button>
+          <button
+              class="item-btn btn"
+              style="width: 125px;"
+              @click="downloadQuery(query.query_title, query.query_id, query)"
+          >
+            Скачать
+            <i
+                v-show="query.downloading"
+                class="fa-solid fa-spinner"
+                style="margin-left: 5px;"
+            ></i>
+          </button>
+        </div>
         <i
             class="item__content fa-solid fa-trash delete-icon"
             style="cursor: pointer"

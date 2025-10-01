@@ -310,7 +310,7 @@
           aria-hidden="true"
           style="margin-right: 4px; padding-top: 2px;"
       ></i>
-      Важно! Все запросы автоматически удаляются спустя 2 часа после скачивания.
+      Важно! Все запросы автоматически удаляются спустя 2 часа после скачивания/просмотра.
     </div>
     <div
         v-if="query_list.length"
@@ -320,7 +320,7 @@
         <div class="item__header item-title">ФИО</div>
         <div class="item__header item-date" style="">Дата</div>
         <div class="item__header item-price" style="">Стоимость</div>
-        <div class="item__header item__control"></div>
+        <div class="item__header item__control" style="width: 260px;"></div>
         <div class="item__header delete-icon"></div>
       </div>
     </div>
@@ -333,8 +333,6 @@
       >
         <div
             class="item__content item__content-title item-title"
-            :style="query?.query_status !== 'pending' ? 'cursor: pointer' : ''"
-            @click="goToQueryPage(query)"
         >
           {{ query.query_title }}
         </div>
@@ -347,7 +345,7 @@
         <div
             v-if="query.query_status === 'pending'"
             class="item__content"
-            style="height: 30px;position: relative; pointer-events: none;"
+            style="height: 30px;position: relative; pointer-events: none; width: 260px;"
         >
           <button
               class="item-btn btn"
@@ -359,7 +357,7 @@
         <div
             v-else-if="query.query_status === 'queue'"
             class="item__content"
-            style="height: 26px;position: relative; pointer-events: none;"
+            style="height: 26px;position: relative; pointer-events: none; width: 260px;"
         >
           <button
               class="item-btn btn"
@@ -372,26 +370,39 @@
             v-else-if="query.query_status === 'xmlriver on update'"
             class="item__content fa-solid fa-circle-exclamation"
             :title="'Сервис на обновлении!\n\nПопробуйте позже.'"
-            style="font-size: 17px;color: #ec5e5e;"
+            style="font-size: 17px;color: #ec5e5e; width: 260px;"
         ></i>
         <i
             v-else-if="query.query_status === 'failed'"
             class="item__content fa-solid fa-circle-exclamation"
             :title="'Ошибка сервера!\n\nПопробуйте позже.'"
-            style="font-size: 17px;color: #ec5e5e;"
+            style="font-size: 17px;color: #ec5e5e; width: 260px;"
         ></i>
-        <button
+        <div
             v-else
-            class="item-btn download btn"
-            @click="downloadQuery(query.query_title, query.query_id, query)"
+            class="item__content"
+            style="width: 260px; display: flex; gap: 5px; justify-content: center;"
         >
-          Скачать
-          <i
-              v-show="query.downloading"
-              class="fa-solid fa-spinner"
-              style="margin-left: 5px;"
-          ></i>
-        </button>
+          <button
+              class="item-btn btn"
+              style="width: 125px;"
+              @click="goToQueryPage(query)"
+          >
+            Посмотреть
+          </button>
+          <button
+              class="item-btn btn"
+              style="width: 125px;"
+              @click="downloadQuery(query.query_title, query.query_id, query)"
+          >
+            Скачать
+            <i
+                v-show="query.downloading"
+                class="fa-solid fa-spinner"
+                style="margin-left: 5px;"
+            ></i>
+          </button>
+        </div>
         <i
             class="item__content fa-solid fa-trash delete-icon"
             style="cursor: pointer"
@@ -436,7 +447,8 @@ import {getItemDate} from '../utils/dateUtils.js';
 import {clearCheckboxes, clearKeysList} from '../utils/fieldUtils.js';
 
 const languageOptions = JSON.parse(localStorage.getItem('languages'));
-const checkedLanguages = ref([JSON.parse(localStorage.getItem('defaultLanguage')) || {name: 'Русский', code: 'ru'}]);
+const defaultLanguage = localStorage.getItem('defaultLanguage');
+const checkedLanguages = ref(defaultLanguage && defaultLanguage !== 'null' ? [JSON.parse(defaultLanguage)] : [{name: 'Русский', code: 'ru'}]);
 const temp_price = ref(0);
 const confirm_model = ref(false);
 
@@ -495,7 +507,8 @@ const multiInput = (event) => {
 
 const clearAllFields = () => {
   form.search_surname = '';
-  checkedLanguages.value = [JSON.parse(localStorage.getItem('defaultLanguage')) || {name: 'Русский', code: 'ru'}];
+  const defaultLang = localStorage.getItem('defaultLanguage');
+  checkedLanguages.value = defaultLang && defaultLang !== 'null' ? [JSON.parse(defaultLang)] : [{name: 'Русский', code: 'ru'}];
   form.search_name = '';
   languageError.value = false;
   form.search_patronymic = '';

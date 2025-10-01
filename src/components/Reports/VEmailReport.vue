@@ -1,6 +1,5 @@
 <template>
   <div class="email-report" @click="closeModal">
-    <!-- Tab Header -->
     <div class="tab-head" @click="closeModal">
       <div class="flex items-center" style="flex-wrap: wrap;">
         <h2 class="object-full_name">
@@ -19,13 +18,11 @@
       </div>
     </div>
 
-    <!-- Controls Section -->
     <div 
       v-show="hasItemsForCurrentTab"
       class="flex items-center flex-col wrap-reverse-container only-for-mentions"
       style="padding: 0 10px; margin-top: 15px"
     >
-      <!-- Sort and Filter Controls -->
       <div class="controls-section" @click="closeModal">
         <div class="sort-controls">
           <button
@@ -57,6 +54,22 @@
             ↓ Дата (новые)
           </button>
           <button
+            v-if="isGroupingEnabled"
+            @click="setCountSortOrder('count-asc')"
+            :class="['sort-btn', { active: sortOrder === 'count-asc' }]"
+            title="Сортировать домены по количеству (возрастание)"
+          >
+            ↑ Количество
+          </button>
+          <button
+            v-if="isGroupingEnabled"
+            @click="setCountSortOrder('count-desc')"
+            :class="['sort-btn', { active: sortOrder === 'count-desc' }]"
+            title="Сортировать домены по количеству (убывание)"
+          >
+            ↓ Количество
+          </button>
+          <button
             @click="toggleGrouping"
             :class="['group-btn', { active: isGroupingEnabled }]"
             title="Группировать по доменам"
@@ -73,7 +86,6 @@
         </div>
       </div>
 
-      <!-- Pagination -->
       <div class="pagination-container" @click="closeModal">
         <VPagination
           :selected_page="currentPage"
@@ -84,9 +96,7 @@
       </div>
     </div>
 
-    <!-- Content Section -->
     <div class="content" @click="closeModal">
-      <!-- Tab 1: Mentions -->
       <div :class="['tab-content-1', { selected: selectedTabIndex === 1 }]">
         <div v-if="!renderedItems.length" class="empty-list">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -95,7 +105,6 @@
           Нет найденных результатов!
         </div>
 
-        <!-- Grouped View -->
         <template v-if="isGroupingEnabled">
           <div 
             v-for="(group, domain) in groupedItems" 
@@ -118,7 +127,6 @@
                 :id="makeSafeForCSS(item.link)"
               >
                 <div class="item" style="position:relative">
-                  <!-- Viewed indicator -->
                   <svg 
                     v-if="seenLinks[item.link]" 
                     class="checkmark" 
@@ -187,7 +195,6 @@
           </div>
         </template>
 
-        <!-- Regular View -->
         <div 
           v-else
           v-for="item in renderedItems" 
@@ -196,7 +203,6 @@
           :id="makeSafeForCSS(item.link)"
         >
           <div class="item" style="position:relative">
-            <!-- Viewed indicator -->
             <svg 
               v-if="seenLinks[item.link]" 
               class="checkmark" 
@@ -264,7 +270,6 @@
       </div>
     </div>
 
-    <!-- Bottom Pagination -->
     <div 
       v-show="selectedTabIndex === 1 && hasItemsForCurrentTab" 
       class="flex only-for-mentions" 
@@ -286,7 +291,6 @@
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import VPagination from '../UI/VPagination.vue'
 
-// Types
 interface Item {
   link: string
   title: string
@@ -300,7 +304,6 @@ interface FilterConfig {
   [key: string]: boolean
 }
 
-// Props
 const props = defineProps<{
   title: string
   items: {
@@ -309,35 +312,27 @@ const props = defineProps<{
   filters?: Record<number, FilterConfig>
 }>()
 
-// Emits
 const emit = defineEmits<{
   'item-viewed': [payload: { link: string; timestamp: number }]
   'filter-changed': [payload: { tab: number; filters: FilterConfig }]
 }>()
 
-// Constants
 const ITEMS_PER_PAGE = 20
 
-// State management
 const selectedTabIndex = ref(1)
 const seenLinks = reactive<Record<string, boolean>>({})
 const tempLinkClasses = reactive<Record<string, string>>({})
 
-// Pagination state
 const currentPage = ref(1)
 
-// Filters state
 const filters = reactive<Record<number, FilterConfig>>({ ...props.filters })
 
-// Sorting and grouping state
-const sortOrder = ref<'none' | 'asc' | 'desc' | 'date-asc' | 'date-desc'>('none')
+const sortOrder = ref<'none' | 'asc' | 'desc' | 'date-asc' | 'date-desc' | 'count-asc' | 'count-desc'>('none')
 const isGroupingEnabled = ref(false)
 const expandedDomains = reactive<Record<string, boolean>>({})
 
-// Store original order for reset
 const originalItems = ref<Item[]>([])
 
-// Функция для парсинга даты формата "24 июн. 2019г."
 const parseDate = (dateStr: string): Date | null => {
   if (!dateStr) return null
 
@@ -346,7 +341,6 @@ const parseDate = (dateStr: string): Date | null => {
     'июл': 6, 'авг': 7, 'сен': 8, 'окт': 9, 'нояб': 10, 'дек': 11
   }
 
-  // Парсим строку вида "24 июн. 2019г."
   const match = dateStr.match(/(\d+)\s+([а-я]+)\.?\s*(\d+)г?\.?/)
   if (!match) return null
 
@@ -360,18 +354,15 @@ const parseDate = (dateStr: string): Date | null => {
   return new Date(year, month, day)
 }
 
-// Check if current tab has items to show controls
 const hasItemsForCurrentTab = computed(() => {
   return (props.items.main?.length || 0) > 0
 })
 
-// Cleanup function for scroll listener
 let scrollCleanup: (() => void) | null = null
 
 const filteredItems = computed((): Item[] => {
   let tempItems = [...(props.items.main || [])]
 
-  // Apply sorting only when not grouping (grouping handles domain sorting separately)
   if (!isGroupingEnabled.value) {
     if (sortOrder.value === 'asc') {
       tempItems.sort((a, b) => a.link.localeCompare(b.link))
@@ -382,7 +373,6 @@ const filteredItems = computed((): Item[] => {
         const dateA = a.publication_date ? parseDate(a.publication_date) : null
         const dateB = b.publication_date ? parseDate(b.publication_date) : null
 
-        // Элементы без даты идут в конец
         if (!dateA && !dateB) return 0
         if (!dateA) return 1
         if (!dateB) return -1
@@ -396,13 +386,11 @@ const filteredItems = computed((): Item[] => {
   return tempItems
 })
 
-// Group ALL filtered items by domain (not just current page)
 const allGroupedItems = computed(() => {
   if (!isGroupingEnabled.value) return {}
   
   const groups: Record<string, Item[]> = {}
-  
-  // Group ALL filtered items, not just current page
+
   filteredItems.value.forEach(item => {
     const domain = getDomainName(item.link)
     if (!groups[domain]) {
@@ -410,28 +398,29 @@ const allGroupedItems = computed(() => {
     }
     groups[domain].push(item)
   })
-  
-  // Sort domains based on current sort order
+
   const sortedGroups: Record<string, Item[]> = {}
   let domainKeys = Object.keys(groups)
-  
+
   if (sortOrder.value === 'asc') {
     domainKeys = domainKeys.sort((a, b) => a.localeCompare(b))
   } else if (sortOrder.value === 'desc') {
     domainKeys = domainKeys.sort((a, b) => b.localeCompare(a))
+  } else if (sortOrder.value === 'count-asc') {
+    domainKeys = domainKeys.sort((a, b) => groups[a].length - groups[b].length)
+  } else if (sortOrder.value === 'count-desc') {
+    domainKeys = domainKeys.sort((a, b) => groups[b].length - groups[a].length)
   } else {
-    // Default alphabetical sort when no specific order is set
     domainKeys = domainKeys.sort((a, b) => a.localeCompare(b))
   }
-  
+
   domainKeys.forEach(domain => {
     sortedGroups[domain] = groups[domain]
   })
-  
+
   return sortedGroups
 })
 
-// Get domains for current page (paginate domains, not items)
 const paginatedDomains = computed(() => {
   if (!isGroupingEnabled.value) return []
   
@@ -442,7 +431,6 @@ const paginatedDomains = computed(() => {
   return domains.slice(start, end)
 })
 
-// Get grouped items for current page domains only
 const groupedItems = computed(() => {
   if (!isGroupingEnabled.value) return {}
   
@@ -458,7 +446,6 @@ const groupedItems = computed(() => {
 })
 
 const renderedItems = computed((): Item[] => {
-  // If grouping is enabled, return all items from current page domains
   if (isGroupingEnabled.value) {
     const allPageItems: Item[] = []
     
@@ -470,20 +457,17 @@ const renderedItems = computed((): Item[] => {
     
     return allPageItems
   }
-  
-  // Regular pagination for non-grouped view
+
   const start = (currentPage.value - 1) * ITEMS_PER_PAGE
   const end = start + ITEMS_PER_PAGE
   
   return filteredItems.value.slice(start, end)
 })
 
-// Helper functions
 const truncateText = (text: string, maxLength: number): string => {
   return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
 }
 
-// Sorting and grouping functions
 const setSortOrder = (order: 'asc' | 'desc') => {
   sortOrder.value = order
   currentPage.value = 1
@@ -494,10 +478,14 @@ const setDateSortOrder = (order: 'date-asc' | 'date-desc') => {
   currentPage.value = 1
 }
 
+const setCountSortOrder = (order: 'count-asc' | 'count-desc') => {
+  sortOrder.value = order
+  currentPage.value = 1
+}
+
 const toggleGrouping = () => {
   isGroupingEnabled.value = !isGroupingEnabled.value
-  
-  // If enabling grouping, collapse all domains by default
+
   if (isGroupingEnabled.value) {
     Object.keys(groupedItems.value).forEach(domain => {
       expandedDomains[domain] = false
@@ -515,14 +503,12 @@ const resetFilters = () => {
   sortOrder.value = 'none'
   isGroupingEnabled.value = false
   currentPage.value = 1
-  
-  // Clear expanded domains
+
   Object.keys(expandedDomains).forEach(domain => {
     delete expandedDomains[domain]
   })
 }
 
-// Utility functions
 const makeSafeForCSS = (name: string): string => {
   return name.replace(/[^a-z0-9]/g, (s) => {
     const c = s.charCodeAt(0)
@@ -544,13 +530,11 @@ const getDomainName = (url: string): string => {
 
 const copyToClipboard = async (text: string): Promise<void> => {
   try {
-    // Try modern clipboard API first
     if (navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(text)
       return
     }
-    
-    // Fallback to legacy method
+
     const inp = document.createElement('input')
     document.body.appendChild(inp)
     inp.value = text
@@ -562,14 +546,12 @@ const copyToClipboard = async (text: string): Promise<void> => {
   }
 }
 
-// Tab management
 const selectTab = (newTabIndex: number): void => {
   if (selectedTabIndex.value === newTabIndex) return
   
   selectedTabIndex.value = newTabIndex
   currentPage.value = 1
-  
-  // Emit filter change event
+
   emit('filter-changed', {
     tab: newTabIndex,
     filters: filters[newTabIndex] || {}
@@ -584,12 +566,10 @@ const updateList = (): void => {
   // Reactive computation handles filtering automatically
 }
 
-// Pagination handlers
 const setPage = (page: number): void => {
   currentPage.value = page
 }
 
-// Viewport tracking
 const isInViewport = (el: Element | null): boolean => {
   if (!el) return false
   const rect = el.getBoundingClientRect()
@@ -607,10 +587,8 @@ const checkAllItems = (): void => {
     if (element && isInViewport(element)) {
       const originalLink = tempLinkClasses[linkClassName]
       if (!seenLinks[originalLink]) {
-        // Mark as seen immediately when in viewport
         seenLinks[originalLink] = true
-        
-        // Emit event for parent component
+
         emit('item-viewed', { link: originalLink, timestamp: Date.now() })
         
         const checkmark = element.querySelector('.checkmark.unseen')
@@ -627,7 +605,6 @@ const checkAllItems = (): void => {
   })
 }
 
-// Enhanced viewport checking with intersection observer for better performance
 let intersectionObserver: IntersectionObserver | null = null
 
 const setupIntersectionObserver = (): void => {
@@ -645,8 +622,7 @@ const setupIntersectionObserver = (): void => {
           
           if (originalLink && !seenLinks[originalLink]) {
             seenLinks[originalLink] = true
-            
-            // Emit event for parent component
+
             emit('item-viewed', { link: originalLink, timestamp: Date.now() })
             
             const checkmark = element.querySelector('.checkmark.unseen')
@@ -670,12 +646,9 @@ const setupIntersectionObserver = (): void => {
   )
 }
 
-// Lifecycle hooks
 onMounted(() => {
-  // Store original items for reset functionality
   originalItems.value = [...(props.items.main || [])]
 
-  // Set up scroll listener for tracking viewed items
   const handleScroll = (): void => {
     checkAllItems()
   }
@@ -697,18 +670,14 @@ onUnmounted(() => {
   }
 })
 
-// Watchers
 watch(renderedItems, () => {
   nextTick(() => {
-    // Clear previous tracking data
     Object.keys(tempLinkClasses).forEach(key => {
       delete tempLinkClasses[key]
     })
-    
-    // Update temp link classes for viewport tracking
+
     const itemsToTrack = isGroupingEnabled.value 
       ? Object.values(groupedItems.value).flat().filter((item) => {
-          // Only track items in expanded domains
           const domain = getDomainName(item.link)
           return expandedDomains[domain]
         })
@@ -718,11 +687,9 @@ watch(renderedItems, () => {
       const safeName = makeSafeForCSS(item.link)
       tempLinkClasses[safeName] = item.link
     })
-    
-    // Setup intersection observer for better performance
+
     setupIntersectionObserver()
-    
-    // Observe all item elements
+
     setTimeout(() => {
       Object.keys(tempLinkClasses).forEach(linkClassName => {
         const element = document.getElementById(linkClassName)
@@ -731,19 +698,16 @@ watch(renderedItems, () => {
         }
       })
     }, 100)
-    
-    // Fallback to original method
+
     checkAllItems()
   })
 })
 
-// Watch for domain expansion changes to update intersection observer
 watch(expandedDomains, () => {
   if (isGroupingEnabled.value) {
     nextTick(() => {
       setupIntersectionObserver()
-      
-      // Re-observe elements in newly expanded domains
+
       setTimeout(() => {
         Object.keys(tempLinkClasses).forEach(linkClassName => {
           const element = document.getElementById(linkClassName)
@@ -766,12 +730,10 @@ watch(filteredItems, () => {
   }
 })
 
-// Watch for grouping changes to reset pagination
 watch(isGroupingEnabled, () => {
   currentPage.value = 1
 })
 
-// Watch for external filter changes
 watch(() => props.filters, (newFilters) => {
   if (newFilters) {
     Object.assign(filters, newFilters)

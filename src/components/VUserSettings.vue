@@ -136,7 +136,8 @@ import {ref} from 'vue';
 import Multiselect from 'vue-multiselect';
 
 const languageOptions = JSON.parse(localStorage.getItem('languages'));
-const checkedLanguage = ref(JSON.parse(localStorage.getItem('defaultLanguage')) || {name: 'Русский', code: 'ru'});
+const defaultLanguage = localStorage.getItem('defaultLanguage');
+const checkedLanguage = ref(defaultLanguage && defaultLanguage !== 'null' ? JSON.parse(defaultLanguage) : {name: 'Русский', code: 'ru'});
 const languageErrorMessage = ref('');
 const languageSuccess = ref(false);
 const oldPassword = ref('');

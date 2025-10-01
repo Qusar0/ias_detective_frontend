@@ -71,6 +71,22 @@
             ↓ Дата (новые)
           </button>
           <button
+            v-if="isGroupingEnabled"
+            @click="setCountSortOrder('count-asc')"
+            :class="['sort-btn', { active: sortOrder === 'count-asc' }]"
+            title="Сортировать домены по количеству (возрастание)"
+          >
+            ↑ Количество
+          </button>
+          <button
+            v-if="isGroupingEnabled"
+            @click="setCountSortOrder('count-desc')"
+            :class="['sort-btn', { active: sortOrder === 'count-desc' }]"
+            title="Сортировать домены по количеству (убывание)"
+          >
+            ↓ Количество
+          </button>
+          <button
             @click="toggleGrouping"
             :class="['group-btn', { active: isGroupingEnabled }]"
             title="Группировать по доменам"
@@ -417,7 +433,7 @@ const currentPage = ref(1)
 
 const filters = reactive<Record<number, FilterConfig>>({ ...props.filters })
 
-const sortOrder = ref<'none' | 'asc' | 'desc' | 'date-asc' | 'date-desc'>('none')
+const sortOrder = ref<'none' | 'asc' | 'desc' | 'date-asc' | 'date-desc' | 'count-asc' | 'count-desc'>('none')
 const isGroupingEnabled = ref(false)
 const expandedDomains = reactive<Record<string, boolean>>({})
 
@@ -548,19 +564,23 @@ const allGroupedItems = computed(() => {
 
   const sortedGroups: Record<string, Item[]> = {}
   let domainKeys = Object.keys(groups)
-  
+
   if (sortOrder.value === 'asc') {
     domainKeys = domainKeys.sort((a, b) => a.localeCompare(b))
   } else if (sortOrder.value === 'desc') {
     domainKeys = domainKeys.sort((a, b) => b.localeCompare(a))
+  } else if (sortOrder.value === 'count-asc') {
+    domainKeys = domainKeys.sort((a, b) => groups[a].length - groups[b].length)
+  } else if (sortOrder.value === 'count-desc') {
+    domainKeys = domainKeys.sort((a, b) => groups[b].length - groups[a].length)
   } else {
     domainKeys = domainKeys.sort((a, b) => a.localeCompare(b))
   }
-  
+
   domainKeys.forEach(domain => {
     sortedGroups[domain] = groups[domain]
   })
-  
+
   return sortedGroups
 })
 
@@ -651,6 +671,11 @@ const setSortOrder = (order: 'asc' | 'desc') => {
 }
 
 const setDateSortOrder = (order: 'date-asc' | 'date-desc') => {
+  sortOrder.value = order
+  currentPage.value = 1
+}
+
+const setCountSortOrder = (order: 'count-asc' | 'count-desc') => {
   sortOrder.value = order
   currentPage.value = 1
 }
