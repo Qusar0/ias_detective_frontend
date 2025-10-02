@@ -11,9 +11,16 @@
               <label class="checkbox-item">
                 <input
                     type="radio"
+                    :value="null"
+                    v-model="filters.search_type"
+                >
+                <span>Все данные</span>
+              </label>
+              <label class="checkbox-item">
+                <input
+                    type="radio"
                     value="name"
                     v-model="filters.search_type"
-                    @change="onFiltersChange"
                 >
                 <span>По инициалам ФИО</span>
               </label>
@@ -22,7 +29,6 @@
                     type="radio"
                     value="inn"
                     v-model="filters.search_type"
-                    @change="onFiltersChange"
                 >
                 <span>По ИНН</span>
               </label>
@@ -90,9 +96,6 @@
             </div>
             <div class="region" v-if="bankruptcyCase.region_name">
               {{ bankruptcyCase.region_name }}
-            </div>
-            <div class="search-type-badge">
-              {{ getSearchTypeName(filters.search_type) }}
             </div>
           </div>
 
@@ -219,8 +222,8 @@
 
     <div v-if="cases.length > 0" class="pagination-section">
       <div class="pagination-info">
-        Страница {{ currentPage }} из {{ Math.ceil(totalCount / pageSize) }}
-        (всего: {{ totalCount }})
+        Страница {{ currentPage }} из {{ totalPages }}
+        (всего: {{ filteredTotalCount }})
       </div>
       <div class="pagination-controls">
         <button
@@ -233,7 +236,7 @@
         <span class="page-display">{{ currentPage }}</span>
         <button
             @click="changePage(currentPage + 1)"
-            :disabled="currentPage >= Math.ceil(totalCount / pageSize) || loading"
+            :disabled="currentPage >= totalPages || loading"
             class="page-button"
         >
           Следующая →
@@ -266,9 +269,11 @@ const error = ref(null);
 const cases = ref([]);
 const currentPage = ref(1);
 const pageSize = ref(20);
+const totalPages = ref(0);
+const filteredTotalCount = ref(0);
 
 const filters = reactive({
-  search_type: 'name'
+  search_type: null
 });
 
 const expandedCases = ref([]);
@@ -293,17 +298,6 @@ const getFullName = (person) => {
   if (!person) return '';
   const parts = [person.last_name, person.first_name, person.second_name].filter(Boolean);
   return parts.join(' ') || 'Имя не указано';
-};
-
-const getSearchTypeName = (searchType) => {
-  switch (searchType) {
-    case 'name':
-      return 'По ФИО';
-    case 'inn':
-      return 'По ИНН';
-    default:
-      return 'Все записи';
-  }
 };
 
 const fetchCases = async () => {
@@ -336,7 +330,9 @@ const fetchCases = async () => {
     }
 
     const data = await response.json();
-    cases.value = data;
+    cases.value = data.cases || [];
+    totalPages.value = data.total_pages || 0;
+    filteredTotalCount.value = data.total_count || 0;
   } catch (err) {
     error.value = err.message || 'Произошла ошибка при загрузке данных';
     console.error('Error fetching bankruptcy cases:', err);
@@ -393,7 +389,7 @@ const applyFilters = () => {
 };
 
 const resetFilters = () => {
-  filters.search_type = 'name';
+  filters.search_type = null;
   currentPage.value = 1;
   fetchCases();
 };

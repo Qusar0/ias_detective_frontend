@@ -214,8 +214,8 @@
 
     <div v-if="cases.length > 0" class="pagination-section">
       <div class="pagination-info">
-        Страница {{ currentPage }} из {{ Math.ceil(totalCount / pageSize) }}
-        (всего: {{ totalCount }})
+        Страница {{ currentPage }} из {{ totalPages }}
+        (всего: {{ filteredTotalCount }})
       </div>
       <div class="pagination-controls">
         <button
@@ -228,7 +228,7 @@
         <span class="page-display">{{ currentPage }}</span>
         <button
             @click="changePage(currentPage + 1)"
-            :disabled="currentPage >= Math.ceil(totalCount / pageSize) || loading"
+            :disabled="currentPage >= totalPages || loading"
             class="page-button"
         >
           Следующая →
@@ -261,6 +261,8 @@ const error = ref(null);
 const cases = ref([]);
 const currentPage = ref(1);
 const pageSize = ref(20);
+const totalPages = ref(0);
+const filteredTotalCount = ref(0);
 
 const filters = reactive({
   search_type: null,
@@ -333,7 +335,9 @@ const fetchCases = async () => {
     }
 
     const data = await response.json();
-    cases.value = data;
+    cases.value = data.cases || [];
+    totalPages.value = data.total_pages || 0;
+    filteredTotalCount.value = data.total_count || 0;
   } catch (err) {
     error.value = err.message || 'Произошла ошибка при загрузке данных';
     console.error('Error fetching arbitration cases:', err);

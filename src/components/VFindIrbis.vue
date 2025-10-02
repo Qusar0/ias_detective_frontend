@@ -90,7 +90,7 @@
           v-model="selectedRegions"
           :options="regionsOptions"
           :multiple="true"
-          :close-on-select="false"
+          :close-on-select="true"
           :limit="2"
           :limitText="count => `и еще ${count}`"
           track-by="code"
