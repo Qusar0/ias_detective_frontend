@@ -2,17 +2,22 @@
   <div class="person-report" @click="closeModal">
     <div class="tab-head" @click="closeModal">
       <div class="head-info" :style="{ height: headInfoExpanded ? '105px' : '28px' }">
-        <h2 class="object-full_name" @click="toggleHeadInfo">
-          Объект: <span>{{ objectName }}</span>
-          <svg
-              xmlns="http://www.w3.org/2000/svg"
-              :style="{ transform: headInfoExpanded ? 'rotateX(180deg)' : 'rotateX(0deg)' }" viewBox="0 0 448 512"
-          >
-            <path
-                d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"
-            />
-          </svg>
-        </h2>
+        <div class="head-info-top">
+          <h2 class="object-full_name" @click="toggleHeadInfo">
+            Объект: <span>{{ objectName }}</span>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                :style="{ transform: headInfoExpanded ? 'rotateX(180deg)' : 'rotateX(0deg)' }" viewBox="0 0 448 512"
+            >
+              <path
+                  d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"
+              />
+            </svg>
+          </h2>
+          <div v-if="duplicatesRemoved > 0" class="duplicates-badge">
+            Удалено дубликатов: {{ duplicatesRemoved }}
+          </div>
+        </div>
         <div class="info-details">
           <span class="max-text-length" :title="`Категории поиска: ${searchCategories}`">
             <b>Категории поиска:</b> {{ searchCategories }}
@@ -93,18 +98,6 @@
     </div>
 
     <div v-if="hasItemsForCurrentTab && !loadingTab" class="toggle-buttons-container">
-      <button @click="filtersExpanded = !filtersExpanded" class="toggle-btn">
-        <svg
-            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
-            :style="{ transform: filtersExpanded ? 'rotate(0deg)' : 'rotate(-90deg)' }"
-        >
-          <path
-              d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
-          />
-        </svg>
-        <span>{{ filtersExpanded ? 'Скрыть фильтры' : 'Показать фильтры' }}</span>
-      </button>
-
       <button v-if="selectedTabIndex === 1" @click="chartExpanded = !chartExpanded" class="toggle-btn">
         <svg
             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
@@ -116,6 +109,62 @@
         </svg>
         <span>{{ chartExpanded ? 'Скрыть диаграмму' : 'Показать диаграмму' }}</span>
       </button>
+
+      <button @click="filtersExpanded = !filtersExpanded" class="toggle-btn">
+        <svg
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+            :style="{ transform: filtersExpanded ? 'rotate(0deg)' : 'rotate(-90deg)' }"
+        >
+          <path
+              d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+          />
+        </svg>
+        <span>{{ filtersExpanded ? 'Скрыть фильтры' : 'Показать фильтры' }}</span>
+      </button>
+    </div>
+
+    <div v-if="selectedTabIndex === 1 && !loadingTab && chartExpanded" class="charts-section">
+      <div class="results-chart-container">
+        <h3 class="chart-title">Распределение результатов по вкладкам</h3>
+        <div class="chart-notice">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <path
+                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+            />
+          </svg>
+          <span>
+            Количество результатов на странице может отличаться от статистики из-за удаления дубликатов
+          </span>
+        </div>
+        <div class="chart-stats">
+          <div class="total-results">
+            <div class="total-number">{{ totalAllMaterials }}</div>
+            <div class="total-label">Всего результатов</div>
+          </div>
+          <div class="chart-bars">
+            <div
+                v-for="(item, index) in chartData"
+                :key="index"
+                class="chart-bar-item"
+                @click="selectTab(item.tabIndex)"
+            >
+              <div class="bar-label">{{ item.label }}</div>
+              <div class="bar-container">
+                <div
+                    class="bar-fill"
+                    :style="{
+                    width: item.percentage + '%',
+                    background: item.color
+                  }"
+                >
+                  <span class="bar-count">{{ item.count }}</span>
+                </div>
+              </div>
+              <div class="bar-percentage">{{ item.percentage }}%</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div v-if="hasItemsForCurrentTab && !loadingTab && filtersExpanded" class="filters-container">
@@ -177,6 +226,43 @@
         </div>
       </div>
 
+      <div class="weight-filter-section">
+        <div class="filter-label">Фильтр по весу источника:</div>
+        <div class="weight-info">
+          <span>От {{ weightRange[0] }}</span>
+          <span>До {{ weightRange[1] }}</span>
+        </div>
+        <div class="weight-slider-container">
+          <div
+              class="weight-slider-fill"
+              :style="{
+                left: ((weightRange[0] - minWeight) / (maxWeight - minWeight) * 100) + '%',
+                width: ((weightRange[1] - weightRange[0]) / (maxWeight - minWeight) * 100) + '%'
+              }"
+          ></div>
+          <input
+              type="range"
+              :min="minWeight"
+              :max="maxWeight"
+              v-model.number="weightRange[0]"
+              @input="updateWeightFilter"
+              class="weight-slider weight-slider-min"
+          >
+          <input
+              type="range"
+              :min="minWeight"
+              :max="maxWeight"
+              v-model.number="weightRange[1]"
+              @input="updateWeightFilter"
+              class="weight-slider weight-slider-max"
+          >
+        </div>
+        <div class="weight-range-display">
+          <span class="range-label">Диапазон:</span>
+          <span class="range-values">{{ minWeight }} - {{ maxWeight }}</span>
+        </div>
+      </div>
+
       <div class="minus-keywords-section-all-tabs">
         <div class="minus-keywords-section">
           <div class="filter-label">Стоп-фильтр:</div>
@@ -205,39 +291,16 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <div v-if="selectedTabIndex === 1 && !loadingTab && chartExpanded" class="charts-section">
-      <div class="results-chart-container">
-        <h3 class="chart-title">Распределение результатов по вкладкам</h3>
-        <div class="chart-stats">
-          <div class="total-results">
-            <div class="total-number">{{ totalAllMaterials }}</div>
-            <div class="total-label">Всего результатов</div>
-          </div>
-          <div class="chart-bars">
-            <div
-                v-for="(item, index) in chartData"
-                :key="index"
-                class="chart-bar-item"
-                @click="selectTab(item.tabIndex)"
-            >
-              <div class="bar-label">{{ item.label }}</div>
-              <div class="bar-container">
-                <div
-                    class="bar-fill"
-                    :style="{
-                    width: item.percentage + '%',
-                    background: item.color
-                  }"
-                >
-                  <span class="bar-count">{{ item.count }}</span>
-                </div>
-              </div>
-              <div class="bar-percentage">{{ item.percentage }}%</div>
-            </div>
-          </div>
-        </div>
+      <div class="reset-filters-container">
+        <button @click="resetAllFilters" class="reset-filters-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <path
+                d="M463.5 224H472c13.3 0 24-10.7 24-24V72c0-9.7-5.8-18.5-14.8-22.2s-19.3-1.7-26.2 5.2L413.4 96.6c-87.6-86.5-228.7-86.2-315.8 1c-87.5 87.5-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3c62.2-62.2 162.7-62.5 225.3-1L327 183c-6.9 6.9-8.9 17.2-5.2 26.2s12.5 14.8 22.2 14.8H463.5z"
+            />
+          </svg>
+          <span>Сбросить все фильтры</span>
+        </button>
       </div>
     </div>
 
@@ -333,7 +396,7 @@
           Нет найденных результатов!
         </div>
 
-        <template v-if="isGroupingEnabled && selectedTabIndex === tabIndex">
+        <template v-else-if="isGroupingEnabled && selectedTabIndex === tabIndex && filteredItems.length">
           <div
               v-for="(group, domain) in groupedItems"
               :key="domain"
@@ -422,77 +485,78 @@
           </div>
         </template>
 
-        <div
-            v-else
-            v-for="item in selectedTabIndex === tabIndex ? renderedItems : []"
-            :key="item.link"
-            :class="['item-container', { seen_link: seenLinks[item.link] }]"
-            :id="makeSafeForCSS(item.link)"
-        >
-          <div class="item">
-            <svg
-                v-if="seenLinks[item.link]"
-                class="checkmark"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 52 52"
-            >
-              <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
-              <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
-            </svg>
-            <svg
-                v-else
-                class="checkmark unseen"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 52 52"
-            >
-              <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
-            </svg>
-
-            <div class="flex items-center">
-              <a :href="item.link" target="_blank" class="item-title" :title="item.title">
-                {{ item.title }}
-              </a>
-            </div>
-
-            <div class="item-content">{{ item.content }}</div>
-
-            <div class="item-info">
-              <a :href="item.link" target="_blank" :title="getDomainName(item.link)">
-                {{ truncateText(getDomainName(item.link), 20) }}
-              </a>
-
-              <span
-                  v-if="item.publication_date" class="publication-date"
-                  style="margin-left:9.6px;color:#666;font-size:11px;"
+        <template v-else-if="filteredItems.length && selectedTabIndex === tabIndex">
+          <div
+              v-for="item in renderedItems"
+              :key="item.link"
+              :class="['item-container', { seen_link: seenLinks[item.link] }]"
+              :id="makeSafeForCSS(item.link)"
+          >
+            <div class="item">
+              <svg
+                  v-if="seenLinks[item.link]"
+                  class="checkmark"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 52 52"
               >
-                {{ item.publication_date }}
-              </span>
+                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+              </svg>
+              <svg
+                  v-else
+                  class="checkmark unseen"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 52 52"
+              >
+                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+              </svg>
 
-              <div class="item-keywords" v-if="item.keyword_list?.length" style="margin-left:9.6px">
-                <div class="item-param">
-                  <div class="query-content">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                      <path
-                          d="M336 352c97.2 0 176-78.8 176-176S433.2 0 336 0S160 78.8 160 176c0 18.7 2.9 36.8 8.3 53.7L7 391c-4.5 4.5-7 10.6-7 17v80c0 13.3 10.7 24 24 24h80c13.3 0 24-10.7 24-24V448h40c13.3 0 24-10.7 24-24V384h40c6.4 0 12.5-2.5 17-7l33.3-33.3c16.9 5.4 35 8.3 53.7 8.3zM376 96a40 40 0 1 1 0 80 40 40 0 1 1 0-80z"
-                      />
-                    </svg>
-                    <template v-for="(query, index) in item.keyword_list" :key="index">
-                      <span v-if="index > 0">, </span>
-                      <span
-                          class="query"
-                          @click="copyToClipboard(String(query))"
-                          :title="String(query)"
-                      >
-                        {{ String(query) }}
-                      </span>
-                    </template>
-                    <small class="prompt">Копировать при клике</small>
+              <div class="flex items-center">
+                <a :href="item.link" target="_blank" class="item-title" :title="item.title">
+                  {{ item.title }}
+                </a>
+              </div>
+
+              <div class="item-content">{{ item.content }}</div>
+
+              <div class="item-info">
+                <a :href="item.link" target="_blank" :title="getDomainName(item.link)">
+                  {{ truncateText(getDomainName(item.link), 20) }}
+                </a>
+
+                <span
+                    v-if="item.publication_date" class="publication-date"
+                    style="margin-left:9.6px;color:#666;font-size:11px;"
+                >
+                  {{ item.publication_date }}
+                </span>
+
+                <div class="item-keywords" v-if="item.keyword_list?.length" style="margin-left:9.6px">
+                  <div class="item-param">
+                    <div class="query-content">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path
+                            d="M336 352c97.2 0 176-78.8 176-176S433.2 0 336 0S160 78.8 160 176c0 18.7 2.9 36.8 8.3 53.7L7 391c-4.5 4.5-7 10.6-7 17v80c0 13.3 10.7 24 24 24h80c13.3 0 24-10.7 24-24V448h40c13.3 0 24-10.7 24-24V384h40c6.4 0 12.5-2.5 17-7l33.3-33.3c16.9 5.4 35 8.3 53.7 8.3zM376 96a40 40 0 1 1 0 80 40 40 0 1 1 0-80z"
+                        />
+                      </svg>
+                      <template v-for="(query, index) in item.keyword_list" :key="index">
+                        <span v-if="index > 0">, </span>
+                        <span
+                            class="query"
+                            @click="copyToClipboard(String(query))"
+                            :title="String(query)"
+                        >
+                          {{ String(query) }}
+                        </span>
+                      </template>
+                      <small class="prompt">Копировать при клике</small>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </template>
       </div>
     </div>
 
@@ -589,7 +653,7 @@ const currentPage = ref(1)
 const loadingTab = ref(false)
 const loadedTabs = reactive<Record<number, boolean>>({})
 const filtersExpanded = ref(false)
-const chartExpanded = ref(true)
+const chartExpanded = ref(false)
 
 const fullnameFilter = ref<'all' | 'full' | 'partial'>('all')
 const hideSocialArchives = ref(false)
@@ -603,6 +667,11 @@ const expandedDomains = reactive<Record<string, boolean>>({})
 const keywordSearchQuery = ref('')
 const selectedKeywords = reactive<Record<string, boolean>>({})
 const filteredKeywordList = ref<Array<{ word: string, count: number }>>([])
+
+const minWeight = ref(0)
+const maxWeight = ref(100)
+const weightRange = ref<[number, number]>([0, 100])
+const duplicatesRemoved = ref(0)
 
 const availableKeywords = computed(() => {
   const tabItems = getTabItems(selectedTabIndex.value)
@@ -689,6 +758,14 @@ const getTabItems = (tabIndex: number): Item[] => {
 const filteredItems = computed((): Item[] => {
   let items = getTabItems(selectedTabIndex.value)
 
+  // Фильтр по весу источника (вес = количество ключевых слов)
+  items = items.filter(item => {
+    const weight = item.keyword_list?.length || 0
+    const minRange = Math.min(weightRange.value[0], weightRange.value[1])
+    const maxRange = Math.max(weightRange.value[0], weightRange.value[1])
+    return weight >= minRange && weight <= maxRange
+  })
+
   if (fullnameFilter.value !== 'all') {
     items = items.filter((item: any) => {
       if (fullnameFilter.value === 'full') {
@@ -749,6 +826,19 @@ const filteredItems = computed((): Item[] => {
       })
     }
   }
+
+  // Удаление дубликатов по ссылке
+  const beforeDedup = items.length
+  const seenLinks = new Set<string>()
+  items = items.filter(item => {
+    if (seenLinks.has(item.link)) {
+      return false
+    }
+    seenLinks.add(item.link)
+    return true
+  })
+
+  duplicatesRemoved.value = beforeDedup - items.length
 
   return items
 })
@@ -1008,7 +1098,6 @@ const copyToClipboard = async (text: string): Promise<void> => {
     document.execCommand('copy')
     inp.remove()
   } catch (error) {
-    console.warn('Failed to copy to clipboard:', error)
   }
 }
 
@@ -1018,40 +1107,58 @@ const toggleHeadInfo = (event: Event) => {
 }
 
 const loadTabData = async (tabIndex: number) => {
-  console.log(`[loadTabData] Starting for tab ${tabIndex}`)
-
-  if (tabIndex === 8) {
-    console.log('[loadTabData] Skipping tab 8 (all materials)')
-    return
-  }
-  if (tabIndex === 6 || tabIndex === 7) {
-    console.log(`[loadTabData] Skipping tab ${tabIndex} (socials/documents)`)
-    return
-  }
 
   const keywordTypeCategory = KEYWORD_TYPE_MAPPING[tabIndex]
-  if (!keywordTypeCategory) {
-    console.log('[loadTabData] No keyword type category found')
-    return
+
+  if (tabIndex === 6) {
+    if (loadedTabs[tabIndex]) {
+      return
+    }
+  } else if (tabIndex === 7) {
+    if (loadedTabs[tabIndex]) {
+      return
+    }
+  } else if (tabIndex === 8) {
+    if (loadedTabs[tabIndex]) {
+      return
+    }
+  } else {
+    if (!keywordTypeCategory) {
+      return
+    }
   }
 
-  if (loadedTabs[tabIndex]) {
-    console.log(`[loadTabData] Tab ${tabIndex} already loaded`)
-    return
+  let requestKeywordTypeCategory: string | undefined = keywordTypeCategory
+
+  if (tabIndex === 6) {
+    requestKeywordTypeCategory = 'socials'
+  } else if (tabIndex === 7) {
+    requestKeywordTypeCategory = 'documents'
+  } else if (tabIndex === 8) {
+    requestKeywordTypeCategory = undefined
   }
 
-  const statsCount = props.keywordStats?.[keywordTypeCategory]
-  console.log(`[loadTabData] Stats count for ${keywordTypeCategory}:`, statsCount)
+  const statsCount = requestKeywordTypeCategory
+    ? props.keywordStats?.[requestKeywordTypeCategory]
+    : totalAllMaterials.value
+
 
   if (!statsCount || statsCount === 0) {
-    console.log('[loadTabData] No data in keywordStats, marking as loaded')
     loadedTabs[tabIndex] = true
     return
   }
 
   try {
-    console.log('[loadTabData] Starting data fetch...')
     loadingTab.value = true
+
+    const requestBody: any = {
+      query_id: props.queryId,
+      size: 20
+    }
+
+    if (requestKeywordTypeCategory) {
+      requestBody.keyword_type_category = requestKeywordTypeCategory
+    }
 
     const categoryRes = await fetch('/api/queries/category_query_data', {
       method: 'POST',
@@ -1059,29 +1166,30 @@ const loadTabData = async (tabIndex: number) => {
         'Content-Type': 'application/json'
       },
       credentials: 'include',
-      body: JSON.stringify({
-        query_id: props.queryId,
-        keyword_type_category: keywordTypeCategory,
-        size: 20
-      })
+      body: JSON.stringify(requestBody)
     })
     const categoryData = await categoryRes.json()
 
     const totalResults = categoryData.total || (categoryData.size * categoryData.total_pages) || 0
 
     if (totalResults > 0) {
+      const dataRequestBody: any = {
+        query_id: props.queryId,
+        page: 1,
+        size: totalResults
+      }
+
+      if (requestKeywordTypeCategory) {
+        dataRequestBody.keyword_type_category = requestKeywordTypeCategory
+      }
+
       const dataRes = await fetch('/api/queries/query_data', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         credentials: 'include',
-        body: JSON.stringify({
-          query_id: props.queryId,
-          keyword_type_category: keywordTypeCategory,
-          page: 1,
-          size: totalResults
-        })
+        body: JSON.stringify(dataRequestBody)
       })
       const data = await dataRes.json()
 
@@ -1125,6 +1233,7 @@ const selectTab = async (newTabIndex: number): Promise<void> => {
 
   await nextTick()
   initializeKeywordFilter()
+  updateWeightRange()
 
   emit('filter-changed', {
     tab: newTabIndex,
@@ -1143,6 +1252,50 @@ const initializeKeywordFilter = () => {
 
   filteredKeywordList.value = [...availableKeywords.value]
   keywordSearchQuery.value = ''
+}
+
+const updateWeightRange = () => {
+  const tabItems = getTabItems(selectedTabIndex.value)
+
+  if (tabItems.length === 0) {
+    minWeight.value = 0
+    maxWeight.value = 100
+    weightRange.value = [0, 100]
+    return
+  }
+
+  const weights = tabItems.map(item => item.keyword_list?.length || 0)
+
+  minWeight.value = Math.min(...weights, 0)
+  maxWeight.value = Math.max(...weights, 1)
+  weightRange.value = [minWeight.value, maxWeight.value]
+}
+
+const updateWeightFilter = () => {
+  if (weightRange.value[0] > weightRange.value[1]) {
+    const temp = weightRange.value[0]
+    weightRange.value[0] = weightRange.value[1]
+    weightRange.value[1] = temp
+  }
+
+  currentPage.value = 1
+}
+
+const resetAllFilters = () => {
+  fullnameFilter.value = 'all'
+
+  hideSocialArchives.value = false
+
+  Object.keys(selectedKeywords).forEach(key => {
+    selectedKeywords[key] = false
+  })
+
+  minusKeywords.value = []
+  newMinusKeyword.value = ''
+
+  updateWeightRange()
+
+  currentPage.value = 1
 }
 
 const filterKeywords = () => {
@@ -1337,17 +1490,14 @@ const isInViewport = (el: Element): boolean => {
 let scrollCleanup: (() => void) | null = null
 
 onMounted(async () => {
-  console.log('[onMounted] Component mounted, keywordStats:', props.keywordStats)
 
   await nextTick()
 
   if (props.keywordStats && Object.keys(props.keywordStats).length > 0) {
-    console.log('[onMounted] keywordStats available, loading tab 1')
     await loadTabData(1)
     await nextTick()
     initializeKeywordFilter()
   } else {
-    console.log('[onMounted] keywordStats not ready yet, will wait for watcher')
   }
 
   setupIntersectionObserver()
@@ -1416,10 +1566,8 @@ watch(availableKeywords, () => {
 })
 
 watch(() => props.keywordStats, async (newStats, oldStats) => {
-  console.log('[watch keywordStats] Stats changed:', newStats)
 
   if (newStats && Object.keys(newStats).length > 0 && !loadedTabs[1]) {
-    console.log('[watch keywordStats] Loading tab 1 data')
     await loadTabData(1)
     await nextTick()
     initializeKeywordFilter()
@@ -1472,6 +1620,25 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
   transition: .15s;
   overflow: hidden;
   width: 100%;
+}
+
+.head-info-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 5px;
+}
+
+.duplicates-badge {
+  background: #d9edf7;
+  color: #31708f;
+  border: 1px solid #bce8f1;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  font-weight: 500;
 }
 
 .object-full_name {
@@ -1667,6 +1834,29 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
   margin: 0 0 20px 0;
   text-align: center;
   color: #333;
+}
+
+.chart-notice {
+  color: #31708f;
+  background: #d9edf7;
+  border: 1px solid #bce8f1;
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin: 0 0 15px 0;
+  font-size: 13px;
+}
+
+.chart-notice svg {
+  height: 16px;
+  min-width: 16px;
+  margin-right: 8px;
+  fill: #31708f;
+}
+
+.chart-notice span {
+  line-height: 1.4;
 }
 
 .chart-stats {
@@ -2361,6 +2551,39 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
   transition: transform 0.3s;
 }
 
+.reset-filters-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  background: #4400ed;
+  color: white;
+  border: 1px solid #4400ed;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.reset-filters-btn:hover {
+  background: #3300cc;
+  border-color: #3300cc;
+}
+
+.reset-filters-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: white;
+}
+
+.reset-filters-container {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+}
+
 .filters-container {
   margin-top: 10px;
 }
@@ -2394,6 +2617,7 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
 .fullname-filter-all-tabs label input {
   margin-right: 5px;
   cursor: pointer;
+  accent-color: #4400ed;
 }
 
 .fullname-filter-all-tabs label span {
@@ -2549,5 +2773,136 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
     margin: 10px 5px 0;
     padding: 10px;
   }
+}
+
+/* Weight Filter Section */
+.weight-filter-section {
+  margin: 0 10px 10px;
+  padding: 12px;
+  background: white;
+  border-radius: 5px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.weight-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.weight-slider-container {
+  position: relative;
+  height: 40px;
+  margin-bottom: 10px;
+}
+
+.weight-slider-container::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.weight-slider-fill {
+  position: absolute;
+  top: 50%;
+  height: 6px;
+  background: #4400ed;
+  border-radius: 3px;
+  transform: translateY(-50%);
+  z-index: 1;
+  transition: left 0.1s, width 0.1s;
+}
+
+.weight-slider {
+  position: absolute;
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  outline: none;
+  pointer-events: none;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.weight-slider::-webkit-slider-track {
+  width: 100%;
+  height: 6px;
+  background: transparent;
+  border-radius: 3px;
+}
+
+.weight-slider::-moz-range-track {
+  width: 100%;
+  height: 6px;
+  background: transparent;
+  border-radius: 3px;
+}
+
+.weight-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  background: #4400ed;
+  cursor: pointer;
+  border-radius: 50%;
+  pointer-events: all;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.weight-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: #4400ed;
+  cursor: pointer;
+  border-radius: 50%;
+  pointer-events: all;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.weight-slider-min {
+  z-index: 1;
+}
+
+.weight-slider-max {
+  z-index: 2;
+}
+
+.weight-slider::-webkit-slider-thumb:hover {
+  background: #3300cc;
+}
+
+.weight-slider::-moz-range-thumb:hover {
+  background: #3300cc;
+}
+
+.weight-range-display {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #666;
+}
+
+.range-label {
+  font-weight: 600;
+}
+
+.range-values {
+  color: #4400ed;
+  font-weight: 600;
 }
 </style>
