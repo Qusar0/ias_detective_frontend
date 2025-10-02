@@ -150,6 +150,27 @@
           Следующая →
         </button>
       </div>
+      <div class="page-jump">
+        <label for="page-jump-input">Перейти на страницу:</label>
+        <input
+            id="page-jump-input"
+            type="number"
+            v-model.number="pageJumpInput"
+            @keyup.enter="jumpToPage"
+            :min="1"
+            :max="Math.ceil(totalCount / pageSize)"
+            step="1"
+            :disabled="loading"
+            class="page-jump-input"
+        >
+        <button
+            @click="jumpToPage"
+            :disabled="loading || !pageJumpInput || !Number.isInteger(pageJumpInput) || pageJumpInput < 1 || pageJumpInput > Math.ceil(totalCount / pageSize)"
+            class="page-jump-button"
+        >
+          Перейти
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -177,6 +198,7 @@ const error = ref(null);
 const partInOrgCases = ref([]);
 const currentPage = ref(1);
 const pageSize = ref(20);
+const pageJumpInput = ref(null);
 const expandedCases = ref([]);
 const caseDetails = reactive({});
 const loadingDetails = reactive({});
@@ -250,10 +272,22 @@ const toggleCaseDetails = (caseId) => {
 };
 
 const changePage = (page) => {
-  if (page < 1) return;
+  const maxPage = Math.ceil(props.totalCount / pageSize.value);
+  if (page < 1 || page > maxPage) return;
   currentPage.value = page;
   expandedCases.value = [];
   fetchPartInOrg();
+};
+
+const jumpToPage = () => {
+  const maxPage = Math.ceil(props.totalCount / pageSize.value);
+  if (pageJumpInput.value &&
+      Number.isInteger(pageJumpInput.value) &&
+      pageJumpInput.value >= 1 &&
+      pageJumpInput.value <= maxPage) {
+    changePage(pageJumpInput.value);
+    pageJumpInput.value = null;
+  }
 };
 
 watch(() => props.isActive, (isActive) => {
@@ -544,6 +578,8 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
   margin-top: 20px;
   padding: 15px 20px;
   background: white;
@@ -606,5 +642,55 @@ onMounted(() => {
     flex-direction: column;
     gap: 10px;
   }
+
+  .page-jump {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.page-jump {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-jump label {
+  font-size: 14px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.page-jump-input {
+  width: 70px;
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.page-jump-input:focus {
+  outline: none;
+  border-color: #4400ed;
+}
+
+.page-jump-button {
+  background: #4400ed;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.page-jump-button:hover:not(:disabled) {
+  background: #3300cc;
+}
+
+.page-jump-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
 </style>

@@ -234,6 +234,27 @@
           Следующая →
         </button>
       </div>
+      <div class="page-jump">
+        <label for="page-jump-input">Перейти на страницу:</label>
+        <input
+            id="page-jump-input"
+            type="number"
+            v-model.number="pageJumpInput"
+            @keyup.enter="jumpToPage"
+            :min="1"
+            :max="totalPages"
+            step="1"
+            :disabled="loading"
+            class="page-jump-input"
+        >
+        <button
+            @click="jumpToPage"
+            :disabled="loading || !pageJumpInput || !Number.isInteger(pageJumpInput) || pageJumpInput < 1 || pageJumpInput > totalPages"
+            class="page-jump-button"
+        >
+          Перейти
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -263,6 +284,7 @@ const currentPage = ref(1);
 const pageSize = ref(20);
 const totalPages = ref(0);
 const filteredTotalCount = ref(0);
+const pageJumpInput = ref(null);
 
 const filters = reactive({
   search_type: null,
@@ -406,9 +428,19 @@ const clearRole = () => {
 };
 
 const changePage = (page) => {
-  if (page < 1) return;
+  if (page < 1 || page > totalPages.value) return;
   currentPage.value = page;
   fetchCases();
+};
+
+const jumpToPage = () => {
+  if (pageJumpInput.value &&
+      Number.isInteger(pageJumpInput.value) &&
+      pageJumpInput.value >= 1 &&
+      pageJumpInput.value <= totalPages.value) {
+    changePage(pageJumpInput.value);
+    pageJumpInput.value = null;
+  }
 };
 
 watch(() => props.isActive, (isActive) => {
@@ -830,6 +862,8 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
   margin-top: 20px;
   padding: 15px 20px;
   background: white;
@@ -912,6 +946,51 @@ onMounted(() => {
 }
 
 /* Responsive */
+.page-jump {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-jump label {
+  font-size: 14px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.page-jump-input {
+  width: 70px;
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.page-jump-input:focus {
+  outline: none;
+  border-color: #4400ed;
+}
+
+.page-jump-button {
+  background: #4400ed;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.page-jump-button:hover:not(:disabled) {
+  background: #3300cc;
+}
+
+.page-jump-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
   .filters-grid {
     grid-template-columns: 1fr;
@@ -935,6 +1014,11 @@ onMounted(() => {
   .pagination-section {
     flex-direction: column;
     gap: 10px;
+  }
+
+  .page-jump {
+    width: 100%;
+    justify-content: center;
   }
 }
 </style>
