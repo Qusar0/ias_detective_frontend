@@ -227,7 +227,17 @@
       </div>
 
       <div class="weight-filter-section">
-        <div class="filter-label">Фильтр по весу источника:</div>
+        <div class="filter-label">
+          Фильтр по весу источника:
+          <span class="weight-tooltip">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="16" height="16">
+              <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/>
+            </svg>
+            <span class="weight-tooltip-text">
+              Вес источника — это количество найденных ключевых слов в результате. Чем больше ключевых слов содержит результат, тем выше его вес (релевантность).
+            </span>
+          </span>
+        </div>
         <div class="weight-info">
           <span>От {{ weightRange[0] }}</span>
           <span>До {{ weightRange[1] }}</span>
@@ -2782,6 +2792,61 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
   background: white;
   border-radius: 5px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.weight-tooltip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  cursor: help;
+  vertical-align: middle;
+}
+
+.weight-tooltip svg {
+  fill: #666;
+  transition: fill 0.2s;
+}
+
+.weight-tooltip:hover svg {
+  fill: #4400ed;
+}
+
+.weight-tooltip-text {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  z-index: 1000;
+  transition: opacity 0.3s, visibility 0.3s;
+  pointer-events: none;
+}
+
+.weight-tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: #333 transparent transparent transparent;
+}
+
+.weight-tooltip:hover .weight-tooltip-text {
+  visibility: visible;
+  opacity: 1;
 }
 
 .weight-info {

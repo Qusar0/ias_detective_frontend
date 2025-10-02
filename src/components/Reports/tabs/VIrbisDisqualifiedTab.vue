@@ -47,10 +47,7 @@
             <div class="disqualification-period">
               <div class="period-label">Период дисквалификации:</div>
               <div class="dates">
-                <span v-if="person.start_date_disq">{{ formatDate(person.start_date_disq) }}</span>
-                <span v-if="person.start_date_disq && person.end_date_disq"> — </span>
-                <span v-if="person.end_date_disq">{{ formatDate(person.end_date_disq) }}</span>
-                <span v-if="!person.start_date_disq && !person.end_date_disq" class="no-date">Не указан</span>
+                {{ formatPeriod(person.start_date_disq, person.end_date_disq) }}
               </div>
             </div>
             <div class="article" v-if="person.article">
@@ -234,16 +231,31 @@ const loadingDetails = ref({});
 const detailsErrors = ref({});
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'Дата не указана';
+  if (!dateString || dateString === '') return null;
   try {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-      return 'Дата не указана';
+      return null;
     }
     return date.toLocaleDateString('ru-RU');
   } catch {
-    return 'Дата не указана';
+    return null;
   }
+};
+
+const formatPeriod = (startDate, endDate) => {
+  const formattedStart = formatDate(startDate);
+  const formattedEnd = formatDate(endDate);
+
+  if (!formattedStart && !formattedEnd) {
+    return 'Не указан';
+  }
+
+  if (formattedStart && formattedEnd) {
+    return `${formattedStart} — ${formattedEnd}`;
+  }
+
+  return formattedStart || formattedEnd;
 };
 
 const getPersonStatus = (person) => {

@@ -99,8 +99,7 @@
 
           <div class="case-meta">
             <div class="case-dates">
-              <span v-if="courtCase.start_date">{{ formatDate(courtCase.start_date) }}</span>
-              <span v-if="courtCase.end_date"> - {{ formatDate(courtCase.end_date) }}</span>
+              {{ formatPeriod(courtCase.start_date, courtCase.end_date) }}
             </div>
             <div class="case-region">{{ courtCase.region?.name }}</div>
             <div v-if="courtCase.review > 0" class="case-review">
@@ -310,16 +309,31 @@ const loadingDetails = ref({});
 const detailsErrors = ref({});
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'Дата не указана';
+  if (!dateString || dateString === '') return null;
   try {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) {
-      return 'Дата не указана';
+      return null;
     }
     return date.toLocaleDateString('ru-RU');
   } catch {
+    return null;
+  }
+};
+
+const formatPeriod = (startDate, endDate) => {
+  const formattedStart = formatDate(startDate);
+  const formattedEnd = formatDate(endDate);
+
+  if (!formattedStart && !formattedEnd) {
     return 'Дата не указана';
   }
+
+  if (formattedStart && formattedEnd) {
+    return `${formattedStart} - ${formattedEnd}`;
+  }
+
+  return formattedStart || formattedEnd;
 };
 
 const translateLinkCategory = (category) => {
@@ -759,6 +773,11 @@ input:checked + .slider:before {
 .case-dates {
   font-size: 12px;
   color: #666;
+}
+
+.case-dates .no-date {
+  color: #999;
+  font-style: italic;
 }
 
 .case-region {

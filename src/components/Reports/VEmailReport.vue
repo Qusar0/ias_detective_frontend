@@ -18,8 +18,87 @@
       </div>
     </div>
 
+    <div v-if="hasItemsForCurrentTab && !loading" class="toggle-buttons-container" @click="closeModal">
+      <button @click="filtersExpanded = !filtersExpanded" class="toggle-btn">
+        <svg
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
+            :style="{ transform: filtersExpanded ? 'rotate(0deg)' : 'rotate(-90deg)' }"
+        >
+          <path d="M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/>
+        </svg>
+        <span>{{ filtersExpanded ? 'Скрыть фильтры' : 'Показать фильтры' }}</span>
+      </button>
+    </div>
+
+    <div v-if="hasItemsForCurrentTab && !loading && filtersExpanded" class="filters-container" @click="closeModal">
+      <div class="search-filter-section">
+        <div class="filter-label">Поиск по содержимому:</div>
+        <div class="search-filter-input">
+          <input
+              v-model="newSearchKeyword"
+              @keydown.enter="addSearchKeyword"
+              placeholder="Введите слово для поиска"
+          >
+          <button @click="addSearchKeyword">Добавить</button>
+        </div>
+        <div class="search-keywords-list" v-if="searchKeywords.length > 0">
+          <div
+              v-for="(keyword, index) in searchKeywords"
+              :key="index"
+              class="search-keyword"
+          >
+            <span>{{ keyword }}</span>
+            <svg @click="removeSearchKeyword(index)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+              <path
+                  d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="minus-keywords-section-all-tabs">
+        <div class="minus-keywords-section">
+          <div class="filter-label">Стоп-фильтр:</div>
+          <div class="minus-keywords-input">
+            <input
+                v-model="newMinusKeyword"
+                @keydown.enter="addMinusKeyword"
+                placeholder="Введите стоп-слово"
+            >
+            <button @click="addMinusKeyword">Добавить</button>
+          </div>
+          <div class="minus-keywords-list" v-if="minusKeywords.length > 0">
+            <div
+                v-for="(keyword, index) in minusKeywords"
+                :key="index"
+                class="minus-keyword"
+            >
+              <span>{{ keyword }}</span>
+              <svg @click="removeMinusKeyword(index)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+                <path
+                    d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="reset-filters-container">
+        <button @click="resetAllFilters" class="reset-filters-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+            <path
+                d="M463.5 224H472c13.3 0 24-10.7 24-24V72c0-9.7-5.8-18.5-14.8-22.2s-19.3-1.7-26.2 5.2L413.4 96.6c-87.6-86.5-228.7-86.2-315.8 1c-87.5 87.5-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3c62.2-62.2 162.7-62.5 225.3-1L327 183c-6.9 6.9-8.9 17.2-5.2 26.2s12.5 14.8 22.2 14.8H463.5z"
+            />
+          </svg>
+          <span>Сбросить все фильтры</span>
+        </button>
+      </div>
+    </div>
+
     <div
-        v-show="hasItemsForCurrentTab"
+        v-show="hasItemsForCurrentTab && !loading"
         class="flex items-center flex-col wrap-reverse-container only-for-mentions"
         style="padding: 0 10px; margin-top: 15px"
     >
@@ -98,7 +177,12 @@
 
     <div class="content" @click="closeModal">
       <div :class="['tab-content-1', { selected: selectedTabIndex === 1 }]">
-        <div v-if="!renderedItems.length" class="empty-list">
+        <div v-if="loading" class="loading-container">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">Загрузка данных...</div>
+        </div>
+
+        <div v-else-if="!renderedItems.length" class="empty-list">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
             <path
                 d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"
@@ -107,7 +191,7 @@
           Нет найденных результатов!
         </div>
 
-        <template v-if="isGroupingEnabled">
+        <template v-else-if="isGroupingEnabled">
           <div
               v-for="(group, domain) in groupedItems"
               :key="domain"
@@ -328,6 +412,7 @@ const props = defineProps<{
     main?: Item[]
   }
   filters?: Record<number, FilterConfig>
+  loading?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -348,6 +433,12 @@ const filters = reactive<Record<number, FilterConfig>>({...props.filters})
 const sortOrder = ref<'none' | 'asc' | 'desc' | 'date-asc' | 'date-desc' | 'count-asc' | 'count-desc'>('none')
 const isGroupingEnabled = ref(false)
 const expandedDomains = reactive<Record<string, boolean>>({})
+
+const filtersExpanded = ref(false)
+const searchKeywords = ref<string[]>([])
+const newSearchKeyword = ref('')
+const minusKeywords = ref<string[]>([])
+const newMinusKeyword = ref('')
 
 const originalItems = ref<Item[]>([])
 
@@ -380,6 +471,38 @@ let scrollCleanup: (() => void) | null = null
 
 const filteredItems = computed((): Item[] => {
   let tempItems = [...(props.items.main || [])]
+
+  // Фильтр по поисковым словам (должны содержать хотя бы одно)
+  if (searchKeywords.value.length > 0) {
+    tempItems = tempItems.filter(item => {
+      const searchableContent = [
+        item.title,
+        item.content,
+        item.link,
+        item.publication_date
+      ].join(' ').toLowerCase()
+
+      return searchKeywords.value.some(keyword =>
+          searchableContent.includes(keyword.toLowerCase())
+      )
+    })
+  }
+
+  // Фильтр по стоп-словам (не должны содержать ни одного)
+  if (minusKeywords.value.length > 0) {
+    tempItems = tempItems.filter(item => {
+      const searchableContent = [
+        item.title,
+        item.content,
+        item.link,
+        item.publication_date
+      ].join(' ').toLowerCase()
+
+      return !minusKeywords.value.some(keyword =>
+          searchableContent.includes(keyword.toLowerCase())
+      )
+    })
+  }
 
   if (!isGroupingEnabled.value) {
     if (sortOrder.value === 'asc') {
@@ -517,6 +640,42 @@ const toggleDomainExpansion = (domain: string) => {
   expandedDomains[domain] = !expandedDomains[domain]
 }
 
+const addSearchKeyword = () => {
+  const keyword = newSearchKeyword.value.trim()
+  if (keyword && !searchKeywords.value.includes(keyword)) {
+    searchKeywords.value.push(keyword)
+    newSearchKeyword.value = ''
+    currentPage.value = 1
+  }
+}
+
+const removeSearchKeyword = (index: number) => {
+  searchKeywords.value.splice(index, 1)
+  currentPage.value = 1
+}
+
+const addMinusKeyword = () => {
+  const keyword = newMinusKeyword.value.trim()
+  if (keyword && !minusKeywords.value.includes(keyword)) {
+    minusKeywords.value.push(keyword)
+    newMinusKeyword.value = ''
+    currentPage.value = 1
+  }
+}
+
+const removeMinusKeyword = (index: number) => {
+  minusKeywords.value.splice(index, 1)
+  currentPage.value = 1
+}
+
+const resetAllFilters = () => {
+  searchKeywords.value = []
+  newSearchKeyword.value = ''
+  minusKeywords.value = []
+  newMinusKeyword.value = ''
+  currentPage.value = 1
+}
+
 const resetFilters = () => {
   sortOrder.value = 'none'
   isGroupingEnabled.value = false
@@ -525,6 +684,8 @@ const resetFilters = () => {
   Object.keys(expandedDomains).forEach(domain => {
     delete expandedDomains[domain]
   })
+
+  resetAllFilters()
 }
 
 const makeSafeForCSS = (name: string): string => {
@@ -1010,6 +1171,42 @@ watch(() => props.filters, (newFilters) => {
   opacity: 1 !important;
 }
 
+/* Loading Styles */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  min-height: 200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #4400ed;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+.loading-text {
+  color: #666;
+  font-size: 16px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .empty-list {
   color: #8a6d3b;
   background: #fce7c4;
@@ -1286,6 +1483,263 @@ h2 {
 
   .controls-section {
     margin-bottom: 10px;
+  }
+}
+
+/* Toggle Buttons Container */
+.toggle-buttons-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  color: #333;
+}
+
+.toggle-btn:hover {
+  background: #f8f9fa;
+  border-color: #4400ed;
+  color: #4400ed;
+}
+
+.toggle-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+  transition: transform 0.3s;
+}
+
+/* Filters Container */
+.filters-container {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 0 auto 20px;
+  max-width: 800px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Search Filter Section */
+.search-filter-section {
+  margin-bottom: 20px;
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.search-filter-input {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.search-filter-input input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.search-filter-input input:focus {
+  outline: none;
+  border-color: #4400ed;
+}
+
+.search-filter-input button {
+  padding: 8px 16px;
+  background: #4400ed;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.search-filter-input button:hover {
+  background: #3300cc;
+}
+
+.search-keywords-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.search-keyword {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #1976d2;
+}
+
+.search-keyword span {
+  font-weight: 500;
+}
+
+.search-keyword svg {
+  width: 14px;
+  height: 14px;
+  fill: #1976d2;
+  cursor: pointer;
+  transition: fill 0.2s;
+}
+
+.search-keyword svg:hover {
+  fill: #0d47a1;
+}
+
+/* Minus Keywords Section */
+.minus-keywords-section-all-tabs {
+  margin-bottom: 20px;
+}
+
+.minus-keywords-section {
+  width: 100%;
+}
+
+.minus-keywords-input {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.minus-keywords-input input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.minus-keywords-input input:focus {
+  outline: none;
+  border-color: #4400ed;
+}
+
+.minus-keywords-input button {
+  padding: 8px 16px;
+  background: #4400ed;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.minus-keywords-input button:hover {
+  background: #3300cc;
+}
+
+.minus-keywords-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.minus-keyword {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: #ffebee;
+  border: 1px solid #ef5350;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #c62828;
+}
+
+.minus-keyword span {
+  font-weight: 500;
+}
+
+.minus-keyword svg {
+  width: 14px;
+  height: 14px;
+  fill: #c62828;
+  cursor: pointer;
+  transition: fill 0.2s;
+}
+
+.minus-keyword svg:hover {
+  fill: #b71c1c;
+}
+
+/* Reset Filters Button */
+.reset-filters-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.reset-filters-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.reset-filters-btn:hover {
+  background: #c82333;
+}
+
+.reset-filters-btn svg {
+  width: 16px;
+  height: 16px;
+  fill: white;
+}
+
+@media (max-width: 640px) {
+  .filters-container {
+    padding: 15px;
+  }
+
+  .search-filter-input,
+  .minus-keywords-input {
+    flex-direction: column;
+  }
+
+  .search-filter-input button,
+  .minus-keywords-input button {
+    width: 100%;
   }
 }
 </style>

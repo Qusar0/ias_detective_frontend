@@ -3,6 +3,7 @@
       v-if="queryType === 'number'"
       :title="queryTitle"
       :items="numberItems"
+      :loading="isLoading"
   />
   <VSubjectReport
       v-if="queryType === 'company' || queryType === 'person'"
@@ -21,6 +22,7 @@
       v-if="queryType === 'email'"
       :title="queryTitle"
       :items="emailItems"
+      :loading="isLoading"
   />
   <VIrbisReport
       v-if="queryType === 'irbis'"
@@ -47,6 +49,7 @@ export default {
       query_id: null,
       queryType: '',
       queryTitle: '',
+      isLoading: true,
       numberItems: {
         main: [],
         arbitrary: []
@@ -212,7 +215,10 @@ export default {
       } else if (this.queryType === 'irbis') {
         // может тут что-то тоже появится для пагинации
       }
+
+      this.isLoading = false;
     } catch (error) {
+      this.isLoading = false;
       await router.push('/');
     }
   }
