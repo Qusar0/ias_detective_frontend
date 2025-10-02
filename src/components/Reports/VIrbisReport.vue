@@ -536,6 +536,10 @@ onMounted(() => {
   .title-container {
     justify-content: center;
   }
+
+  .object-full_name {
+    font-size: 28px;
+  }
 }
 
 .tab-head .flex div {
@@ -579,7 +583,7 @@ onMounted(() => {
 
 .title-container {
   display: flex;
-  margin-bottom: 10px;
+  margin-bottom: 0;
 }
 
 .object-full_name {

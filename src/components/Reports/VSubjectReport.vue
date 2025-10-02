@@ -97,8 +97,8 @@
       </div>
     </div>
 
-    <div v-if="hasItemsForCurrentTab && !loadingTab" class="toggle-buttons-container">
-      <button v-if="selectedTabIndex === 1" @click="chartExpanded = !chartExpanded" class="toggle-btn">
+    <div v-if="hasItemsForCurrentTab && !loadingTab && selectedTabIndex === 1" class="toggle-buttons-container">
+      <button @click="chartExpanded = !chartExpanded" class="toggle-btn">
         <svg
             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
             :style="{ transform: chartExpanded ? 'rotate(0deg)' : 'rotate(-90deg)' }"
@@ -108,18 +108,6 @@
           />
         </svg>
         <span>{{ chartExpanded ? 'Скрыть диаграмму' : 'Показать диаграмму' }}</span>
-      </button>
-
-      <button @click="filtersExpanded = !filtersExpanded" class="toggle-btn">
-        <svg
-            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
-            :style="{ transform: filtersExpanded ? 'rotate(0deg)' : 'rotate(-90deg)' }"
-        >
-          <path
-              d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
-          />
-        </svg>
-        <span>{{ filtersExpanded ? 'Скрыть фильтры' : 'Показать фильтры' }}</span>
       </button>
     </div>
 
@@ -165,6 +153,23 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <div
+        v-if="hasItemsForCurrentTab && !loadingTab"
+        class="toggle-buttons-container"
+    >
+      <button @click="filtersExpanded = !filtersExpanded" class="toggle-btn">
+        <svg
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+            :style="{ transform: filtersExpanded ? 'rotate(0deg)' : 'rotate(-90deg)' }"
+        >
+          <path
+              d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"
+          />
+        </svg>
+        <span>{{ filtersExpanded ? 'Скрыть фильтры' : 'Показать фильтры' }}</span>
+      </button>
     </div>
 
     <div v-if="hasItemsForCurrentTab && !loadingTab && filtersExpanded" class="filters-container">
@@ -234,7 +239,9 @@
               <path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/>
             </svg>
             <span class="weight-tooltip-text">
-              Вес источника — это количество найденных ключевых слов в результате. Чем больше ключевых слов содержит результат, тем выше его вес (релевантность).
+              <strong>Вес источника</strong> — это количество найденных ключевых слов в материале.<br><br>
+              Чем больше ключевых слов содержит результат, тем выше его вес и релевантность вашему запросу.<br><br>
+              Используйте фильтр для отбора наиболее релевантных материалов или для поиска результатов с конкретным количеством совпадений.
             </span>
           </span>
         </div>
@@ -347,18 +354,42 @@
           ↓ Кол-во (много)
         </button>
         <button
+            v-if="!isGroupingEnabled"
             @click="setDateSortOrder('date-asc')"
-            :class="['sort-btn', { active: sortOrder === 'date-asc' }]"
+            :class="['sort-btn', {
+              active: sortOrder === 'date-asc' || secondarySortOrder === 'date-asc',
+              secondary: secondarySortOrder === 'date-asc'
+            }]"
             title="Сортировать по дате по возрастанию"
         >
           ↑ Дата (старые)
         </button>
         <button
+            v-if="!isGroupingEnabled"
             @click="setDateSortOrder('date-desc')"
-            :class="['sort-btn', { active: sortOrder === 'date-desc' }]"
+            :class="['sort-btn', {
+              active: sortOrder === 'date-desc' || secondarySortOrder === 'date-desc',
+              secondary: secondarySortOrder === 'date-desc'
+            }]"
             title="Сортировать по дате по убыванию"
         >
           ↓ Дата (новые)
+        </button>
+        <button
+            v-if="!isGroupingEnabled"
+            @click="setWeightSortOrder('weight-asc')"
+            :class="['sort-btn', { active: sortOrder === 'weight-asc' }]"
+            title="Сортировать по весу источника (количество ключевых слов) по возрастанию"
+        >
+          ↑ Вес (мало)
+        </button>
+        <button
+            v-if="!isGroupingEnabled"
+            @click="setWeightSortOrder('weight-desc')"
+            :class="['sort-btn', { active: sortOrder === 'weight-desc' }]"
+            title="Сортировать по весу источника (количество ключевых слов) по убыванию"
+        >
+          ↓ Вес (много)
         </button>
         <button
             @click="toggleGrouping"
@@ -446,6 +477,12 @@
                     <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"></circle>
                   </svg>
 
+                  <span
+                      v-if="item.publication_date" class="publication-date-top"
+                  >
+                    {{ item.publication_date }}
+                  </span>
+
                   <div class="flex items-center">
                     <a :href="item.link" target="_blank" class="item-title" :title="item.title">
                       {{ item.title }}
@@ -458,13 +495,6 @@
                     <a :href="item.link" target="_blank" :title="getDomainName(item.link)">
                       {{ truncateText(getDomainName(item.link), 20) }}
                     </a>
-
-                    <span
-                        v-if="item.publication_date" class="publication-date"
-                        style="margin-left:9.6px;color:#666;font-size:11px;"
-                    >
-                      {{ item.publication_date }}
-                    </span>
 
                     <div class="item-keywords" v-if="item.keyword_list?.length" style="margin-left:9.6px">
                       <div class="item-param">
@@ -521,6 +551,12 @@
                 <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
               </svg>
 
+              <span
+                  v-if="item.publication_date" class="publication-date-top"
+              >
+                {{ item.publication_date }}
+              </span>
+
               <div class="flex items-center">
                 <a :href="item.link" target="_blank" class="item-title" :title="item.title">
                   {{ item.title }}
@@ -533,13 +569,6 @@
                 <a :href="item.link" target="_blank" :title="getDomainName(item.link)">
                   {{ truncateText(getDomainName(item.link), 20) }}
                 </a>
-
-                <span
-                    v-if="item.publication_date" class="publication-date"
-                    style="margin-left:9.6px;color:#666;font-size:11px;"
-                >
-                  {{ item.publication_date }}
-                </span>
 
                 <div class="item-keywords" v-if="item.keyword_list?.length" style="margin-left:9.6px">
                   <div class="item-param">
@@ -670,7 +699,8 @@ const hideSocialArchives = ref(false)
 const minusKeywords = ref<string[]>([])
 const newMinusKeyword = ref('')
 
-const sortOrder = ref<'none' | 'asc' | 'desc' | 'date-asc' | 'date-desc' | 'count-asc' | 'count-desc'>('none')
+const sortOrder = ref<'none' | 'asc' | 'desc' | 'date-asc' | 'date-desc' | 'count-asc' | 'count-desc' | 'weight-asc' | 'weight-desc'>('none')
+const secondarySortOrder = ref<'none' | 'date-asc' | 'date-desc'>('none')
 const isGroupingEnabled = ref(false)
 const expandedDomains = reactive<Record<string, boolean>>({})
 
@@ -818,10 +848,29 @@ const filteredItems = computed((): Item[] => {
   }
 
   if (!isGroupingEnabled.value) {
-    if (sortOrder.value === 'asc') {
-      items = [...items].sort((a, b) => a.link.localeCompare(b.link))
-    } else if (sortOrder.value === 'desc') {
-      items = [...items].sort((a, b) => b.link.localeCompare(a.link))
+    if (sortOrder.value === 'asc' || sortOrder.value === 'desc') {
+      items = [...items].sort((a, b) => {
+        // Первичная сортировка по ссылкам
+        const linkComparison = sortOrder.value === 'asc'
+          ? a.link.localeCompare(b.link)
+          : b.link.localeCompare(a.link)
+
+        // Если ссылки одинаковые или есть вторичная сортировка по дате
+        if (linkComparison === 0 || secondarySortOrder.value !== 'none') {
+          const dateA = a.publication_date ? parseDate(a.publication_date) : null
+          const dateB = b.publication_date ? parseDate(b.publication_date) : null
+
+          if (!dateA && !dateB) return linkComparison
+          if (!dateA) return linkComparison || 1
+          if (!dateB) return linkComparison || -1
+
+          const dateComparison = dateA.getTime() - dateB.getTime()
+          const finalDateComparison = secondarySortOrder.value === 'date-asc' ? dateComparison : -dateComparison
+          return linkComparison || finalDateComparison
+        }
+
+        return linkComparison
+      })
     } else if (sortOrder.value === 'date-asc' || sortOrder.value === 'date-desc') {
       items = [...items].sort((a, b) => {
         const dateA = a.publication_date ? parseDate(a.publication_date) : null
@@ -833,6 +882,30 @@ const filteredItems = computed((): Item[] => {
 
         const comparison = dateA.getTime() - dateB.getTime()
         return sortOrder.value === 'date-asc' ? comparison : -comparison
+      })
+    } else if (sortOrder.value === 'weight-asc' || sortOrder.value === 'weight-desc') {
+      items = [...items].sort((a, b) => {
+        const weightA = a.keyword_list?.length || 0
+        const weightB = b.keyword_list?.length || 0
+
+        const weightComparison = weightA - weightB
+        const finalWeightComparison = sortOrder.value === 'weight-asc' ? weightComparison : -weightComparison
+
+        // Если веса одинаковые или есть вторичная сортировка по дате
+        if (finalWeightComparison === 0 || secondarySortOrder.value !== 'none') {
+          const dateA = a.publication_date ? parseDate(a.publication_date) : null
+          const dateB = b.publication_date ? parseDate(b.publication_date) : null
+
+          if (!dateA && !dateB) return finalWeightComparison
+          if (!dateA) return finalWeightComparison || 1
+          if (!dateB) return finalWeightComparison || -1
+
+          const dateComparison = dateA.getTime() - dateB.getTime()
+          const finalDateComparison = secondarySortOrder.value === 'date-asc' ? dateComparison : -dateComparison
+          return finalWeightComparison || finalDateComparison
+        }
+
+        return finalWeightComparison
       })
     }
   }
@@ -1073,7 +1146,7 @@ const parseDate = (dateStr: string): Date | null => {
   if (!dateStr) return null
 
   const monthMap: Record<string, number> = {
-    'янв': 0, 'фев': 1, 'мар': 2, 'апр': 3, 'май': 4, 'мая': 4, 'июн': 5,
+    'янв': 0, 'февр': 1, 'мар': 2, 'апр': 3, 'май': 4, 'мая': 4, 'июн': 5,
     'июл': 6, 'авг': 7, 'сен': 8, 'окт': 9, 'нояб': 10, 'дек': 11
   }
 
@@ -1373,17 +1446,63 @@ const updateList = (): void => {
 }
 
 const setSortOrder = (order: 'asc' | 'desc') => {
-  sortOrder.value = order
+  // Если уже активна сортировка по ссылкам, переключаем направление
+  if (sortOrder.value === order) {
+    sortOrder.value = 'none'
+    secondarySortOrder.value = 'none'
+  } else {
+    sortOrder.value = order
+    // Сохраняем вторичную сортировку по дате, если она была
+    if (secondarySortOrder.value !== 'none' &&
+        (sortOrder.value === 'asc' || sortOrder.value === 'desc')) {
+      // Вторичная сортировка остается
+    } else {
+      secondarySortOrder.value = 'none'
+    }
+  }
   currentPage.value = 1
 }
 
 const setDateSortOrder = (order: 'date-asc' | 'date-desc') => {
-  sortOrder.value = order
+  // Если уже выбрана сортировка по дате
+  if (sortOrder.value === order) {
+    sortOrder.value = 'none'
+    secondarySortOrder.value = 'none'
+  } else if (sortOrder.value === 'asc' || sortOrder.value === 'desc') {
+    // Если активна сортировка по ссылкам, дата становится вторичной
+    secondarySortOrder.value = order
+  } else if (sortOrder.value === 'weight-asc' || sortOrder.value === 'weight-desc') {
+    // Если активна сортировка по весу, дата становится вторичной
+    secondarySortOrder.value = order
+  } else {
+    // Иначе дата становится первичной
+    sortOrder.value = order
+    secondarySortOrder.value = 'none'
+  }
   currentPage.value = 1
 }
 
 const setCountSortOrder = (order: 'count-asc' | 'count-desc') => {
   sortOrder.value = order
+  secondarySortOrder.value = 'none'
+  currentPage.value = 1
+}
+
+const setWeightSortOrder = (order: 'weight-asc' | 'weight-desc') => {
+  // Если уже активна сортировка по весу, переключаем направление
+  if (sortOrder.value === order) {
+    sortOrder.value = 'none'
+    secondarySortOrder.value = 'none'
+  } else {
+    sortOrder.value = order
+    // Сохраняем вторичную сортировку по дате, если она была
+    if (secondarySortOrder.value !== 'none' &&
+        (sortOrder.value === 'weight-asc' || sortOrder.value === 'weight-desc')) {
+      // Вторичная сортировка остается
+    } else {
+      secondarySortOrder.value = 'none'
+    }
+  }
   currentPage.value = 1
 }
 
@@ -1391,6 +1510,13 @@ const toggleGrouping = () => {
   isGroupingEnabled.value = !isGroupingEnabled.value
 
   if (isGroupingEnabled.value) {
+    // Сбрасываем сортировки по весу и дате при включении группировки
+    if (sortOrder.value === 'weight-asc' || sortOrder.value === 'weight-desc' ||
+        sortOrder.value === 'date-asc' || sortOrder.value === 'date-desc') {
+      sortOrder.value = 'none'
+    }
+    secondarySortOrder.value = 'none'
+
     Object.keys(groupedItems.value).forEach(domain => {
       expandedDomains[domain] = false
     })
@@ -1405,6 +1531,7 @@ const toggleDomainExpansion = (domain: string) => {
 
 const resetSortAndGrouping = () => {
   sortOrder.value = 'none'
+  secondarySortOrder.value = 'none'
   isGroupingEnabled.value = false
   currentPage.value = 1
 
@@ -2104,6 +2231,18 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
   position: relative;
 }
 
+.publication-date-top {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  color: #666;
+  font-size: 11px;
+  background: #f5f5f5;
+  padding: 3px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
 .item-title {
   cursor: pointer;
   font-weight: 600;
@@ -2114,6 +2253,7 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
   -webkit-box-orient: vertical;
   text-decoration: none;
   color: #333;
+  padding-right: 100px;
 }
 
 .item-title:hover {
@@ -2443,6 +2583,12 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
   background: #4400ed;
   color: white;
   border-color: #4400ed;
+}
+
+.sort-btn.secondary {
+  background: #8866ff;
+  color: white;
+  border-color: #8866ff;
 }
 
 .reset-btn {
@@ -2819,15 +2965,15 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
   bottom: 125%;
   left: 50%;
   transform: translateX(-50%);
-  width: 280px;
+  width: 320px;
   background-color: #333;
   color: white;
-  text-align: center;
-  padding: 10px 12px;
+  text-align: left;
+  padding: 12px 14px;
   border-radius: 6px;
   font-size: 13px;
   font-weight: 400;
-  line-height: 1.4;
+  line-height: 1.5;
   z-index: 1000;
   transition: opacity 0.3s, visibility 0.3s;
   pointer-events: none;

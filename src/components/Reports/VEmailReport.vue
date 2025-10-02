@@ -231,6 +231,12 @@
                     <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"></circle>
                   </svg>
 
+                  <span
+                      v-if="item.publication_date" class="publication-date-top"
+                  >
+                    {{ item.publication_date }}
+                  </span>
+
                   <div class="flex items-center">
                     <a :href="item.link" target="_blank" class="item-title" :title="item.title">
                       {{ item.title }}
@@ -241,13 +247,6 @@
                     <a :href="item.link" target="_blank" style="color: #4d4dff;" :title="getDomainName(item.link)">
                       {{ truncateText(getDomainName(item.link), 20) }}
                     </a>
-
-                    <span
-                        v-if="item.publication_date" class="publication-date"
-                        style="margin-left:9.6px;color:#666;font-size:11px;"
-                    >
-                      {{ item.publication_date }}
-                    </span>
 
                     <div class="mt-auto item-keywords" style="margin-left:9.6px">
                       <div class="item-param">
@@ -315,6 +314,12 @@
               <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"></circle>
             </svg>
 
+            <span
+                v-if="item.publication_date" class="publication-date-top"
+            >
+              {{ item.publication_date }}
+            </span>
+
             <div class="flex items-center">
               <a :href="item.link" target="_blank" class="item-title" :title="item.title">
                 {{ item.title }}
@@ -325,13 +330,6 @@
               <a :href="item.link" target="_blank" style="color: #4d4dff;" :title="getDomainName(item.link)">
                 {{ truncateText(getDomainName(item.link), 20) }}
               </a>
-
-              <span
-                  v-if="item.publication_date" class="publication-date"
-                  style="margin-left:9.6px;color:#666;font-size:11px;"
-              >
-                {{ item.publication_date }}
-              </span>
 
               <div class="mt-auto item-keywords" style="margin-left:9.6px">
                 <div class="item-param">
@@ -446,7 +444,7 @@ const parseDate = (dateStr: string): Date | null => {
   if (!dateStr) return null
 
   const monthMap: Record<string, number> = {
-    'янв': 0, 'фев': 1, 'мар': 2, 'апр': 3, 'май': 4, 'мая': 4, 'июн': 5,
+    'янв': 0, 'февр': 1, 'мар': 2, 'апр': 3, 'май': 4, 'мая': 4, 'июн': 5,
     'июл': 6, 'авг': 7, 'сен': 8, 'окт': 9, 'нояб': 10, 'дек': 11
   }
 
@@ -1050,6 +1048,19 @@ watch(() => props.filters, (newFilters) => {
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+.publication-date-top {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  color: #666;
+  font-size: 11px;
+  background: #f5f5f5;
+  padding: 3px 8px;
+  border-radius: 3px;
+  white-space: nowrap;
 }
 
 .mt-auto {
@@ -1072,6 +1083,7 @@ watch(() => props.filters, (newFilters) => {
   -webkit-box-orient: vertical;
   text-decoration: none;
   color: #333;
+  padding-right: 100px;
 }
 
 .item-title:hover {
