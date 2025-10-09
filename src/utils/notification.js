@@ -39,12 +39,7 @@ export function get_events() {
         return response.json();
       })
       .then((data) => {
-        data = Object.values(data).map(event_item => {
-          event_item.message.task_created_at = new Date(event_item.message.task_created_at).minus('minute', new Date().getTimezoneOffset()).format('Y-m-d h:i:s');
-          return event_item;
-        });
-
-        events.value = data ?? [];
+        events.value = Object.values(data) ?? [];
       });
 }
 
