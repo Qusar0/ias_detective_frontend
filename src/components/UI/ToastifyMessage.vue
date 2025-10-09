@@ -28,7 +28,8 @@ export default {
         number: 'fa-phone',
         email: 'fa-envelope',
         company: 'fa-building',
-        telegram: 'fa-telegram'
+        telegram: 'fa-telegram',
+        irbis: 'fa-balance-scale'
       }
     };
   },
