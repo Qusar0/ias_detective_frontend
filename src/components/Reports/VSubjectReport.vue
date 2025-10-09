@@ -339,7 +339,7 @@
         </button>
         <button
             v-if="isGroupingEnabled"
-            @click="setCountSortOrder('count-asc')"
+            @click="setSortOrder('count-asc')"
             :class="['sort-btn', { active: sortOrder === 'count-asc' }]"
             title="Сортировать по количеству результатов по возрастанию"
         >
@@ -347,7 +347,7 @@
         </button>
         <button
             v-if="isGroupingEnabled"
-            @click="setCountSortOrder('count-desc')"
+            @click="setSortOrder('count-desc')"
             :class="['sort-btn', { active: sortOrder === 'count-desc' }]"
             title="Сортировать по количеству результатов по убыванию"
         >
@@ -355,29 +355,23 @@
         </button>
         <button
             v-if="!isGroupingEnabled"
-            @click="setDateSortOrder('date-asc')"
-            :class="['sort-btn', {
-              active: sortOrder === 'date-asc' || secondarySortOrder === 'date-asc',
-              secondary: secondarySortOrder === 'date-asc'
-            }]"
+            @click="setSortOrder('date-asc')"
+            :class="['sort-btn', { active: sortOrder === 'date-asc' }]"
             title="Сортировать по дате по возрастанию"
         >
           ↑ Дата (старые)
         </button>
         <button
             v-if="!isGroupingEnabled"
-            @click="setDateSortOrder('date-desc')"
-            :class="['sort-btn', {
-              active: sortOrder === 'date-desc' || secondarySortOrder === 'date-desc',
-              secondary: secondarySortOrder === 'date-desc'
-            }]"
+            @click="setSortOrder('date-desc')"
+            :class="['sort-btn', { active: sortOrder === 'date-desc' }]"
             title="Сортировать по дате по убыванию"
         >
           ↓ Дата (новые)
         </button>
         <button
             v-if="!isGroupingEnabled"
-            @click="setWeightSortOrder('weight-asc')"
+            @click="setSortOrder('weight-asc')"
             :class="['sort-btn', { active: sortOrder === 'weight-asc' }]"
             title="Сортировать по весу источника (количество ключевых слов) по возрастанию"
         >
@@ -385,7 +379,7 @@
         </button>
         <button
             v-if="!isGroupingEnabled"
-            @click="setWeightSortOrder('weight-desc')"
+            @click="setSortOrder('weight-desc')"
             :class="['sort-btn', { active: sortOrder === 'weight-desc' }]"
             title="Сортировать по весу источника (количество ключевых слов) по убыванию"
         >
@@ -795,6 +789,10 @@ const getTabItems = (tabIndex: number): Item[] => {
   return props.items[tabName as keyof PersonItems] || []
 }
 
+const normalizeUrl = (url: string): string => {
+  return url.replace(/^(https?:\/\/)?/, '').toLowerCase();
+};
+
 const filteredItems = computed((): Item[] => {
   let items = getTabItems(selectedTabIndex.value)
 
@@ -850,27 +848,16 @@ const filteredItems = computed((): Item[] => {
   if (!isGroupingEnabled.value) {
     if (sortOrder.value === 'asc' || sortOrder.value === 'desc') {
       items = [...items].sort((a, b) => {
-        // Первичная сортировка по ссылкам
+        // Нормализуем ссылки для правильной сортировки
+        const linkA = normalizeUrl(a.link);
+        const linkB = normalizeUrl(b.link);
+        
         const linkComparison = sortOrder.value === 'asc'
-          ? a.link.localeCompare(b.link)
-          : b.link.localeCompare(a.link)
+          ? linkA.localeCompare(linkB, 'ru', { sensitivity: 'base' })
+          : linkB.localeCompare(linkA, 'ru', { sensitivity: 'base' });
 
-        // Если ссылки одинаковые или есть вторичная сортировка по дате
-        if (linkComparison === 0 || secondarySortOrder.value !== 'none') {
-          const dateA = a.publication_date ? parseDate(a.publication_date) : null
-          const dateB = b.publication_date ? parseDate(b.publication_date) : null
-
-          if (!dateA && !dateB) return linkComparison
-          if (!dateA) return linkComparison || 1
-          if (!dateB) return linkComparison || -1
-
-          const dateComparison = dateA.getTime() - dateB.getTime()
-          const finalDateComparison = secondarySortOrder.value === 'date-asc' ? dateComparison : -dateComparison
-          return linkComparison || finalDateComparison
-        }
-
-        return linkComparison
-      })
+        return linkComparison;
+      });
     } else if (sortOrder.value === 'date-asc' || sortOrder.value === 'date-desc') {
       items = [...items].sort((a, b) => {
         const dateA = a.publication_date ? parseDate(a.publication_date) : null
@@ -889,23 +876,7 @@ const filteredItems = computed((): Item[] => {
         const weightB = b.keyword_list?.length || 0
 
         const weightComparison = weightA - weightB
-        const finalWeightComparison = sortOrder.value === 'weight-asc' ? weightComparison : -weightComparison
-
-        // Если веса одинаковые или есть вторичная сортировка по дате
-        if (finalWeightComparison === 0 || secondarySortOrder.value !== 'none') {
-          const dateA = a.publication_date ? parseDate(a.publication_date) : null
-          const dateB = b.publication_date ? parseDate(b.publication_date) : null
-
-          if (!dateA && !dateB) return finalWeightComparison
-          if (!dateA) return finalWeightComparison || 1
-          if (!dateB) return finalWeightComparison || -1
-
-          const dateComparison = dateA.getTime() - dateB.getTime()
-          const finalDateComparison = secondarySortOrder.value === 'date-asc' ? dateComparison : -dateComparison
-          return finalWeightComparison || finalDateComparison
-        }
-
-        return finalWeightComparison
+        return sortOrder.value === 'weight-asc' ? weightComparison : -weightComparison
       })
     }
   }
@@ -943,15 +914,28 @@ const allGroupedItems = computed(() => {
   let domainKeys = Object.keys(groups)
 
   if (sortOrder.value === 'asc') {
-    domainKeys = domainKeys.sort((a, b) => a.localeCompare(b))
+    domainKeys = domainKeys.sort((a, b) => {
+      const normA = normalizeUrl(a);
+      const normB = normalizeUrl(b);
+      return normA.localeCompare(normB, 'ru', { sensitivity: 'base' });
+    });
   } else if (sortOrder.value === 'desc') {
-    domainKeys = domainKeys.sort((a, b) => b.localeCompare(a))
+    domainKeys = domainKeys.sort((a, b) => {
+      const normA = normalizeUrl(a);
+      const normB = normalizeUrl(b);
+      return normB.localeCompare(normA, 'ru', { sensitivity: 'base' });
+    });
   } else if (sortOrder.value === 'count-asc') {
     domainKeys = domainKeys.sort((a, b) => groups[a].length - groups[b].length)
   } else if (sortOrder.value === 'count-desc') {
     domainKeys = domainKeys.sort((a, b) => groups[b].length - groups[a].length)
   } else {
-    domainKeys = domainKeys.sort((a, b) => a.localeCompare(b))
+    // Сортировка по умолчанию тоже с localeCompare
+    domainKeys = domainKeys.sort((a, b) => {
+      const normA = normalizeUrl(a);
+      const normB = normalizeUrl(b);
+      return normA.localeCompare(normB, 'ru', { sensitivity: 'base' });
+    });
   }
 
   domainKeys.forEach(domain => {
@@ -1445,99 +1429,40 @@ const updateList = (): void => {
 
 }
 
-const setSortOrder = (order: 'asc' | 'desc') => {
-  // Если уже активна сортировка по ссылкам, переключаем направление
-  if (sortOrder.value === order) {
-    sortOrder.value = 'none'
-    secondarySortOrder.value = 'none'
-  } else {
-    sortOrder.value = order
-    // Сохраняем вторичную сортировку по дате, если она была
-    if (secondarySortOrder.value !== 'none' &&
-        (sortOrder.value === 'asc' || sortOrder.value === 'desc')) {
-      // Вторичная сортировка остается
-    } else {
-      secondarySortOrder.value = 'none'
-    }
-  }
-  currentPage.value = 1
-}
-
-const setDateSortOrder = (order: 'date-asc' | 'date-desc') => {
-  // Если уже выбрана сортировка по дате
-  if (sortOrder.value === order) {
-    sortOrder.value = 'none'
-    secondarySortOrder.value = 'none'
-  } else if (sortOrder.value === 'asc' || sortOrder.value === 'desc') {
-    // Если активна сортировка по ссылкам, дата становится вторичной
-    secondarySortOrder.value = order
-  } else if (sortOrder.value === 'weight-asc' || sortOrder.value === 'weight-desc') {
-    // Если активна сортировка по весу, дата становится вторичной
-    secondarySortOrder.value = order
-  } else {
-    // Иначе дата становится первичной
-    sortOrder.value = order
-    secondarySortOrder.value = 'none'
-  }
-  currentPage.value = 1
-}
-
-const setCountSortOrder = (order: 'count-asc' | 'count-desc') => {
-  sortOrder.value = order
-  secondarySortOrder.value = 'none'
-  currentPage.value = 1
-}
-
-const setWeightSortOrder = (order: 'weight-asc' | 'weight-desc') => {
-  // Если уже активна сортировка по весу, переключаем направление
-  if (sortOrder.value === order) {
-    sortOrder.value = 'none'
-    secondarySortOrder.value = 'none'
-  } else {
-    sortOrder.value = order
-    // Сохраняем вторичную сортировку по дате, если она была
-    if (secondarySortOrder.value !== 'none' &&
-        (sortOrder.value === 'weight-asc' || sortOrder.value === 'weight-desc')) {
-      // Вторичная сортировка остается
-    } else {
-      secondarySortOrder.value = 'none'
-    }
-  }
-  currentPage.value = 1
+const setSortOrder = (order: 'asc' | 'desc' | 'date-asc' | 'date-desc' | 'weight-asc' | 'weight-desc' | 'count-asc' | 'count-desc') => {
+  sortOrder.value = sortOrder.value === order ? 'none' : order;
+  currentPage.value = 1;
 }
 
 const toggleGrouping = () => {
-  isGroupingEnabled.value = !isGroupingEnabled.value
-
+  isGroupingEnabled.value = !isGroupingEnabled.value;
+  
   if (isGroupingEnabled.value) {
-    // Сбрасываем сортировки по весу и дате при включении группировки
     if (sortOrder.value === 'weight-asc' || sortOrder.value === 'weight-desc' ||
         sortOrder.value === 'date-asc' || sortOrder.value === 'date-desc') {
-      sortOrder.value = 'none'
+      sortOrder.value = 'none';
     }
-    secondarySortOrder.value = 'none'
-
+    
     Object.keys(groupedItems.value).forEach(domain => {
-      expandedDomains[domain] = false
-    })
+      expandedDomains[domain] = false;
+    });
   }
+  
+  currentPage.value = 1;
+}
 
-  currentPage.value = 1
+const resetSortAndGrouping = () => {
+  sortOrder.value = 'none';
+  isGroupingEnabled.value = false;
+  currentPage.value = 1;
+
+  Object.keys(expandedDomains).forEach(domain => {
+    delete expandedDomains[domain];
+  });
 }
 
 const toggleDomainExpansion = (domain: string) => {
   expandedDomains[domain] = !expandedDomains[domain]
-}
-
-const resetSortAndGrouping = () => {
-  sortOrder.value = 'none'
-  secondarySortOrder.value = 'none'
-  isGroupingEnabled.value = false
-  currentPage.value = 1
-
-  Object.keys(expandedDomains).forEach(domain => {
-    delete expandedDomains[domain]
-  })
 }
 
 let intersectionObserver: IntersectionObserver | null = null
