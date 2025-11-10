@@ -255,13 +255,13 @@
                   </span>
 
                   <div class="flex items-center">
-                    <a :href="item.link" target="_blank" class="item-title" :title="item.title">
+                    <a :href="item.link" target="_blank" class="item-title" :title="item.title" @click="handleLinkClick(item.link)">
                       {{ item.title }}
                     </a>
                   </div>
                   <div class="item-content">{{ item.content }}</div>
                   <div class="item-info" style="display:flex;align-items:center;margin-top:5px;font-size:12px;">
-                    <a :href="item.link" target="_blank" style="color: #4d4dff;" :title="getDomainName(item.link)">
+                    <a :href="item.link" target="_blank" style="color: #4d4dff;" :title="getDomainName(item.link)" @click="handleLinkClick(item.link)">
                       {{ truncateText(getDomainName(item.link), 20) }}
                     </a>
 
@@ -338,13 +338,13 @@
             </span>
 
             <div class="flex items-center">
-              <a :href="item.link" target="_blank" class="item-title" :title="item.title">
+              <a :href="item.link" target="_blank" class="item-title" :title="item.title" @click="handleLinkClick(item.link)">
                 {{ item.title }}
               </a>
             </div>
             <div class="item-content">{{ item.content }}</div>
             <div class="item-info" style="display:flex;align-items:center;margin-top:5px;font-size:12px;">
-              <a :href="item.link" target="_blank" style="color: #4d4dff;" :title="getDomainName(item.link)">
+              <a :href="item.link" target="_blank" style="color: #4d4dff;" :title="getDomainName(item.link)" @click="handleLinkClick(item.link)">
                 {{ truncateText(getDomainName(item.link), 20) }}
               </a>
 
@@ -469,7 +469,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
+import {computed, nextTick, onMounted, reactive, ref, watch} from 'vue'
 import VPagination from '../UI/VPagination.vue'
 
 interface Item {
@@ -585,8 +585,6 @@ const hasItemsForCurrentTab = computed(() => {
   }
   return false
 })
-
-let scrollCleanup: (() => void) | null = null
 
 const isRussianNumber = computed((): boolean => {
   const number = props.title
@@ -1088,27 +1086,14 @@ const setPage = (page: number): void => {
   currentPage.value = page
 }
 
-const isInViewport = (el: Element | null): boolean => {
-  if (!el) return false
-  const rect = el.getBoundingClientRect()
-  return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-  )
-}
+const handleLinkClick = (link: string) => {
+  if (!seenLinks[link]) {
+    seenLinks[link] = true
+    emit('item-viewed', {link: link, timestamp: Date.now()})
 
-const checkAllItems = (): void => {
-  Object.keys(tempLinkClasses).forEach(linkClassName => {
-    const element = document.getElementById(linkClassName)
-    if (element && isInViewport(element)) {
-      const originalLink = tempLinkClasses[linkClassName]
-      if (!seenLinks[originalLink]) {
-        seenLinks[originalLink] = true
-
-        emit('item-viewed', {link: originalLink, timestamp: Date.now()})
-
+    nextTick(() => {
+      const element = document.getElementById(makeSafeForCSS(link))
+      if (element) {
         const checkmark = element.querySelector('.checkmark.unseen')
         if (checkmark) {
           checkmark.classList.add('seen_scale')
@@ -1119,49 +1104,8 @@ const checkAllItems = (): void => {
           }, 1100)
         }
       }
-    }
-  })
-}
-
-let intersectionObserver: IntersectionObserver | null = null
-
-const setupIntersectionObserver = (): void => {
-  if (intersectionObserver) {
-    intersectionObserver.disconnect()
+    })
   }
-
-  intersectionObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const element = entry.target as HTMLElement
-            const linkClassName = element.id
-            const originalLink = tempLinkClasses[linkClassName]
-
-            if (originalLink && !seenLinks[originalLink]) {
-              seenLinks[originalLink] = true
-
-              emit('item-viewed', {link: originalLink, timestamp: Date.now()})
-
-              const checkmark = element.querySelector('.checkmark.unseen')
-              if (checkmark) {
-                checkmark.classList.add('seen_scale')
-                setTimeout(() => {
-                  if (checkmark instanceof HTMLElement) {
-                    checkmark.style.display = 'none'
-                  }
-                }, 1100)
-              }
-            }
-          }
-        })
-      },
-      {
-        root: null,
-        rootMargin: '50px',
-        threshold: 0.1
-      }
-  )
 }
 
 onMounted(() => {
@@ -1180,77 +1124,8 @@ onMounted(() => {
       endRangeValue.value = maxRange.value
     }
   }
-
-  const handleScroll = (): void => {
-    checkAllItems()
-  }
-
-  window.addEventListener('scroll', handleScroll, {passive: true})
-
-  scrollCleanup = () => {
-    window.removeEventListener('scroll', handleScroll)
-  }
 })
 
-onUnmounted(() => {
-  if (scrollCleanup) {
-    scrollCleanup()
-  }
-
-  if (intersectionObserver) {
-    intersectionObserver.disconnect()
-  }
-})
-
-watch(renderedItems, () => {
-  nextTick(() => {
-    Object.keys(tempLinkClasses).forEach(key => {
-      delete tempLinkClasses[key]
-    })
-
-    const itemsToTrack = isGroupingEnabled.value
-        ? Object.values(groupedItems.value).flat().filter((item) => {
-          const domain = getDomainName(item.link)
-          return expandedDomains[domain]
-        })
-        : renderedItems.value
-
-    itemsToTrack.forEach(item => {
-      const safeName = makeSafeForCSS(item.link)
-      tempLinkClasses[safeName] = item.link
-    })
-
-    setupIntersectionObserver()
-
-    setTimeout(() => {
-      Object.keys(tempLinkClasses).forEach(linkClassName => {
-        const element = document.getElementById(linkClassName)
-        if (element && intersectionObserver) {
-          intersectionObserver.observe(element)
-        }
-      })
-    }, 100)
-
-    checkAllItems()
-  })
-})
-
-watch(expandedDomains, () => {
-  if (isGroupingEnabled.value) {
-    nextTick(() => {
-      setupIntersectionObserver()
-
-      setTimeout(() => {
-        Object.keys(tempLinkClasses).forEach(linkClassName => {
-          const element = document.getElementById(linkClassName)
-          if (element && intersectionObserver) {
-            intersectionObserver.observe(element)
-          }
-        })
-      }, 100)
-    })
-  }
-}, {deep: true})
 
 watch(filteredItems, () => {
   const totalCount = isGroupingEnabled.value

@@ -478,7 +478,7 @@
                   </span>
 
                   <div class="flex items-center">
-                    <a :href="item.link" target="_blank" class="item-title" :title="item.title">
+                    <a :href="item.link" target="_blank" class="item-title" :title="item.title" @click="handleLinkClick(item.link)">
                       {{ item.title }}
                     </a>
                   </div>
@@ -486,11 +486,11 @@
                   <div class="item-content">{{ item.content }}</div>
 
                   <div class="item-info">
-                    <a :href="item.link" target="_blank" :title="getDomainName(item.link)">
+                    <a :href="item.link" target="_blank" :title="getDomainName(item.link)" @click="handleLinkClick(item.link)">
                       {{ truncateText(getDomainName(item.link), 20) }}
                     </a>
 
-                    <div class="item-keywords" v-if="item.keyword_list?.length" style="margin-left:9.6px">
+                    <div class="item-keywords" v-if="item.keyword_list?.length" style="margin-left:10px">
                       <div class="item-param">
                         <div class="query-content">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -553,7 +553,7 @@
               </span>
 
               <div class="flex items-center">
-                <a :href="item.link" target="_blank" class="item-title" :title="item.title">
+                <a :href="item.link" target="_blank" class="item-title" :title="item.title" @click="handleLinkClick(item.link)">
                   {{ item.title }}
                 </a>
               </div>
@@ -561,11 +561,11 @@
               <div class="item-content">{{ item.content }}</div>
 
               <div class="item-info">
-                <a :href="item.link" target="_blank" :title="getDomainName(item.link)">
+                <a :href="item.link" target="_blank" :title="getDomainName(item.link)" @click="handleLinkClick(item.link)">
                   {{ truncateText(getDomainName(item.link), 20) }}
                 </a>
 
-                <div class="item-keywords" v-if="item.keyword_list?.length" style="margin-left:9.6px">
+                <div class="item-keywords" v-if="item.keyword_list?.length" style="margin-left:10px">
                   <div class="item-param">
                     <div class="query-content">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -607,7 +607,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
+import {computed, nextTick, onMounted, reactive, ref, watch} from 'vue'
 import VPagination from '../UI/VPagination.vue'
 
 interface Item {
@@ -853,12 +853,10 @@ const filteredItems = computed((): Item[] => {
         // Нормализуем ссылки для правильной сортировки
         const linkA = normalizeUrl(a.link);
         const linkB = normalizeUrl(b.link);
-        
-        const linkComparison = sortOrder.value === 'asc'
-          ? linkA.localeCompare(linkB, 'ru', { sensitivity: 'base' })
-          : linkB.localeCompare(linkA, 'ru', { sensitivity: 'base' });
 
-        return linkComparison;
+        return sortOrder.value === 'asc'
+            ? linkA.localeCompare(linkB, 'ru', {sensitivity: 'base'})
+            : linkB.localeCompare(linkA, 'ru', {sensitivity: 'base'});
       });
     } else if (sortOrder.value === 'date-asc' || sortOrder.value === 'date-desc') {
       items = [...items].sort((a, b) => {
@@ -1005,9 +1003,7 @@ const decodePunycode = (input: string): string => {
   const skew = 38
   const damp = 700
   const initialBias = 72
-  const initialN = 128
-
-  let n = initialN
+  let n = 128
   let i = 0
   let bias = initialBias
   let output: number[] = []
@@ -1087,8 +1083,7 @@ const getDomainName = (url: string): string => {
       const decodedParts = parts.map(part => {
         if (part.startsWith('xn--')) {
           try {
-            const decoded = decodePunycode(part)
-            return decoded
+            return decodePunycode(part)
           } catch {
             return part
           }
@@ -1278,12 +1273,6 @@ const loadTabData = async (tabIndex: number) => {
       }
 
       loadedTabs[tabIndex] = true
-
-      nextTick(() => {
-        if (intersectionObserver) {
-          observeItems()
-        }
-      })
     }
   } catch (error) {
     console.error(`Error loading tab ${tabIndex}:`, error)
@@ -1468,94 +1457,29 @@ const toggleDomainExpansion = (domain: string) => {
   expandedDomains[domain] = !expandedDomains[domain]
 }
 
-let intersectionObserver: IntersectionObserver | null = null
+const handleLinkClick = (link: string) => {
+  if (!seenLinks[link]) {
+    seenLinks[link] = true
+    emit('item-viewed', {link: link, timestamp: Date.now()})
 
-const setupIntersectionObserver = (): void => {
-  if (intersectionObserver) {
-    intersectionObserver.disconnect()
-  }
-
-  intersectionObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const element = entry.target as HTMLElement
-            const itemId = element.id
-
-            const item = renderedItems.value.find(item => makeSafeForCSS(item.link) === itemId)
-
-            if (item && !seenLinks[item.link]) {
-              seenLinks[item.link] = true
-              emit('item-viewed', {link: item.link, timestamp: Date.now()})
-
-              const checkmark = element.querySelector('.checkmark.unseen')
-              if (checkmark) {
-                checkmark.classList.add('seen_scale')
-                setTimeout(() => {
-                  if (checkmark instanceof HTMLElement) {
-                    checkmark.style.display = 'none'
-                  }
-                }, 1100)
-              }
-            }
-          }
-        })
-      },
-      {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.5
-      }
-  )
-}
-
-const observeItems = (): void => {
-  if (!intersectionObserver) return
-
-  nextTick(() => {
-    renderedItems.value.forEach(item => {
-      const element = document.getElementById(makeSafeForCSS(item.link))
+    nextTick(() => {
+      const element = document.getElementById(makeSafeForCSS(link))
       if (element) {
-        intersectionObserver?.observe(element)
+        const checkmark = element.querySelector('.checkmark.unseen')
+        if (checkmark) {
+          checkmark.classList.add('seen_scale')
+          setTimeout(() => {
+            if (checkmark instanceof HTMLElement) {
+              checkmark.style.display = 'none'
+            }
+          }, 1100)
+        }
       }
     })
-  })
+  }
 }
-
-const checkAllItems = (): void => {
-  renderedItems.value.forEach(item => {
-    const element = document.getElementById(makeSafeForCSS(item.link))
-    if (element && isInViewport(element) && !seenLinks[item.link]) {
-      seenLinks[item.link] = true
-      emit('item-viewed', {link: item.link, timestamp: Date.now()})
-
-      const checkmark = element.querySelector('.checkmark.unseen')
-      if (checkmark) {
-        checkmark.classList.add('seen_scale')
-        setTimeout(() => {
-          if (checkmark instanceof HTMLElement) {
-            checkmark.style.display = 'none'
-          }
-        }, 1100)
-      }
-    }
-  })
-}
-
-const isInViewport = (el: Element): boolean => {
-  const rect = el.getBoundingClientRect()
-  return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-  )
-}
-
-let scrollCleanup: (() => void) | null = null
 
 onMounted(async () => {
-
   await nextTick()
 
   if (props.keywordStats && Object.keys(props.keywordStats).length > 0) {
@@ -1563,41 +1487,6 @@ onMounted(async () => {
     await nextTick()
     initializeKeywordFilter()
   } else {
-  }
-
-  setupIntersectionObserver()
-
-  const handleScroll = (): void => {
-    if (!intersectionObserver) {
-      checkAllItems()
-    }
-  }
-
-  window.addEventListener('scroll', handleScroll, {passive: true})
-
-  scrollCleanup = () => {
-    window.removeEventListener('scroll', handleScroll)
-  }
-})
-
-onUnmounted(() => {
-  if (scrollCleanup) {
-    scrollCleanup()
-  }
-
-  if (intersectionObserver) {
-    intersectionObserver.disconnect()
-  }
-})
-
-watch(renderedItems, () => {
-  if (intersectionObserver) {
-    intersectionObserver.disconnect()
-    observeItems()
-  } else {
-    nextTick(() => {
-      checkAllItems()
-    })
   }
 })
 
@@ -1614,17 +1503,6 @@ watch(filteredItems, () => {
 watch(isGroupingEnabled, () => {
   currentPage.value = 1
 })
-
-watch(expandedDomains, () => {
-  if (isGroupingEnabled.value) {
-    nextTick(() => {
-      if (intersectionObserver) {
-        intersectionObserver.disconnect()
-        observeItems()
-      }
-    })
-  }
-}, {deep: true})
 
 watch(availableKeywords, () => {
   initializeKeywordFilter()
@@ -1671,8 +1549,7 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
 .tab-head {
   position: relative;
   background: white;
-  padding: 12px 12px 0px 18px;
-  box-shadow: 0 2.5px 4px rgb(184, 183, 183);
+  box-shadow: 0 3px 4px rgb(184, 183, 183);
   font-size: 16px;
   padding: 7px 20px 0;
   display: flex;
@@ -1838,7 +1715,7 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
   display: flex;
   align-items: center;
   height: 34px;
-  font-size: 13.5px;
+  font-size: 14px;
   background: white;
   padding: 0 10px;
   border-radius: 5px;
@@ -2118,7 +1995,7 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
 }
 
 .content {
-  padding: 15px 7.5px 0;
+  padding: 15px 8px 0;
 }
 
 .content > div.selected {
@@ -2132,7 +2009,7 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
 
 .item-container {
   width: 50%;
-  padding: 0 7.5px;
+  padding: 0 8px;
   margin-bottom: 15px;
 }
 
@@ -2144,7 +2021,7 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
 
 @media (max-width: 570px) {
   .item-container {
-    padding: 0 1.5px;
+    padding: 0 2px;
   }
 }
 
@@ -2191,7 +2068,6 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
 .item-content {
   font-size: 13px;
   margin-top: 6px;
-  margin-bottom: 0px;
   text-align: justify;
   max-height: 80px;
   line-height: 20px;
@@ -2217,7 +2093,7 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
 }
 
 .item-keywords {
-  margin-left: 9.6px;
+  margin-left: 10px;
 }
 
 .item-param {
@@ -2257,7 +2133,7 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
   background: #9300FF;
   font-size: 11px;
   border-radius: 3px;
-  padding: 0px 4px 1px 4px;
+  padding: 0 4px 1px 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2344,7 +2220,7 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
 }
 
 .pagination-container {
-  padding: 15px 7.5px 0;
+  padding: 15px 8px 0;
   margin: 0 auto;
   display: flex;
   justify-content: center;
@@ -2388,7 +2264,7 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
   stroke-width: 6.5;
   stroke: #fff;
   stroke-miterlimit: 10;
-  box-shadow: inset 0px 0px 0px #4400ed;
+  box-shadow: inset 0 0 0 #4400ed;
   animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
   margin-right: 5px;
   position: absolute;
@@ -2444,7 +2320,7 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
 
 @keyframes fill {
   100% {
-    box-shadow: inset 0px 0px 0px 20px #4400ed;
+    box-shadow: inset 0 0 0 20px #4400ed;
   }
 }
 
@@ -2684,7 +2560,7 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
   display: flex;
   align-items: center;
   height: 34px;
-  font-size: 13.5px;
+  font-size: 14px;
   background: white;
   padding: 0 10px;
   border-radius: 5px;
