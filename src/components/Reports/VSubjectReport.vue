@@ -1438,18 +1438,19 @@ const setSortOrder = (order: 'asc' | 'desc' | 'date-asc' | 'date-desc' | 'weight
 
 const toggleGrouping = () => {
   isGroupingEnabled.value = !isGroupingEnabled.value;
-  
+
   if (isGroupingEnabled.value) {
     if (sortOrder.value === 'weight-asc' || sortOrder.value === 'weight-desc' ||
-        sortOrder.value === 'date-asc' || sortOrder.value === 'date-desc') {
-      sortOrder.value = 'none';
+        sortOrder.value === 'date-asc' || sortOrder.value === 'date-desc' ||
+        sortOrder.value === 'none') {
+      sortOrder.value = 'count-desc';
     }
-    
+
     Object.keys(groupedItems.value).forEach(domain => {
       expandedDomains[domain] = false;
     });
   }
-  
+
   currentPage.value = 1;
 }
 
