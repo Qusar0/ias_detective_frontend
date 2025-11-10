@@ -225,7 +225,7 @@
                 :checked="selectedKeywords[keyword.word]"
                 @change="toggleKeyword(keyword.word)"
             >
-            <span class="keyword-text">{{ keyword.word }}</span>
+            <span class="keyword-text">{{ displayKeyword(keyword.word) }}</span>
             <span class="keyword-count">{{ keyword.count }}</span>
           </label>
         </div>
@@ -506,7 +506,7 @@
                                 @click="copyToClipboard(String(query))"
                                 :title="String(query)"
                             >
-                              {{ String(query) }}
+                              {{ displayKeyword(String(query)) }}
                             </span>
                           </template>
                           <small class="prompt">Копировать при клике</small>
@@ -581,7 +581,7 @@
                             @click="copyToClipboard(String(query))"
                             :title="String(query)"
                         >
-                          {{ String(query) }}
+                          {{ displayKeyword(String(query)) }}
                         </span>
                       </template>
                       <small class="prompt">Копировать при клике</small>
@@ -1146,6 +1146,10 @@ const parseDate = (dateStr: string): Date | null => {
 
 const truncateText = (text: string, maxLength: number): string => {
   return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
+}
+
+const displayKeyword = (keyword: string): string => {
+  return keyword === 'free word' ? 'произвольные' : keyword
 }
 
 const copyToClipboard = async (text: string): Promise<void> => {
