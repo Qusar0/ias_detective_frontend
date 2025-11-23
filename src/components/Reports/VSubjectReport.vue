@@ -1149,7 +1149,7 @@ const truncateText = (text: string, maxLength: number): string => {
 }
 
 const displayKeyword = (keyword: string): string => {
-  return keyword === 'free word' ? 'произвольные' : keyword
+  return keyword === 'free word' ? 'ключевых слов нет' : keyword
 }
 
 const copyToClipboard = async (text: string): Promise<void> => {
