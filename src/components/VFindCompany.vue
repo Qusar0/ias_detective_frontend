@@ -311,13 +311,15 @@
             </small>
           </label>
 
-          <label class="flex items-center search-engine-label parent-prompt-hover">
+          <label class="flex items-center search-engine-label parent-prompt-hover" style="cursor: not-allowed;">
             <input
                 type="checkbox"
                 class="chbox"
                 v-model="engines.yandex"
+                disabled
+                style="opacity: 0.4;"
             />
-            <span style="user-select: none; margin-left: 5px;">
+            <span style="user-select: none; margin-left: 5px; opacity: 0.4;">
                             Yandex
                         </span>
             <small class="prompt-hover">
@@ -448,7 +450,7 @@
 <script setup>
 import { onMounted, reactive, ref, watch } from 'vue';
 import '../utils/index';
-import { isAuthorized, keys_list, user_balance } from '../use/index';
+import { isAuthorized, keys_list, user_balance, languageOptions, appDefaultLanguage } from '../use/index';
 import ListInput from './ListInput.vue';
 import VPagination from './UI/VPagination.vue';
 import { events } from '../utils/notification';
@@ -473,14 +475,10 @@ const {
 } = useQueryManagement('company');
 const {selected_page, set_selected_page} = usePagination();
 const {update_current_timestamp} = useTimestamp();
-const languageOptions = JSON.parse(localStorage.getItem('languages'));
-const defaultLanguage = localStorage.getItem('defaultLanguage');
-const checkedLanguages = ref(defaultLanguage && defaultLanguage !== 'null' ? [JSON.parse(defaultLanguage)] : [
-  {
-    name: 'Русский',
-    code: 'ru'
-  }
-]);
+const checkedLanguages = ref([{name: 'Русский', code: 'ru'}]);
+watch(appDefaultLanguage, (newVal) => {
+  if (newVal) checkedLanguages.value = [newVal];
+}, {immediate: true});
 const temp_price = ref(0);
 
 const chbox = reactive({

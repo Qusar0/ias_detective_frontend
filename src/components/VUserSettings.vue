@@ -140,15 +140,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import Multiselect from 'vue-multiselect';
+import { languageOptions, appDefaultLanguage } from '../use/index';
 
-const languageOptions = JSON.parse(localStorage.getItem('languages'));
-const defaultLanguage = localStorage.getItem('defaultLanguage');
-const checkedLanguage = ref(defaultLanguage && defaultLanguage !== 'null' ? JSON.parse(defaultLanguage) : {
-  name: 'Русский',
-  code: 'ru'
-});
+const checkedLanguage = ref({name: 'Русский', code: 'ru'});
+watch(appDefaultLanguage, (newVal) => {
+  if (newVal) checkedLanguage.value = newVal;
+}, {immediate: true});
 const languageErrorMessage = ref('');
 const languageSuccess = ref(false);
 const oldPassword = ref('');
@@ -203,11 +202,8 @@ const setDefaultLanguage = () => {
           try {
             const res = await fetch(`/api/users/default_language`);
             let data = await res.json();
-            const defaultLanguage =
-                JSON.parse(localStorage.getItem('languages')).find((el) => el.code === data.default_language_code);
-            defaultLanguage
-                ? localStorage.setItem('defaultLanguage', JSON.stringify(defaultLanguage))
-                : localStorage.setItem('defaultLanguage', JSON.stringify([{name: 'Русский', code: 'ru'}]));
+            const foundLanguage = languageOptions.value.find((el) => el.code === data.default_language_code);
+            appDefaultLanguage.value = foundLanguage || {name: 'Русский', code: 'ru'};
             languageSuccess.value = true;
           } catch (error) {
             languageErrorMessage.value = 'Ошибка! Не удалось применить настройки. Попробуйте обновить страницу.';

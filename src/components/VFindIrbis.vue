@@ -363,7 +363,7 @@
 <script setup>
 import { onMounted, reactive, ref, watch } from 'vue';
 import '../utils/index';
-import { isAuthorized, user_balance } from '../use/index';
+import { isAuthorized, user_balance, appDefaultLanguage } from '../use/index';
 import VPagination from './UI/VPagination.vue';
 import { events } from '../utils/notification';
 import Multiselect from 'vue-multiselect';
@@ -373,13 +373,10 @@ import { usePagination } from '../composables/usePagination.js';
 import { useTimestamp } from '../composables/useTimestamp.js';
 import { getItemDate } from '../utils/dateUtils.js';
 
-const defaultLanguage = localStorage.getItem('defaultLanguage');
-const checkedLanguages = ref(defaultLanguage && defaultLanguage !== 'null' ? [JSON.parse(defaultLanguage)] : [
-  {
-    name: 'Русский',
-    code: 'ru'
-  }
-]);
+const checkedLanguages = ref([{name: 'Русский', code: 'ru'}]);
+watch(appDefaultLanguage, (newVal) => {
+  if (newVal) checkedLanguages.value = [newVal];
+}, {immediate: true});
 const temp_price = ref(0);
 const confirm_model = ref(false);
 

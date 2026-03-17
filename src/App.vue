@@ -7,7 +7,7 @@ import { h } from 'vue';
 import { toast } from 'vue3-toastify';
 import { events, get_events, getNotificationSound } from './utils/notification';
 import ToastifyMessage from './components/UI/ToastifyMessage.vue';
-import { set_user_balance, user_created, user_name } from './use';
+import { set_user_balance, user_created, user_name, languageOptions, appDefaultLanguage } from './use';
 
 export default {
   components: {
@@ -79,23 +79,20 @@ export default {
       let data = await res.json();
       data = Object.entries(data).map(([name, code]) => ({name, code}));
       if (res?.status !== 200) {
-        localStorage.setItem('languages', JSON.stringify([{name: 'Русский', code: 'ru'}]));
+        languageOptions.value = [{name: 'Русский', code: 'ru'}];
       } else {
-        localStorage.setItem('languages', JSON.stringify(data));
+        languageOptions.value = data;
       }
     } catch (error) {
-      localStorage.setItem('languages', JSON.stringify([{name: 'Русский', code: 'ru'}]));
+      languageOptions.value = [{name: 'Русский', code: 'ru'}];
     }
     try {
       const res = await fetch(`/api/users/default_language`);
       let data = await res.json();
-      const defaultLanguage =
-          JSON.parse(localStorage.getItem('languages')).find((el) => el.code === data.default_language_code);
-      defaultLanguage
-          ? localStorage.setItem('defaultLanguage', JSON.stringify(defaultLanguage))
-          : localStorage.setItem('defaultLanguage', JSON.stringify([{name: 'Русский', code: 'ru'}]));
+      const foundLanguage = languageOptions.value.find((el) => el.code === data.default_language_code);
+      appDefaultLanguage.value = foundLanguage || {name: 'Русский', code: 'ru'};
     } catch (error) {
-      localStorage.setItem('defaultLanguage', JSON.stringify([{name: 'Русский', code: 'ru'}]));
+      appDefaultLanguage.value = {name: 'Русский', code: 'ru'};
     }
   },
   beforeUnmount() {
@@ -103,8 +100,8 @@ export default {
       this.source.removeEventListener('message', this.handleGreeting);
       this.source.close();
     }
-    localStorage.removeItem('languages');
-    localStorage.removeItem('defaultLanguage');
+    languageOptions.value = [];
+    appDefaultLanguage.value = null;
   }
 };
 

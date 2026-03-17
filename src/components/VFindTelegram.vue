@@ -102,12 +102,12 @@
           <span style="user-select: none">Телефон: <span class="checkbox-price">{{ chbox_prices.phone_number }}
                             ₽</span></span>
         </label>
-        <label class="flex items-center parent-prompt-hover">
-          <input type="checkbox" class="chbox" v-model="chbox.use_yandex"/>
+        <label class="flex items-center parent-prompt-hover" style="cursor: not-allowed;">
+          <input type="checkbox" class="chbox" v-model="chbox.use_yandex" disabled style="opacity: 0.4;"/>
           <small class="prompt-hover">
-            Использовать ПС Яндекс для поиска
+            Временно недоступно
           </small>
-          <span style="user-select: none">
+          <span style="user-select: none; opacity: 0.4;">
                   Yandex
                 </span>
         </label>

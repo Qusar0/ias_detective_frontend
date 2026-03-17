@@ -2,6 +2,8 @@ import { reactive, ref } from 'vue';
 import { bell_opened } from '../utils/notification';
 
 export const isAuthorized = reactive(ref(undefined));
+export const languageOptions = reactive(ref([]));
+export const appDefaultLanguage = reactive(ref(null));
 export const bool = reactive(ref(true));
 export const user_name = reactive(ref(localStorage.getItem('user_name')));
 export const user_balance = reactive(ref(0));

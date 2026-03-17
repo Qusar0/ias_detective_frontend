@@ -78,14 +78,14 @@
             @click="selectTab(6)"
         >
           Соц.сети
-          <span class="tab-count">{{ items.socials?.length || 0 }}</span>
+          <span class="tab-count">{{ keywordStats?.socials || 0 }}</span>
         </div>
         <div
             :class="['tab-7', { selected: selectedTabIndex === 7 }]"
             @click="selectTab(7)"
         >
           Документы
-          <span class="tab-count">{{ items.documents?.length || 0 }}</span>
+          <span class="tab-count">{{ keywordStats?.documents || 0 }}</span>
         </div>
         <div
             :class="['tab-8', { selected: selectedTabIndex === 8 }]"
