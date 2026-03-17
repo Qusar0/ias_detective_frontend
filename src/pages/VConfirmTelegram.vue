@@ -37,13 +37,13 @@
 </template>
 
 <script>
-import router from "../router/router.js";
+import router from '../router/router.js';
 import { isAuthorized } from '../use/index';
 
 export default {
   methods: {
     router() {
-      return router
+      return router;
     }
   },
   data() {
@@ -51,8 +51,8 @@ export default {
       message: 'Пожалуйста, подождите. Выполняется подключение Telegram.',
       iconClass: 'fa fa-spinner fa-spin gray',
       modalTitle: 'Проверяем ссылку...',
-      buttonColor: 'gray',
-    }
+      buttonColor: 'gray'
+    };
   },
   async mounted() {
     isAuthorized.value = false;
@@ -78,7 +78,7 @@ export default {
       this.message = 'Попробуйте позже или обратитесь в службу поддержки.';
     }
   }
-}
+};
 </script>
 
 <style scoped>
@@ -91,7 +91,7 @@ export default {
   padding: 20px;
   max-width: 500px;
   border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0 1px 4px;
 }
 
 .confirm-tg__container {
@@ -107,12 +107,12 @@ export default {
   margin-right: 12px;
 }
 
-.gray {
-  color: gray;
-}
-
 .green {
   color: #1AB394FF;
+}
+
+.gray {
+  color: gray;
 }
 
 .red {

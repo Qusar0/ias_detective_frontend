@@ -16,7 +16,6 @@
             height="100"
             style="margin-top: -12px;margin-left: -5px;"
         >
-        <!-- <div class="logo-title">Logo</div> -->
       </div>
     </div>
     <router-link
@@ -27,7 +26,7 @@
       <i class="fa-solid fa-user-check"></i>
       <span v-show="menu">Поиск персоны</span>
     </router-link>
-    <hr class="sidebar-hr" color="#3a4956"><!-- #364654 -->
+    <hr class="sidebar-hr" color="#3a4956">
     <router-link
         to="/find-by-number"
         class="nav-link"
@@ -36,16 +35,7 @@
       <i class="fa-solid fa-phone"></i>
       <span v-show="menu">Проверка номера</span>
     </router-link>
-    <hr class="sidebar-hr" color="#3a4956"><!-- #364654 -->
-    <!-- <router-link to="/find-by-telegram" class="nav-link" :class="{
-        active: $route.path == '/find-by-telegram'
-    }">
-        <i class="fa-brands fa-telegram"></i>
-        <span v-show="menu">
-            Telegram-аккаунт
-        </span>
-    </router-link>
-    <hr class="sidebar-hr" color="#3a4956"> -->
+    <hr class="sidebar-hr" color="#3a4956">
     <router-link
         to="/find-by-email"
         class="nav-link"
@@ -54,7 +44,7 @@
       <i class="fa-solid fa-envelope"></i>
       <span v-show="menu">Проверка почты</span>
     </router-link>
-    <hr class="sidebar-hr" color="#3a4956"><!-- #364654 -->
+    <hr class="sidebar-hr" color="#3a4956">
     <router-link
         to="/find-by-company"
         class="nav-link"
@@ -63,17 +53,16 @@
       <i class="fa-solid fa-building"></i>
       <span v-show="menu">Поиск компании</span>
     </router-link>
-    <hr class="sidebar-hr" color="#3a4956"><!-- #364654 -->
+    <hr class="sidebar-hr" color="#3a4956">
     <router-link
-        to="/proccess"
+        to="/find-by-irbis"
         class="nav-link"
-        :class="{ disabled: true }"
-        title="Модуль находится в разработке"
+        :class="{ active: $route.path == '/find-by-irbis' }"
     >
-      <i class="fa-solid fa-spinner"></i>
+      <i class="fa-solid fa-balance-scale"></i>
       <span v-show="menu">Судебные процессы</span>
     </router-link>
-    <hr class="sidebar-hr" color="#3a4956"><!-- #364654 -->
+    <hr class="sidebar-hr" color="#3a4956">
     <router-link
         to="/gos"
         class="nav-link"
@@ -83,7 +72,7 @@
       <i class="fa-solid fa-spinner"></i>
       <span v-show="menu">Гос. реестры</span>
     </router-link>
-    <hr class="sidebar-hr" color="#3a4956"><!-- #364654 -->
+    <hr class="sidebar-hr" color="#3a4956">
     <router-link
         to="/nicknames"
         class="nav-link"
@@ -93,7 +82,7 @@
       <i class="fa-solid fa-spinner"></i>
       <span v-show="menu">Никнейм</span>
     </router-link>
-    <hr class="sidebar-hr" color="#3a4956"><!-- #364654 -->
+    <hr class="sidebar-hr" color="#3a4956">
     <router-link
         to="/settings"
         class="nav-link"
@@ -102,7 +91,7 @@
       <i class="fa-solid fa-gear"></i>
       <span v-show="menu">Настройки</span>
     </router-link>
-    <hr class="sidebar-hr" color="#3a4956"><!-- #364654 -->
+    <hr class="sidebar-hr" color="#3a4956">
     <router-link
         to="/support"
         class="nav-link"
@@ -111,7 +100,7 @@
       <i class="fa-solid fa-square-envelope"></i>
       <span v-show="menu">Поддержка</span>
     </router-link>
-    <hr class="sidebar-hr" color="#3a4956"><!-- #364654 -->
+    <hr class="sidebar-hr" color="#3a4956">
     <a
         href="https://t.me/iasdetectivebot"
         target="_blank"
@@ -125,122 +114,117 @@
 
 <script>
 export default {
-    props: {
-        menu: {
-            type: Boolean,
-            required: true
-        }
+  props: {
+    menu: {
+      type: Boolean,
+      required: true
     }
-}
+  }
+};
 </script>
 
 <style scoped>
 hr.sidebar-hr {
-    margin: 0px 25px 0px 10px !important;
+  margin: 0 25px 0 10px !important;
 }
+
 .sidebar {
-    background: white;
-    padding-top: 10px;
-    height: 100%;
-    transition: .2s;
-    overflow: hidden;
-    min-width: 214px;
-    background-color: #2f4050;
+  padding-top: 10px;
+  height: 100%;
+  transition: .2s;
+  overflow: hidden;
+  min-width: 214px;
+  background-color: #2f4050;
 }
 
 .nav-link {
-    display: flex;
-    align-items: center;
-    color: #9aa6b3 !important;
-    cursor: pointer;
-    transition: .15s;
-    text-decoration: none;
-    padding: 0 15px;
-    height: 40px;
-    font-size: 14px;
+  display: flex;
+  align-items: center;
+  color: #9aa6b3 !important;
+  cursor: pointer;
+  transition: .15s;
+  text-decoration: none;
+  padding: 0 15px;
+  height: 40px;
+  font-size: 14px;
 }
+
 .nav-link.active,
 .nav-link:hover {
-    background: #293846;
+  background: #293846;
 }
 
 .nav-link svg {
-    transition: .15s;
-    fill: #fff;
+  transition: .15s;
+  fill: #fff;
 }
+
 .nav-link i {
-    font-size: 14px;
-    margin-right: 8.5px;
+  font-size: 14px;
+  margin-right: 9px;
 }
+
 .nav-link span * {
-    color: #fff;
+  color: #fff;
 }
 
 .nav-link.active {
-    border-left: 4px solid #357EBD;
+  border-left: 4px solid #357EBD;
 }
+
 .nav-link.active,
 .nav-link.active span,
 .nav-link.active span *,
 .nav-link.active svg {
-    color: #fff !important;
-    fill: #fff !important;
+  color: #fff !important;
+  fill: #fff !important;
 }
 
-/* .nav-link:hover,
-.nav-link:hover span,
-.nav-link:hover span *,
-.nav-link:hover svg {
-    color: #fff !important;
-    fill: #fff !important;
-} */
 
 .nav-link span {
-    text-decoration: none;
-    margin-right: auto;
-    padding-bottom: 2px;
-    white-space: nowrap;
+  text-decoration: none;
+  margin-right: auto;
+  padding-bottom: 2px;
+  white-space: nowrap;
 }
 
 .nav-link span * {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .nav-link svg {
-    width: 20px;
-    margin-left: 20px;
+  width: 20px;
+  margin-left: 20px;
 }
 
 
 .logo {
-    /* border-bottom: 1px solid #beafc372;
-    padding-bottom: 7px; */
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: .15s;
-    overflow: hidden;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: .15s;
+  overflow: hidden;
 }
 
 .logo div {
-    display: flex;
-    align-items: center;
-    width: 150px;
-    font-size: 40px;
-    font-weight: 600;
-    color: #fff !important;
-    margin: auto;
+  display: flex;
+  align-items: center;
+  width: 150px;
+  font-size: 40px;
+  font-weight: 600;
+  color: #fff !important;
+  margin: auto;
 }
 
 .logo-title {
-    padding-left: 12px;
-    padding-bottom: 5px;
+  padding-left: 12px;
+  padding-bottom: 5px;
 }
 
 .disabled {
-    opacity: 0.5;
-    pointer-events: none;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 </style>

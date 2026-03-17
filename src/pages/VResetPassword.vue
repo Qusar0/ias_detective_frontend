@@ -45,9 +45,9 @@
 
 
 <script setup>
-import router from "../router/router.js";
-import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import router from '../router/router.js';
+import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 import { isAuthorized } from '../use/index';
 
 const password = ref('');
@@ -58,23 +58,23 @@ const success = ref(false);
 onMounted(() => {
   const route = useRoute();
   token.value = route.query.token;
-})
+});
 
 const resetPassword = () => {
   fetch(`/api/v1/auth/reset_password`, {
-    method: "POST",
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json'
     },
-    credentials: "include",
+    credentials: 'include',
     body: JSON.stringify({
       new_password: password.value,
-      token: token.value,
-    }),
+      token: token.value
+    })
   })
       .then((response) => {
         response?.status === 200 ? success.value = true : errorMessage.value = 'Ошибка! Не удалось сбросить пароль.';
-      })
+      });
 };
 </script>
 
