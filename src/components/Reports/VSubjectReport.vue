@@ -727,8 +727,10 @@ const availableKeywords = computed(() => {
 })
 
 const totalAllMaterials = computed(() => {
-  return Object.values(props.keywordStats || {})
-      .reduce((sum, count) => sum + (typeof count === 'number' ? count : 0), 0)
+  const excludedKeys = new Set(['main', 'socials', 'documents'])
+  return Object.entries(props.keywordStats || {})
+      .filter(([key]) => !excludedKeys.has(key))
+      .reduce((sum, [, count]) => sum + (typeof count === 'number' ? count : 0), 0)
 })
 
 const chartData = computed(() => {
