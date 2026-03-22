@@ -1,11 +1,6 @@
 <template>
   <div
-      class="flex ssss parent-prompt"
-      style="
-        width: 50%;
-        position: relative;
-        height: 30px;
-    "
+      class="flex ssss parent-prompt list-input-wrap"
   >
     <div
         class="prohibited_sites"
@@ -137,8 +132,22 @@ export default {
 </script>
 
 <style scoped>
+.list-input-wrap {
+  width: 50%;
+  position: relative;
+  height: 30px;
+}
+
 .ssss:not(.ssss:last-child) {
   margin-right: 10px;
+}
+
+@media (max-width: 700px) {
+  .list-input-wrap {
+    width: 100%;
+    margin-right: 0;
+    height: 30px;
+  }
 }
 
 .ssss .fa-angle-down {

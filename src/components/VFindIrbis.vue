@@ -1036,6 +1036,20 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
 .birthday {
   margin-right: 0;
 }
+
+@media (max-width: 700px) {
+  .form .inputs {
+    flex-direction: column;
+  }
+
+  .top-input {
+    margin-right: 0 !important;
+  }
+
+  .form input {
+    font-size: 13px;
+  }
+}
 </style>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

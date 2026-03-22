@@ -69,7 +69,7 @@
           >
         </div>
       </div>
-      <div class="flex items-center justify-between" style="height: 30px">
+      <div class="flex items-center justify-between controls-row" style="height: 30px">
         <label class="flex items-center parent-prompt-hover">
           <input type="checkbox" class="chbox" v-model="chbox.mentions" disabled/>
           <small
@@ -756,6 +756,16 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
 
 .checkbox-disabled {
   opacity: .5;
+}
+
+@media (max-width: 600px) {
+  .controls-row {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto !important;
+    gap: 10px;
+    padding-bottom: 5px;
+  }
 }
 
 .item__content {

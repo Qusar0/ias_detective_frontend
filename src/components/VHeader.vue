@@ -9,11 +9,11 @@
       <rect y="8" width="30" height="4" rx="2"/>
       <rect y="16" width="30" height="4" rx="2"/>
     </svg>
-    <div class="nav">
+<div class="nav">
       <button class="item-btn btn">
         <router-link to="/payment" style="text-decoration: none;color: white;">Пополнить</router-link>
       </button>
-      <div style="font-size: 13.3px;margin-right: 15px;">
+      <div class="balance">
         <b>{{ user_balance.toFixed(1) }}</b>
         руб.
       </div>
@@ -426,5 +426,59 @@ export default {
 .item-btn:hover {
   background: rgb(22, 144, 119);
 }
+
+.balance {
+  font-size: 13.3px;
+  margin-right: 15px;
+}
+
+/* Мобильные */
+@media (max-width: 600px) {
+  .header svg {
+    height: 22px;
+    width: 28px;
+    margin-left: 10px;
+  }
+
+.nav {
+    margin-right: 8px;
+    gap: 2px;
+  }
+
+  .item-btn {
+    font-size: 11px;
+    height: 22px;
+    padding: 0 7px;
+    margin-right: 6px;
+  }
+
+  .balance {
+    font-size: 11px;
+    margin-right: 8px;
+  }
+
+  .nav .full_name {
+    display: none;
+  }
+
+  .fa-bell {
+    font-size: 16px;
+  }
+
+  .fa-solid.fa-user-tie {
+    font-size: 18px !important;
+  }
+
+  .nav .dropdown {
+    width: 10px;
+    margin-left: 6px;
+  }
+
+  .notifications {
+    width: 260px;
+    right: 0;
+  }
+}
+
 
 </style>

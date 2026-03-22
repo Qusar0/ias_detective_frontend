@@ -155,7 +155,7 @@
             :item="keys_list.keyword"
         ></list-input>
       </div>
-      <div class="flex">
+      <div class="flex minus-plus-row">
         <list-input :item="keys_list.minus"></list-input>
         <list-input :item="keys_list.plus"></list-input>
       </div>
@@ -696,6 +696,21 @@ onMounted(() => {
   display: flex;
 }
 
+@media (max-width: 700px) {
+  .form .inputs {
+    flex-direction: column;
+  }
+
+  .top-input {
+    margin-right: 0 !important;
+  }
+
+  .minus-plus-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
 .form input:not(.form input:last-child) {
   margin-right: 20px;
 }
@@ -1057,6 +1072,76 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
   margin: 15px auto 0;
   padding: 3px;
 }
+
+/* Планшет */
+@media (max-width: 880px) {
+  .item {
+    font-size: 12px;
+    height: auto;
+    min-height: 45px;
+  }
+
+  .item-title {
+    width: 210px;
+  }
+
+  .item__content-title {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .item__header,
+  .item__content {
+    width: 100px;
+  }
+
+  .item__content[style*="260px"],
+  .item__header[style*="260px"] {
+    width: 200px !important;
+  }
+}
+
+/* Телефон */
+@media (max-width: 520px) {
+  .item {
+    font-size: 11px;
+    padding: 0 8px;
+    height: auto;
+    min-height: 45px;
+  }
+
+  .item-title {
+    width: 150px;
+  }
+
+  .item__content-title {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .item__header,
+  .item__content {
+    width: 72px;
+  }
+
+  .item__content[style*="260px"],
+  .item__header[style*="260px"] {
+    width: 148px !important;
+  }
+
+  .delete-icon {
+    width: 24px;
+  }
+
+  .item-btn {
+    width: auto !important;
+    font-size: 11px;
+    padding: 0 4px;
+  }
+}
+
 </style>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

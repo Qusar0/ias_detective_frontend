@@ -13,6 +13,9 @@ export default {
   methods: {
     toggleMenu(bool) {
       this.menu = bool;
+    },
+    onBackdropClick() {
+      this.menu = false;
     }
   },
   setup() {
@@ -22,7 +25,8 @@ export default {
 </script>
 
 <template>
-  <v-sidebar :menu="menu" @click.stop="refresh()"></v-sidebar>
+  <v-sidebar :menu="menu"></v-sidebar>
+  <div class="sidebar-backdrop" v-show="menu" @click="onBackdropClick"></div>
   <div class="wrap" @click.stop="refresh()" style="overflow-y: scroll;overflow-x: hidden;">
     <v-header :menu="menu" @toggle-menu="toggleMenu"></v-header>
     <v-content></v-content>
@@ -32,5 +36,19 @@ export default {
 <style scoped>
 .wrap {
   flex-grow: 1;
+}
+
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 999px) {
+  .sidebar-backdrop {
+    display: block;
+  }
 }
 </style>

@@ -9,14 +9,7 @@
     </div>
     <div class="form">
       <div class="flex">
-        <div
-            style="
-                    font-size: 22px;
-                    font-weight: 600;
-                    line-height: 1;
-                    margin-bottom: 9px;
-                "
-        >
+        <div class="section-title">
           Уведомления в Telegram
         </div>
         <button class="btn password-btn" style="margin-top: 0;">
@@ -28,14 +21,7 @@
     </div>
 
     <div class="form">
-      <div
-          style="
-                    font-size: 22px;
-                    font-weight: 600;
-                    line-height: 1;
-                    margin-bottom: 9px;
-                "
-      >
+      <div class="section-title">
         Сменить пароль
       </div>
       <div
@@ -88,14 +74,7 @@
 
     <div class="form--language">
       <div>
-        <div
-            style="
-                    font-size: 22px;
-                    font-weight: 600;
-                    line-height: 1;
-                    margin-bottom: 9px;
-                "
-        >
+        <div class="section-title">
           Язык по умолчанию
         </div>
         <div
@@ -410,6 +389,27 @@ button.add-item:hover {
 .change-password__success {
   border: 1px solid green;
   color: green;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1;
+  margin-bottom: 9px;
+}
+
+@media (max-width: 999px) {
+  .section-title {
+    font-size: 16px;
+  }
+
+  .form input {
+    font-size: 13px;
+  }
+
+  .form input::placeholder {
+    font-size: 13px;
+  }
 }
 </style>
 

@@ -22,6 +22,7 @@
         to="/"
         class="nav-link"
         :class="{ active: $route.path == '/' }"
+        @click="closeOnMobile"
     >
       <i class="fa-solid fa-user-check"></i>
       <span v-show="menu">Поиск персоны</span>
@@ -31,6 +32,7 @@
         to="/find-by-number"
         class="nav-link"
         :class="{ active: $route.path == '/find-by-number' }"
+        @click="closeOnMobile"
     >
       <i class="fa-solid fa-phone"></i>
       <span v-show="menu">Проверка номера</span>
@@ -40,6 +42,7 @@
         to="/find-by-email"
         class="nav-link"
         :class="{ active: $route.path == '/find-by-email' }"
+        @click="closeOnMobile"
     >
       <i class="fa-solid fa-envelope"></i>
       <span v-show="menu">Проверка почты</span>
@@ -49,6 +52,7 @@
         to="/find-by-company"
         class="nav-link"
         :class="{ active: $route.path == '/find-by-company' }"
+        @click="closeOnMobile"
     >
       <i class="fa-solid fa-building"></i>
       <span v-show="menu">Поиск компании</span>
@@ -58,6 +62,7 @@
         to="/find-by-irbis"
         class="nav-link"
         :class="{ active: $route.path == '/find-by-irbis' }"
+        @click="closeOnMobile"
     >
       <i class="fa-solid fa-balance-scale"></i>
       <span v-show="menu">Судебные процессы</span>
@@ -87,6 +92,7 @@
         to="/settings"
         class="nav-link"
         :class="{ active: $route.path == '/settings' }"
+        @click="closeOnMobile"
     >
       <i class="fa-solid fa-gear"></i>
       <span v-show="menu">Настройки</span>
@@ -96,6 +102,7 @@
         to="/support"
         class="nav-link"
         :class="{ active: $route.path == '/support' }"
+        @click="closeOnMobile"
     >
       <i class="fa-solid fa-square-envelope"></i>
       <span v-show="menu">Поддержка</span>
@@ -105,6 +112,7 @@
         href="https://t.me/iasdetectivebot"
         target="_blank"
         class="nav-link"
+        @click="closeOnMobile"
     >
       <i class="fa-brands fa-telegram"></i>
       <span v-show="menu">Уведомления в Telegram</span>
@@ -113,11 +121,20 @@
 </template>
 
 <script>
+import { menu } from '../use/index';
+
 export default {
   props: {
     menu: {
       type: Boolean,
       required: true
+    }
+  },
+  methods: {
+    closeOnMobile() {
+      if (window.innerWidth <= 999) {
+        menu.value = false;
+      }
     }
   }
 };
@@ -225,6 +242,17 @@ hr.sidebar-hr {
 .disabled {
   opacity: 0.5;
   pointer-events: none;
+}
+
+@media (max-width: 999px) {
+  .sidebar {
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    height: 100% !important;
+    min-width: 0 !important;
+  }
 }
 
 </style>
