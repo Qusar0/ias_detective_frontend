@@ -153,6 +153,7 @@
         <list-input
             style="width: 100%;"
             :item="keys_list.keyword"
+            mobile-placeholder="Ключевые слова"
         ></list-input>
       </div>
       <div class="flex minus-plus-row">
@@ -282,15 +283,13 @@
             </small>
           </label>
 
-          <label class="flex items-center search-engine-label parent-prompt-hover" style="cursor: not-allowed;">
+          <label class="flex items-center search-engine-label parent-prompt-hover">
             <input
                 type="checkbox"
                 class="chbox"
                 v-model="engines.yandex"
-                disabled
-                style="opacity: 0.4;"
             />
-            <span style="user-select: none; margin-left: 5px; opacity: 0.4;">
+            <span style="user-select: none; margin-left: 5px;">
                             Yandex
                         </span>
             <small class="prompt-hover">
@@ -393,7 +392,7 @@
             Посмотреть
           </button>
           <button
-              class="item-btn btn"
+              class="item-btn btn btn-download-desktop"
               style="width: 125px;"
               @click="downloadQuery(query.query_title, query.query_id, query)"
           >
@@ -1074,6 +1073,12 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
 }
 
 /* Планшет */
+@media (max-width: 1024px) {
+  .btn-download-desktop {
+    display: none !important;
+  }
+}
+
 @media (max-width: 880px) {
   .item {
     font-size: 12px;

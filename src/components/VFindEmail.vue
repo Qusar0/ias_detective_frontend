@@ -82,7 +82,7 @@
           >Упоминания: <span class="checkbox-price">{{ chbox_prices.mentions }} ₽</span></span
           >
         </label>
-        <label class="flex items-center parent-prompt-hover">
+        <!-- <label class="flex items-center parent-prompt-hover">
           <input type="checkbox" class="chbox" disabled v-model="chbox.searchAccounts"/>
           <small
               class="prompt-hover"
@@ -92,7 +92,7 @@
           <span style="user-select: none" class="checkbox-disabled">
                         Аккаунты
                     </span>
-        </label>
+        </label> -->
         <button
             class="btn"
             style="white-space: nowrap;"

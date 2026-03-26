@@ -68,7 +68,7 @@
       <span v-show="menu">Судебные процессы</span>
     </router-link>
     <hr class="sidebar-hr" color="#3a4956">
-    <router-link
+    <!-- <router-link
         to="/gos"
         class="nav-link"
         :class="{ disabled: true }"
@@ -87,7 +87,7 @@
       <i class="fa-solid fa-spinner"></i>
       <span v-show="menu">Никнейм</span>
     </router-link>
-    <hr class="sidebar-hr" color="#3a4956">
+    <hr class="sidebar-hr" color="#3a4956"> -->
     <router-link
         to="/settings"
         class="nav-link"

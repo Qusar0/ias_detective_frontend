@@ -183,6 +183,7 @@
             style="width: 100%;"
             :item="keys_list.keyword"
             :prompt="'Укажите как можно больше слов, которые могут встречаться в связи с упоминаемой компанией – фамилии руководства, города присутствия, направления деятельности компании, ситуации, связанные с ней и др.'"
+            mobile-placeholder="Ключевые слова"
         ></list-input>
       </div>
       <div class="flex minus-plus-row">
@@ -311,15 +312,13 @@
             </small>
           </label>
 
-          <label class="flex items-center search-engine-label parent-prompt-hover" style="cursor: not-allowed;">
+          <label class="flex items-center search-engine-label parent-prompt-hover">
             <input
                 type="checkbox"
                 class="chbox"
                 v-model="engines.yandex"
-                disabled
-                style="opacity: 0.4;"
             />
-            <span style="user-select: none; margin-left: 5px; opacity: 0.4;">
+            <span style="user-select: none; margin-left: 5px;">
                             Yandex
                         </span>
             <small class="prompt-hover">
@@ -1064,6 +1063,10 @@ label.parent-prompt:not(label.parent-prompt:focus-within) > .prompt {
   .minus-plus-row {
     flex-direction: column;
     gap: 20px;
+  }
+
+  .form .inputs {
+    flex-direction: column;
   }
 }
 </style>

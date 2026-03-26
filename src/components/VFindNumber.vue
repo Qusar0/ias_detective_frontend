@@ -92,7 +92,7 @@
           >Теги: <span class="checkbox-price">{{ chbox_prices.tags }} ₽</span></span
           >
         </label>
-        <label class="flex items-center parent-prompt-hover">
+        <!-- <label class="flex items-center parent-prompt-hover">
           <input type="checkbox" class="chbox" disabled v-model="chbox.searchAccounts"/>
           <small
               class="prompt-hover"
@@ -102,7 +102,7 @@
           <span style="user-select: none" class="checkbox-disabled">
                         Аккаунты
                     </span>
-        </label>
+        </label> -->
         <button
             class="btn"
             style="white-space: nowrap;margin-top: 0;margin-left: 0 !important;"

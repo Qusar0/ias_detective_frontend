@@ -42,7 +42,7 @@
         v-model="item.input"
         style="margin-right: 0; border-radius: 3px 0 0 3px;height: 100%;"
         type="text"
-        :placeholder="item.placeholder"
+        :placeholder="effectivePlaceholder"
         @keydown.enter="addItem"
     />
     <small class="prompt with-upload">{{ prompt === '' ? item.prompt : prompt }}</small>
@@ -82,6 +82,19 @@ export default {
       type: String,
       required: false,
       default: ''
+    },
+    mobilePlaceholder: {
+      type: String,
+      required: false,
+      default: ''
+    }
+  },
+  computed: {
+    effectivePlaceholder() {
+      if (this.mobilePlaceholder && window.innerWidth <= 700) {
+        return this.mobilePlaceholder;
+      }
+      return this.item.placeholder;
     }
   },
   setup() {
