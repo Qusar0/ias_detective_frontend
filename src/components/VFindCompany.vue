@@ -1,5 +1,6 @@
 <template>
   <div class="content">
+    <v-loader v-if="query_list_loading" />
     <div
         v-show="confirm_model"
         class="confirm-model"
@@ -424,13 +425,6 @@
             @click="deleteQuery(query.query_id, update_current_timestamp)"
         ></i>
       </div>
-      <div
-          v-show="query_list_loading"
-          class="item"
-          style="background-color: transparent;justify-content: center;margin-top: 0;"
-      >
-        <i class="fa-solid fa-spinner"></i>
-      </div>
     </div>
 
     <div
@@ -452,6 +446,7 @@ import '../utils/index';
 import { isAuthorized, keys_list, user_balance, languageOptions, appDefaultLanguage } from '../use/index';
 import ListInput from './ListInput.vue';
 import VPagination from './UI/VPagination.vue';
+import VLoader from './UI/VLoader.vue';
 import { events } from '../utils/notification';
 import Multiselect from 'vue-multiselect';
 import router from '../router/router.js';

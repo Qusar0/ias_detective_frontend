@@ -492,24 +492,34 @@
 
                     <div class="item-keywords" v-if="item.keyword_list?.length" style="margin-left:10px">
                       <div class="item-param">
-                        <div class="query-content">
+                        <div class="query-content" @click.stop="toggleKeywordMenu(item.link)">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                             <path
                                 d="M336 352c97.2 0 176-78.8 176-176S433.2 0 336 0S160 78.8 160 176c0 18.7 2.9 36.8 8.3 53.7L7 391c-4.5 4.5-7 10.6-7 17v80c0 13.3 10.7 24 24 24h80c13.3 0 24-10.7 24-24V448h40c13.3 0 24-10.7 24-24V384h40c6.4 0 12.5-2.5 17-7l33.3-33.3c16.9 5.4 35 8.3 53.7 8.3zM376 96a40 40 0 1 1 0 80 40 40 0 1 1 0-80z"
                             />
                           </svg>
                           <span class="keyword-counter">{{ item.keyword_list.length }}</span>
-                          <template v-for="(query, index) in item.keyword_list" :key="index">
-                            <span v-if="index > 0">, </span>
-                            <span
-                                class="query"
-                                @click="copyToClipboard(String(query))"
-                                :title="String(query)"
-                            >
-                              {{ displayKeyword(String(query)) }}
-                            </span>
-                          </template>
+                          <span class="keywords-inline-list">
+                            <template v-for="(query, index) in item.keyword_list" :key="index">
+                              <span v-if="index > 0">, </span>
+                              <span
+                                  class="query"
+                                  @click.stop="copyToClipboard(String(query))"
+                                  :title="String(query)"
+                              >
+                                {{ displayKeyword(String(query)) }}
+                              </span>
+                            </template>
+                          </span>
                           <small class="prompt">Копировать при клике</small>
+                        </div>
+                        <div class="keywords-mobile-menu" v-show="openKeywordMenu === item.link" @click.stop>
+                          <span
+                              v-for="(query, index) in item.keyword_list"
+                              :key="index"
+                              class="query"
+                              @click="copyToClipboard(String(query))"
+                          >{{ displayKeyword(String(query)) }}</span>
                         </div>
                       </div>
                     </div>
@@ -567,24 +577,34 @@
 
                 <div class="item-keywords" v-if="item.keyword_list?.length" style="margin-left:10px">
                   <div class="item-param">
-                    <div class="query-content">
+                    <div class="query-content" @click.stop="toggleKeywordMenu(item.link)">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                         <path
                             d="M336 352c97.2 0 176-78.8 176-176S433.2 0 336 0S160 78.8 160 176c0 18.7 2.9 36.8 8.3 53.7L7 391c-4.5 4.5-7 10.6-7 17v80c0 13.3 10.7 24 24 24h80c13.3 0 24-10.7 24-24V448h40c13.3 0 24-10.7 24-24V384h40c6.4 0 12.5-2.5 17-7l33.3-33.3c16.9 5.4 35 8.3 53.7 8.3zM376 96a40 40 0 1 1 0 80 40 40 0 1 1 0-80z"
                         />
                       </svg>
                       <span class="keyword-counter">{{ item.keyword_list.length }}</span>
-                      <template v-for="(query, index) in item.keyword_list" :key="index">
-                        <span v-if="index > 0">, </span>
-                        <span
-                            class="query"
-                            @click="copyToClipboard(String(query))"
-                            :title="String(query)"
-                        >
-                          {{ displayKeyword(String(query)) }}
-                        </span>
-                      </template>
+                      <span class="keywords-inline-list">
+                        <template v-for="(query, index) in item.keyword_list" :key="index">
+                          <span v-if="index > 0">, </span>
+                          <span
+                              class="query"
+                              @click.stop="copyToClipboard(String(query))"
+                              :title="String(query)"
+                          >
+                            {{ displayKeyword(String(query)) }}
+                          </span>
+                        </template>
+                      </span>
                       <small class="prompt">Копировать при клике</small>
+                    </div>
+                    <div class="keywords-mobile-menu" v-show="openKeywordMenu === item.link" @click.stop>
+                      <span
+                          v-for="(query, index) in item.keyword_list"
+                          :key="index"
+                          class="query"
+                          @click="copyToClipboard(String(query))"
+                      >{{ displayKeyword(String(query)) }}</span>
                     </div>
                   </div>
                 </div>
@@ -607,7 +627,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, nextTick, onMounted, reactive, ref, watch} from 'vue'
+import {computed, nextTick, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import VPagination from '../UI/VPagination.vue'
 
 interface Item {
@@ -699,6 +719,12 @@ const sortOrder = ref<'none' | 'asc' | 'desc' | 'date-asc' | 'date-desc' | 'coun
 const secondarySortOrder = ref<'none' | 'date-asc' | 'date-desc'>('none')
 const isGroupingEnabled = ref(false)
 const expandedDomains = reactive<Record<string, boolean>>({})
+
+const openKeywordMenu = ref<string | null>(null)
+
+const toggleKeywordMenu = (key: string) => {
+  openKeywordMenu.value = openKeywordMenu.value === key ? null : key
+}
 
 const keywordSearchQuery = ref('')
 const selectedKeywords = reactive<Record<string, boolean>>({})
@@ -1492,6 +1518,12 @@ onMounted(async () => {
     initializeKeywordFilter()
   } else {
   }
+
+  document.addEventListener('click', () => { openKeywordMenu.value = null })
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', () => { openKeywordMenu.value = null })
 })
 
 watch(filteredItems, () => {
@@ -2931,5 +2963,41 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
 .range-values {
   color: #4400ed;
   font-weight: 600;
+}
+
+/* Mobile keyword dropdown */
+.keywords-mobile-menu {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .keywords-inline-list {
+    display: none;
+  }
+
+  .query-content {
+    cursor: pointer;
+  }
+
+  .keywords-mobile-menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    z-index: 100;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 180px;
+    max-width: 280px;
+  }
+
+  .keywords-mobile-menu .query {
+    margin-left: 0;
+  }
 }
 </style>

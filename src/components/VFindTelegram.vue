@@ -1,5 +1,6 @@
 <template>
   <div class="content">
+    <v-loader v-if="query_list_loading" />
     <div class="confirm-model" v-show="confirm_model" @click="confirm_model = false">
       <div class="confirm-model_body" @click.stop>
         <div
@@ -169,12 +170,6 @@
           ></i>
         </div>
       </div>
-      <div
-          class="item" v-show="query_list_loading"
-          style="background-color: transparent;justify-content: center;margin-top: 0;"
-      >
-        <i class="fa-solid fa-spinner"></i>
-      </div>
     </div>
 
     <div
@@ -195,6 +190,7 @@ import { onMounted, reactive, ref, watch } from 'vue';
 import '../utils/index';
 import { isAuthorized, user_balance } from '../use/index';
 import VPagination from './UI/VPagination.vue';
+import VLoader from './UI/VLoader.vue';
 import { events } from '../utils/notification';
 import router from '../router/router.js';
 import { useQueryManagement } from '../composables/useQueryManagement.js';
