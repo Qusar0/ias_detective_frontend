@@ -145,7 +145,7 @@
           {{ getItemDate(new Date(query?.query_created_at)) }}
         </div>
         <div class="item__content item-price">
-          {{ query.balance }} руб.
+          {{ query.balance != null ? query.balance + ' руб.' : '—' }}
         </div>
         <div
             v-if="query.query_status == 'pending'"

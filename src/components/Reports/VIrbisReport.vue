@@ -591,24 +591,85 @@ onMounted(() => {
   margin: 0;
 }
 
-@media (max-width: 710px) {
-  .tab-head > .tabs:not(.pagination) {
-    margin: 0 -5px;
-    font-size: 15px;
+@media (max-width: 1024px) and (min-width: 641px) {
+  .tabs-container {
+    width: 100%;
+  }
+
+  .tabs-scroll {
+    overflow-x: visible;
+    overflow-y: visible;
+    flex: none;
+    width: 100%;
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    white-space: normal;
+    width: 100%;
+  }
+
+  .tab-head .flex > div[class*="tab-"]:not(.pagination) {
+    font-size: 12px !important;
+    padding: .4em .4em;
+    margin-right: 0;
+    flex: 0 0 33.33%;
+    box-sizing: border-box;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.3;
+    flex-shrink: 1;
   }
 
   .tab-scroll-button {
-    width: 28px;
-    height: 28px;
-  }
-
-  .tab-scroll-button svg {
-    width: 10px;
-    height: 10px;
+    display: none;
   }
 }
 
-/* General Info Header */
+@media (max-width: 640px) {
+  .tabs-container {
+    width: 100%;
+  }
+
+  .tabs-scroll {
+    overflow-x: visible;
+    overflow-y: visible;
+    flex: none;
+    width: 100%;
+  }
+
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    white-space: normal;
+    width: 100%;
+  }
+
+  .tab-head .flex > div[class*="tab-"]:not(.pagination) {
+    font-size: 11px !important;
+    padding: .35em .3em;
+    margin-right: 0;
+    flex: 0 0 50%;
+    box-sizing: border-box;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.3;
+    flex-shrink: 1;
+  }
+
+  .tab-scroll-button {
+    display: none;
+  }
+
+  .tab-count {
+    font-size: 10px;
+    height: 14px;
+    top: -1px;
+    right: -2px;
+  }
+}
+
 .general-info-header {
   display: flex;
   flex-wrap: wrap;
@@ -640,7 +701,6 @@ onMounted(() => {
   }
 }
 
-/* Override default checkbox and radio colors */
 :deep(input[type="checkbox"]),
 :deep(input[type="radio"]) {
   accent-color: #4400ed;

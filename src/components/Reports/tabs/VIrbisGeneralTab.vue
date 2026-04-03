@@ -217,7 +217,6 @@ onMounted(() => {
   fill: #8a6d3b;
 }
 
-/* Loading Styles */
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -251,7 +250,7 @@ onMounted(() => {
   }
 }
 
-/* Error Styles */
+
 .error-container {
   display: flex;
   flex-direction: column;
@@ -276,7 +275,6 @@ onMounted(() => {
   max-width: 400px;
 }
 
-/* Results Chart */
 .results-chart-container {
   width: 100%;
   max-width: 800px;
@@ -378,23 +376,65 @@ onMounted(() => {
   text-align: right;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1024px) and (min-width: 641px) {
+  .results-chart-container {
+    max-width: 100%;
+    padding: 16px;
+  }
+
   .chart-bar-item {
-    grid-template-columns: 140px 1fr 50px;
+    grid-template-columns: 150px 1fr 50px;
     gap: 8px;
   }
 
   .bar-label {
-    font-size: 11px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 640px) {
+  .results-chart-container {
+    max-width: 100%;
+    padding: 12px;
+    margin: 0;
+  }
+
+  .chart-title {
+    font-size: 15px;
+    margin-bottom: 14px;
   }
 
   .total-number {
     font-size: 28px;
   }
 
-  .results-chart-container {
-    margin: 0 10px;
-    padding: 15px;
+  .total-label {
+    font-size: 12px;
+  }
+
+  .chart-bar-item {
+    grid-template-columns: 1fr 44px;
+    grid-template-rows: auto auto;
+    gap: 4px 8px;
+    padding: 6px 4px;
+  }
+
+  .bar-label {
+    font-size: 11px;
+    grid-column: 1 / -1;
+  }
+
+  .bar-container {
+    height: 24px;
+  }
+
+  .bar-percentage {
+    font-size: 12px;
+    align-self: center;
+  }
+
+  .bar-count {
+    font-size: 11px;
   }
 }
 </style>
