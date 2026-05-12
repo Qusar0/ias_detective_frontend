@@ -80,6 +80,10 @@
                   <i class="fa-solid fa-gear"></i>
                   <router-link to="/settings">Настройки</router-link>
                 </span>
+        <span>
+                  <i class="fa-solid fa-clock-rotate-left"></i>
+                  <router-link to="/balance-history">История баланса</router-link>
+                </span>
         <span class="logout" @click="logout()">
                   <i class="fa-solid fa-arrow-right-from-bracket"></i>
                   Выход
@@ -232,8 +236,7 @@ export default {
   align-items: center;
   line-height: 1;
   cursor: pointer;
-  padding-left: 48px;
-
+  padding-left: 10px;
   overflow: hidden;
 }
 

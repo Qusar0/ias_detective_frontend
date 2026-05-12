@@ -14,6 +14,7 @@ import VResetPassword from '../pages/VResetPassword.vue';
 import VConfirmTelegram from '../pages/VConfirmTelegram.vue';
 import VQuery from '../pages/VQuery.vue';
 import VFindByIrbis from '../pages/VFindByIrbis.vue';
+import VBalanceHistory from '../pages/VBalanceHistory.vue';
 
 const routes = [
   {
@@ -80,6 +81,11 @@ const routes = [
     path: '/settings',
     name: 'Settings',
     component: VSettings
+  },
+  {
+    path: '/balance-history',
+    name: 'BalanceHistory',
+    component: VBalanceHistory
   },
   {
     path: '/support',
