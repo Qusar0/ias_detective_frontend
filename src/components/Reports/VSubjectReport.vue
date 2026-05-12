@@ -1,7 +1,7 @@
 <template>
   <div class="person-report" @click="closeModal">
     <div class="tab-head" @click="closeModal">
-      <div class="head-info" :style="{ height: headInfoExpanded ? '105px' : '28px' }">
+      <div class="head-info" :style="{ height: headInfoExpanded ? '110px' : '28px' }">
         <div class="head-info-top">
           <h2 class="object-full_name" @click="toggleHeadInfo">
             Объект: <span>{{ objectName }}</span>
