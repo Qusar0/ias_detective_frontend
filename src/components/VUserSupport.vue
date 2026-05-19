@@ -17,7 +17,7 @@
       <div class="inputs flex-col" style="flex-direction: column;gap: 10px;">
         <div class="flex flex-col w-full parent-prompt top-input" style="border: none !important;">
           <input
-              v-model="form.theme" type="text" title="some title ..." placeholder="Контакт для связи"
+              v-model="form.contacts" type="text" title="some title ..." placeholder="Контакт для связи"
               style="margin-right: 0;margin-bottom: 0;border: none !important;font-size: 15px;"
           ><small
             class="prompt"
@@ -27,7 +27,7 @@
             class="flex flex-col w-full parent-prompt top-input"
             style="margin-right: 20px; margin-bottom: 0; align-items: start;"
         ><input
-            v-model="form.description"
+            v-model="form.theme"
             type="text"
             placeholder="Тема сообщение"
             style="margin-right: 0;border: none !important;font-size: 15px;margin-bottom: 0px;"
@@ -36,7 +36,7 @@
         >Введите тему сообщение</small></div>
         <div class="flex flex-col w-full parent-prompt top-input" style="margin-bottom: 0; align-items: start;">
                     <textarea
-                        v-model="form.contacts" type="text" placeholder="Текст сообщение"
+                        v-model="form.description" type="text" placeholder="Текст сообщение"
                         style="font-family: sans-serif;margin-right: 0px;margin-bottom: 0px;font-size: 15px;width: 700px;height: 150px;padding: 5px 7px;max-width: 100%;max-height: 300px;border: none !important;"
                     ></textarea><small
             class="prompt"
@@ -77,7 +77,7 @@ export default {
           this.form.contacts != ''
       ) {
 
-        fetch(`/api/write_support`, {
+        fetch(`/api/telegram/write_support`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
