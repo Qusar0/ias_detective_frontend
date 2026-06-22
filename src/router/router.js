@@ -8,7 +8,7 @@ import VFindByNumber from '../pages/VFindByNumber.vue';
 import VFindByTelegram from '../pages/VFindByTelegram.vue';
 import VFindByEmail from '../pages/VFindByEmail.vue';
 import VFindByCompany from '../pages/VFindByCompany.vue';
-import { isAuthorized } from '../use/index';
+import { isAuthorized, user_role } from '../use/index';
 import VConfirm from '../pages/VConfirm.vue';
 import VResetPassword from '../pages/VResetPassword.vue';
 import VConfirmTelegram from '../pages/VConfirmTelegram.vue';
@@ -123,6 +123,8 @@ router.beforeEach(async (to, from) => {
           });
         } else {
           isAuthorized.value = true;
+          const data = await response.json();
+          user_role.value = data?.role ?? null;
         }
       } else {
         isAuthorized.value = true;

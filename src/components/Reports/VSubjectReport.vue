@@ -155,6 +155,72 @@
       </div>
     </div>
 
+    <template v-if="isAdmin && props.queryId">
+      <div class="toggle-buttons-container">
+        <button @click="toggleSearchLog" class="toggle-btn">
+          <svg
+              xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"
+              :style="{ transform: searchLogExpanded ? 'rotate(0deg)' : 'rotate(-90deg)' }"
+          >
+            <path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/>
+          </svg>
+          <span>{{ searchLogExpanded ? 'Скрыть лог поиска' : 'Лог поиска' }}</span>
+        </button>
+      </div>
+
+      <div v-if="searchLogExpanded" class="search-log-section">
+        <div class="search-log-container">
+          <h3 class="search-log-title">Лог поиска</h3>
+          <div v-if="searchAuditLoading" class="search-log-loading">Загрузка...</div>
+          <div v-else-if="searchAuditError" class="search-log-error">{{ searchAuditError }}</div>
+          <div v-else-if="!searchAuditData || !Object.keys(searchAuditData).length" class="search-log-empty">
+            Лог поиска недоступен
+          </div>
+          <template v-else>
+            <div v-for="(entry, key) in searchAuditData" :key="key" class="audit-entry">
+              <div
+                  class="audit-entry-header"
+                  @click="expandedAuditEntries[String(key)] = !expandedAuditEntries[String(key)]"
+              >
+                <span class="audit-toggle">{{ expandedAuditEntries[String(key)] ? '▼' : '▶' }}</span>
+                <div class="audit-header-main">
+                  <span class="audit-query" :title="entry.query_url">
+                    {{ extractQueryParam(entry.query_url) }}
+                  </span>
+                  <a
+                      :href="entry.query_url"
+                      target="_blank"
+                      class="audit-url-link"
+                      @click.stop
+                      title="Открыть XMLriver запрос"
+                  >↗</a>
+                </div>
+                <div class="audit-counts">
+                  <span class="audit-count-total">{{ entry.total }}</span>
+                  <span class="audit-count-accepted">✓ {{ entry.accepted_count }}</span>
+                  <span class="audit-count-filtered">✗ {{ entry.filtered_count }}</span>
+                </div>
+              </div>
+              <div v-if="expandedAuditEntries[String(key)]" class="audit-entry-results">
+                <div
+                    v-for="(r, i) in entry.results"
+                    :key="i"
+                    :class="['audit-result-item', `audit-result-${r.status}`]"
+                >
+                  <span class="audit-result-badge">{{ r.status === 'accepted' ? '✓' : '✗' }}</span>
+                  <a v-if="r.status === 'accepted'" :href="r.url" target="_blank" class="audit-result-url">{{ r.url }}</a>
+                  <span v-else class="audit-result-url muted">{{ r.url }}</span>
+                  <span v-if="r.reason" class="audit-result-reason">
+                    {{ r.reason === 'prohibited_site' ? 'запрещённый сайт' : 'дубликат' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+    </template>
+
     <div
         v-if="hasItemsForCurrentTab && !loadingTab"
         class="toggle-buttons-container"
@@ -629,6 +695,7 @@
 <script setup lang="ts">
 import {computed, nextTick, onMounted, onUnmounted, reactive, ref, watch} from 'vue'
 import VPagination from '../UI/VPagination.vue'
+import { user_role } from '../../use/index'
 
 interface Item {
   link: string
@@ -726,6 +793,47 @@ const toggleKeywordMenu = (key: string) => {
   openKeywordMenu.value = openKeywordMenu.value === key ? null : key
 }
 
+const isAdmin = computed(() => user_role.value === 'admin')
+
+const extractQueryParam = (url: string): string => {
+  try {
+    return new URL(url).searchParams.get('query') ?? url
+  } catch {
+    return url
+  }
+}
+
+const searchLogExpanded = ref(false)
+const searchAuditData = ref<Record<string, any> | null>(null)
+const searchAuditLoading = ref(false)
+const searchAuditError = ref<string | null>(null)
+const expandedAuditEntries = reactive<Record<string, boolean>>({})
+
+const loadSearchAudit = async () => {
+  if (!props.queryId || searchAuditData.value !== null) return
+  searchAuditLoading.value = true
+  searchAuditError.value = null
+  try {
+    const res = await fetch(`/api/queries/search_audit/${props.queryId}`, { credentials: 'include' })
+    if (res.ok) {
+      searchAuditData.value = await res.json()
+    } else if (res.status === 404) {
+      searchAuditData.value = {}
+    } else {
+      searchAuditError.value = 'Не удалось загрузить лог поиска'
+    }
+  } catch {
+    searchAuditError.value = 'Ошибка загрузки'
+  } finally {
+    searchAuditLoading.value = false
+  }
+}
+
+const toggleSearchLog = async () => {
+  searchLogExpanded.value = !searchLogExpanded.value
+  if (searchLogExpanded.value) await loadSearchAudit()
+}
+
 const keywordSearchQuery = ref('')
 const selectedKeywords = reactive<Record<string, boolean>>({})
 const filteredKeywordList = ref<Array<{ word: string, count: number }>>([])
@@ -753,8 +861,7 @@ const availableKeywords = computed(() => {
 })
 
 const totalAllMaterials = computed(() => {
-  return Object.values(props.keywordStats || {})
-      .reduce((sum, count) => sum + (typeof count === 'number' ? count : 0), 0)
+  return props.keywordStats?.all_materials ?? 0
 })
 
 const chartData = computed(() => {
@@ -2999,5 +3106,164 @@ watch(() => props.keywordStats, async (newStats, oldStats) => {
   .keywords-mobile-menu .query {
     margin-left: 0;
   }
+}
+
+.search-log-section {
+  padding: 0 15px 15px;
+}
+
+.search-log-container {
+  background: white;
+  border-radius: 8px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-top: 12px;
+}
+
+.search-log-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px;
+  color: #333;
+}
+
+.search-log-loading,
+.search-log-empty {
+  color: #888;
+  font-size: 13px;
+  padding: 8px 0;
+}
+
+.search-log-error {
+  color: #c62828;
+  background: #ffebee;
+  border: 1px solid #ef5350;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.audit-entry {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.audit-entry-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #f8f8f8;
+  cursor: pointer;
+  user-select: none;
+  flex-wrap: wrap;
+}
+
+.audit-entry-header:hover {
+  background: #f0f0f0;
+}
+
+.audit-toggle {
+  font-size: 10px;
+  color: #999;
+  min-width: 10px;
+  flex-shrink: 0;
+}
+
+.audit-header-main {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.audit-query {
+  font-size: 12px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #333;
+  flex: 1;
+  min-width: 0;
+}
+
+.audit-url-link {
+  font-size: 11px;
+  color: #1a73e8;
+  text-decoration: none;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.audit-url-link:hover { opacity: 1; }
+
+.audit-counts {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.audit-count-total { color: #999; }
+.audit-count-accepted { color: #2e7d32; font-weight: 600; }
+.audit-count-filtered { color: #c62828; font-weight: 600; }
+
+.audit-entry-results {
+  padding: 6px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: 360px;
+  overflow-y: auto;
+  background: #fafafa;
+}
+
+.audit-result-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 3px 0;
+  border-bottom: 1px solid #f0f0f0;
+  flex-wrap: wrap;
+}
+
+.audit-result-badge {
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 16px;
+  text-align: center;
+}
+
+.audit-result-accepted .audit-result-badge { color: #2e7d32; }
+.audit-result-filtered .audit-result-badge { color: #c62828; }
+
+.audit-result-url {
+  flex: 1;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  color: #1a73e8;
+  text-decoration: none;
+}
+
+.audit-result-url:hover { text-decoration: underline; }
+.audit-result-url.muted { color: #999; cursor: default; }
+
+.audit-result-reason {
+  font-size: 10px;
+  color: #888;
+  white-space: nowrap;
+  font-style: italic;
+  background: #f5f5f5;
+  padding: 1px 5px;
+  border-radius: 3px;
 }
 </style>
